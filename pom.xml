@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- Zero to AI Agent: parent build for every Java episode.
+       Build all labs from here with:  mvn compile
+       Or cd into one episode folder and build just that one. -->
+  <groupId>dev.kagitha.zerotoagent</groupId>
+  <artifactId>zero-to-ai-agent</artifactId>
+  <version>1.0</version>
+  <packaging>pom</packaging>
+  <name>Zero to AI Agent - Build AI Agents in Java from Scratch</name>
+  <url>https://github.com/kagitha-dev/zero-to-ai-agent</url>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <!-- Ep 1 and Ep 2 are slides and browser labs, so they have no Java module. -->
+  <modules>
+    <module>episodes/ep03-talking-to-llm-java-ollama</module>
+    <!-- Ep 4 onward are added here as each episode is released -->
+  </modules>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- run any class with: mvn exec:java -Dexec.mainClass=... -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.5.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

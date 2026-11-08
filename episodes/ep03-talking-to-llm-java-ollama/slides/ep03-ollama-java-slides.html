@@ -1,0 +1,986 @@
+<title>Ep 3 Ollama Slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: fixed 1920x1080 stage scaled to fit, click-to-step slides, same system as Ep 1-2 bridge slides */
+:root{
+  --bg:#F3F5F9; --ink:#152033; --ink2:#3A4659; --muted:#6B7689;
+  --accent:#2B6FD6; --accent-soft:#E3ECFA; --line:#D5DDE9;
+  --b1:#DCE6F4; --b2:#C3D4EE; --b3:#9DBBEA; --b4:#5E8FDC;
+  --card:#FBFCFD; --navy:#152033; --navy2:#22314B; --sky:#8FB3EE;
+  --ok:#1F8A4C; --ok-soft:#E2F3E9; --bad:#B4432F; --bad-soft:#FBE9E7;
+  --letterbox:#0b0f17; --term:#0F1828; --term-ink:#DCE6F4;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--letterbox);overflow:hidden;font-family:var(--f-body);color:var(--ink)}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--bg);padding:96px 140px;opacity:0;pointer-events:none;transition:opacity .5s ease;overflow:hidden}
+.slide.on{opacity:1;pointer-events:auto}
+.eyebrow{font-family:var(--f-mono);font-size:26px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase}
+h1{font-family:var(--f-display);font-weight:800;font-size:76px;line-height:1.04;letter-spacing:-.02em;margin:22px 0 0;max-width:1640px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.mono{font-family:var(--f-mono)}
+.b{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+.b.in{opacity:1;transform:none}
+.x{opacity:0;transition:opacity .45s}
+.x.cur{opacity:1}
+.abs{position:absolute}
+.k{font-family:var(--f-mono);font-size:19px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px}
+.statement{position:absolute;left:140px;right:140px;bottom:64px;background:var(--navy);color:#fff;border-radius:18px;padding:28px 44px;font-family:var(--f-display);font-weight:700;font-size:42px;display:flex;align-items:center;gap:24px}
+.statement .tag{font:500 20px var(--f-mono);letter-spacing:.16em;color:var(--sky);white-space:nowrap}
+.foot{position:absolute;left:140px;right:140px;bottom:60px;font-family:var(--f-display);font-weight:700;font-size:38px;display:flex;gap:18px;align-items:center}
+.foot .tag{font:500 20px var(--f-mono);letter-spacing:.16em;color:var(--accent);background:var(--accent-soft);padding:10px 16px;border-radius:10px;white-space:nowrap}
+.pt{border-left:5px solid var(--b2);padding:4px 0 4px 26px}
+.pt.in{border-color:var(--accent)}
+.pt .t{font-family:var(--f-display);font-weight:700;font-size:38px;margin:6px 0 6px}
+.pt .d{font-size:25px;color:var(--ink2);line-height:1.4}
+.cursor{display:inline-block;width:12px;height:28px;background:var(--accent);vertical-align:-4px;margin-left:3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@keyframes dash{to{stroke-dashoffset:-40}}
+.hint{position:absolute;right:28px;bottom:20px;font:14px var(--f-mono);color:#9aa4b5;letter-spacing:.08em;z-index:5}
+.progress{position:absolute;left:0;bottom:0;height:5px;background:var(--accent);transition:width .4s;z-index:4}
+.chip{display:inline-block;font:500 19px var(--f-mono);letter-spacing:.08em;padding:9px 15px;border-radius:10px;background:var(--accent-soft);color:var(--accent)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+
+/* ===== S1 title ===== */
+#s1{display:flex;flex-direction:column;justify-content:center}
+#s1 h1{font-size:118px;max-width:1500px}
+#s1 .sub{font-size:36px;color:var(--ink2);margin-top:30px;max-width:1300px;line-height:1.35}
+#s1 .series{margin-top:70px;display:flex;gap:16px;align-items:center;font:500 22px var(--f-mono);letter-spacing:.14em;color:var(--muted)}
+#s1 .series i{display:block;width:60px;height:10px;border-radius:5px;background:var(--b2)}
+#s1 .series i.on{background:var(--accent)}
+#s1 .port{position:absolute;right:140px;top:110px;font:600 30px var(--f-mono);color:var(--accent);background:var(--card);border:2px solid var(--line);border-radius:14px;padding:16px 24px}
+
+/* ===== S2 file does nothing ===== */
+#s2 .filecard{left:140px;top:330px;width:440px;height:470px;padding:34px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.fileicon{width:180px;height:230px;position:relative;background:#fff;border:3px solid var(--b4);border-radius:14px 54px 14px 14px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:26px}
+.fileicon::before{content:"";position:absolute;right:-3px;top:-3px;width:54px;height:54px;background:var(--b1);border-left:3px solid var(--b4);border-bottom:3px solid var(--b4);border-radius:0 50px 0 14px}
+.fileicon .ext{font:600 30px var(--f-mono);color:#fff;background:var(--accent);padding:4px 14px;border-radius:8px}
+.fileicon .grid{position:absolute;left:24px;right:24px;top:60px;font:500 15px var(--f-mono);color:var(--b3);line-height:1.35;text-align:left;overflow:hidden;height:110px;word-break:break-all}
+#s2 .fname{font:600 26px var(--f-mono);margin-top:26px}
+#s2 .fmeta{font-size:22px;color:var(--muted);margin-top:8px}
+#s2 .q{left:470px;top:300px;width:96px;height:96px;border-radius:50%;background:var(--bad);color:#fff;font:800 60px var(--f-display);display:flex;align-items:center;justify-content:center}
+#s2 .idle{left:140px;top:820px;width:440px;text-align:center}
+.shake{animation:shake .5s ease-in-out 3}
+@keyframes shake{25%{transform:translateX(-10px) rotate(-2deg)}75%{transform:translateX(10px) rotate(2deg)}}
+#s2 .jobs{left:680px;top:330px;width:1100px;display:flex;flex-direction:column;gap:22px}
+.jrow{height:146px;padding:22px 30px;display:flex;align-items:center;gap:34px}
+.jrow .lbl{width:300px;flex:none}
+.jrow .lbl .t{font-family:var(--f-display);font-weight:700;font-size:40px;margin-top:6px}
+.jrow .viz{flex:1;height:100%;display:flex;align-items:center;gap:18px;font:500 22px var(--f-mono);color:var(--ink2)}
+.bar{flex:1;height:22px;border-radius:11px;background:var(--b1);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width 2.2s cubic-bezier(.4,.1,.2,1) .2s}
+.jrow.in .bar i{width:100%}
+.pct{width:90px;text-align:right;font-variant-numeric:tabular-nums}
+.shelf{display:flex;gap:14px}
+.slot{width:200px;height:70px;border:2px dashed var(--b3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--muted)}
+.slot.full{border-style:solid;border-color:var(--line);background:var(--card)}
+.slot.drop{border-style:solid;border-color:var(--accent);background:var(--accent-soft);color:var(--accent);opacity:0;transform:translateX(-160px);transition:opacity .6s .3s,transform .8s cubic-bezier(.2,.7,.2,1) .3s}
+.jrow.in .slot.drop{opacity:1;transform:none}
+.mem{background:var(--navy);color:#fff;border-radius:12px;padding:16px 20px;font:500 20px var(--f-mono);white-space:nowrap}
+.mem small{display:block;color:var(--sky);font-size:15px;letter-spacing:.12em}
+.tk{display:inline-block;padding:8px 13px;border-radius:9px;background:var(--accent-soft);color:var(--accent);opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s}
+.jrow.in .tk{opacity:1;transform:none}
+
+/* ===== S3 meet ollama ===== */
+#s3 .laptop{left:140px;top:320px;width:860px;height:560px;border:4px solid var(--navy);border-radius:26px;background:#fff}
+#s3 .laptop .lk{position:absolute;left:28px;top:-17px;background:var(--bg);padding:0 12px}
+#s3 .base{left:90px;top:880px;width:960px;height:26px;background:var(--navy);border-radius:0 0 26px 26px}
+#s3 .wifi{left:180px;top:345px;font:500 19px var(--f-mono);letter-spacing:.1em;padding:8px 14px;border-radius:9px;background:var(--ok-soft);color:var(--ok);transition:background .4s,color .4s}
+#s3 .wifi.off{background:var(--bad-soft);color:var(--bad)}
+#s3 .you{left:180px;top:420px;width:330px}
+.bub{border-radius:16px;padding:18px 22px;font-size:23px;line-height:1.35}
+.bub.u{background:var(--navy);color:#fff}
+.bub.a{background:var(--card);border:2px solid var(--line);min-height:120px}
+#s3 .ans{left:180px;top:600px;width:330px}
+#s3 .oll{left:580px;top:390px;width:380px;height:440px;background:var(--navy);border-radius:20px;color:#fff;padding:28px}
+#s3 .oll .n{font-family:var(--f-display);font-weight:800;font-size:52px}
+#s3 .oll .s{font:500 17px var(--f-mono);letter-spacing:.14em;color:var(--sky);margin-top:4px}
+#s3 .jobchips{display:flex;flex-direction:column;gap:12px;margin-top:26px}
+#s3 .jobchips div{font:500 22px var(--f-mono);padding:12px 16px;border-radius:10px;background:var(--navy2);color:#7F8CA3;transition:.4s;display:flex;justify-content:space-between}
+#s3 .jobchips div.in{background:#2B4470;color:#fff}
+#s3 .jobchips div b{color:#7BE0A3;opacity:0;transition:.4s}
+#s3 .jobchips div.in b{opacity:1}
+#s3 .modelchip{margin-top:22px;font:500 20px var(--f-mono);padding:12px 16px;border:2px dashed var(--b4);border-radius:10px;color:var(--sky);text-align:center}
+#s3 .cloud{left:1040px;top:420px;width:180px;height:110px;border:2px dashed var(--b3);border-radius:60px;display:flex;align-items:center;justify-content:center;font:500 18px var(--f-mono);color:var(--muted);letter-spacing:.1em}
+#s3 svg.link{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+#s3 .blk{left:985px;top:530px;width:46px;height:46px;border-radius:50%;background:var(--bad);color:#fff;font:800 28px var(--f-display);display:flex;align-items:center;justify-content:center}
+#s3 .pts{left:1280px;top:330px;width:500px;display:flex;flex-direction:column;gap:30px}
+#s3 .counter{left:180px;top:770px;width:330px;font:500 20px var(--f-mono);color:var(--ink2);line-height:1.6}
+#s3 .counter b{color:var(--accent);font-variant-numeric:tabular-nums}
+
+/* ===== S4 video player ===== */
+#s4 .shelfk{left:140px;top:300px}
+.cas{position:absolute;width:300px;height:104px;border-radius:14px;background:var(--card);border:2px solid var(--line);padding:14px 20px;transition:left .9s cubic-bezier(.5,.1,.2,1),top .9s cubic-bezier(.5,.1,.2,1),transform .9s,border-color .4s,background .4s;z-index:3}
+.cas .reels{display:flex;gap:12px;position:absolute;right:18px;top:20px}
+.cas .reels i{width:30px;height:30px;border-radius:50%;border:4px solid var(--b3);display:block}
+.cas.play .reels i{animation:spin 1.4s linear infinite;border-color:var(--accent);border-top-color:transparent}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cas .nm{font:600 24px var(--f-mono);margin-top:4px}
+.cas .k{font-size:15px}
+.cas.play{border-color:var(--accent);background:var(--accent-soft)}
+#s4 .screen{left:640px;top:300px;width:700px;height:300px;background:var(--term);border-radius:20px;border:10px solid var(--navy);color:var(--term-ink);padding:26px 30px;font:500 24px/1.5 var(--f-mono)}
+#s4 .screen .hd{color:var(--sky);font-size:18px;letter-spacing:.14em;margin-bottom:12px}
+#s4 .stand{left:950px;top:600px;width:80px;height:40px;background:var(--navy)}
+#s4 .player{left:640px;top:640px;width:700px;height:200px;background:var(--navy);border-radius:20px;color:#fff;padding:24px 34px}
+#s4 .player .n{font-family:var(--f-display);font-weight:800;font-size:46px}
+#s4 .player .s{font:500 17px var(--f-mono);letter-spacing:.14em;color:var(--sky)}
+#s4 .player .slotbox{position:absolute;right:30px;top:40px;width:330px;height:120px;border-radius:14px;background:#0A1220;border:2px solid var(--navy2)}
+#s4 .player .led{position:absolute;left:34px;bottom:26px;width:14px;height:14px;border-radius:50%;background:#3A4659;transition:.4s}
+#s4 .player .led.on{background:#7BE0A3;box-shadow:0 0 12px #7BE0A3}
+#s4 .map{left:1420px;top:300px;width:360px;display:flex;flex-direction:column;gap:16px}
+.mrow{padding:16px 20px}
+.mrow .a{font-family:var(--f-display);font-weight:700;font-size:28px}
+.mrow .bb{font-size:21px;color:var(--ink2);margin-top:4px}
+.mrow .bb b{color:var(--accent);font-weight:600}
+
+/* ===== S5 architecture ===== */
+#s5 h1,#s3 h1,#s4 h1{font-size:64px}
+#s5 svg.wires{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:1}
+.wire{stroke:var(--b3);stroke-width:3;fill:none}
+.wire.live{stroke:var(--accent);stroke-dasharray:8 12;animation:dash 1s linear infinite}
+.wire.ret.live{stroke:var(--ok);animation-direction:reverse}
+.cl{position:absolute;left:140px;width:380px;height:138px;padding:18px 22px;z-index:2;transition:border-color .4s,background .4s}
+.cl .t{font-family:var(--f-display);font-weight:700;font-size:32px;margin-top:4px}
+.cl .c{font:500 18px var(--f-mono);color:var(--ink2);margin-top:6px}
+.cl.hot{border-color:var(--accent);background:var(--accent-soft)}
+#s5 .server{left:640px;top:280px;width:780px;height:600px;border:3px solid var(--navy);border-radius:22px;background:#fff;z-index:2}
+#s5 .server .hd{position:absolute;left:28px;top:-20px;background:var(--bg);padding:0 12px;font:600 22px var(--f-mono);letter-spacing:.14em}
+#s5 .port{position:absolute;right:26px;top:-24px;font:600 24px var(--f-mono);color:#fff;background:var(--accent);padding:8px 16px;border-radius:10px}
+#s5 .api{position:absolute;left:26px;top:40px;width:90px;bottom:40px;background:var(--navy);border-radius:14px;color:#fff;display:flex;align-items:center;justify-content:center}
+#s5 .api span{writing-mode:vertical-rl;transform:rotate(180deg);font:500 20px var(--f-mono);letter-spacing:.16em;color:var(--sky)}
+#s5 .store,#s5 .runner{position:absolute;left:150px;right:26px;border-radius:16px;padding:18px 22px;transition:border-color .4s,background .4s}
+#s5 .store{top:40px;height:240px;border:2px solid var(--line);background:var(--card)}
+#s5 .runner{top:310px;height:250px;border:2px solid var(--line);background:var(--card)}
+#s5 .hot2{border-color:var(--accent)!important;background:var(--accent-soft)!important}
+#s5 .sub{font:500 18px var(--f-mono);color:var(--muted);margin-top:4px}
+#s5 .tt{font-family:var(--f-display);font-weight:700;font-size:30px}
+.mchip{position:absolute;font:600 21px var(--f-mono);padding:12px 18px;border-radius:12px;background:#fff;border:2px solid var(--b4);color:var(--ink);transition:left .9s cubic-bezier(.5,.1,.2,1),top .9s cubic-bezier(.5,.1,.2,1),background .4s,color .4s;z-index:3}
+.mchip.ghost{border-style:dashed;color:var(--muted);border-color:var(--b3)}
+.mchip.loaded{background:var(--navy);color:#fff;border-color:var(--navy)}
+#s5 .toks{position:absolute;left:24px;bottom:22px;right:24px;display:flex;gap:10px;flex-wrap:wrap}
+#s5 .toks .tk{opacity:0}
+#s5 .toks .tk.in{opacity:1;transform:none}
+#s5 .lib{left:1510px;top:320px;width:270px;height:200px;border:2px dashed var(--b3);border-radius:22px;padding:22px;z-index:2;background:var(--bg);transition:border-color .4s}
+#s5 .lib.hot{border-color:var(--accent)}
+#s5 .lib .t{font-family:var(--f-display);font-weight:700;font-size:30px;margin-top:6px}
+#s5 .lib .c{font-size:20px;color:var(--ink2);margin-top:6px}
+#s5 .libnote{left:1510px;top:545px;width:270px;font-size:20px;color:var(--muted);line-height:1.4;z-index:2}
+.pkt{position:absolute;z-index:4;font:600 19px var(--f-mono);padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;white-space:nowrap;transition:left 1s cubic-bezier(.5,.1,.2,1),top 1s cubic-bezier(.5,.1,.2,1),opacity .4s,background .4s;opacity:0;box-shadow:0 6px 18px rgba(43,111,214,.3)}
+.pkt.ret{background:var(--ok);box-shadow:0 6px 18px rgba(31,138,76,.3)}
+#s5 .cap{position:absolute;left:640px;top:906px;width:1140px;font-size:27px;color:var(--ink2);line-height:1.35;z-index:2;min-height:80px}
+#s5 .cap b{color:var(--ink);font-family:var(--f-display);font-weight:700}
+#s5 .stepn{font:600 20px var(--f-mono);color:var(--accent);letter-spacing:.12em;margin-right:12px}
+
+/* ===== S6 commands ===== */
+#s6 .cmds{left:140px;top:290px;width:1100px;display:flex;flex-wrap:wrap;gap:10px}
+#s6 .cmds span{font:500 20px var(--f-mono);padding:9px 14px;border-radius:9px;background:var(--b1);color:var(--muted);transition:.3s}
+#s6 .cmds span.cur{background:var(--accent);color:#fff}
+#s6 .cmds span.done{background:var(--accent-soft);color:var(--accent)}
+.term{background:var(--term);border-radius:18px;color:var(--term-ink);font:500 25px/1.5 var(--f-mono);padding:22px 30px;overflow:hidden}
+.term .bar3{display:flex;gap:9px;margin-bottom:16px}
+.term .bar3 i{width:14px;height:14px;border-radius:50%;background:#3A4659;display:block}
+.term .ln{white-space:pre-wrap;min-height:1.5em}
+.term .pr{color:#7BE0A3}
+.term .dim{color:#8592A8}
+.term .hl{color:#FFFFFF}
+#s6 .term{left:140px;top:370px;width:1100px;height:500px}
+#s6 .what{left:140px;top:890px;width:1100px;font-size:28px;color:var(--ink2);min-height:90px}
+#s6 .what b{font-family:var(--f-display);color:var(--ink)}
+#s6 .state{left:1300px;top:290px;width:480px;display:flex;flex-direction:column;gap:22px}
+#s6 .box{padding:22px 24px;min-height:160px}
+#s6 .box .t{font-family:var(--f-display);font-weight:700;font-size:30px;margin:4px 0 14px}
+.place{height:64px;border:2px dashed var(--b3);border-radius:12px;display:flex;align-items:center;justify-content:center;font:500 20px var(--f-mono);color:var(--muted);transition:.5s}
+.place.full{border:2px solid var(--b4);background:#fff;color:var(--ink);font-weight:600}
+.place.fullnavy{border:2px solid var(--navy);background:var(--navy);color:#fff;font-weight:600}
+#s6 .lib6{font-size:21px;color:var(--ink2);line-height:1.45}
+
+/* ===== S7 REST API ===== */
+#s7 h1{font-size:64px}
+#s7 .ep{left:140px;top:270px;display:flex;gap:12px}
+#s7 .ep span{font:600 22px var(--f-mono);padding:10px 18px;border-radius:10px;background:var(--b1);color:var(--muted);transition:.3s}
+#s7 .ep span.cur{background:var(--navy);color:#fff}
+#s7 .cmd{left:140px;top:340px;width:1640px;height:110px;font-size:20px;padding:16px 24px;line-height:1.45}
+#s7 .cmd .ln{word-break:break-all}
+#s7 .req,#s7 .res{top:480px;height:400px;padding:22px 26px}
+#s7 .req{left:140px;width:740px}
+#s7 .res{left:1000px;width:780px}
+#s7 .arrow{left:895px;top:640px;width:90px;text-align:center;font:600 46px var(--f-display);color:var(--b4)}
+#s7 pre{margin:12px 0 0;font:500 21px/1.5 var(--f-mono);white-space:pre-wrap;color:var(--ink)}
+#s7 pre .key{color:var(--accent)}
+#s7 pre .mk{background:transparent;border-radius:6px;padding:1px 4px;transition:background .4s,color .4s}
+#s7 pre .mk.on{background:#FFE9A8;color:var(--ink)}
+#s7 .note{left:140px;top:900px;width:1640px;font-size:26px;color:var(--ink2);display:flex;gap:18px;align-items:center}
+#s7 .ex{font:500 16px var(--f-mono);letter-spacing:.12em;color:var(--muted);float:right}
+
+/* ===== S8 model tags ===== */
+#s8 h1{font-size:64px}
+#s8 .anat{left:140px;top:270px;display:flex;align-items:flex-start;gap:0;font:600 64px var(--f-mono)}
+#s8 .anat .p{display:flex;flex-direction:column;align-items:center}
+#s8 .anat .p span{padding:4px 18px;border-radius:12px}
+#s8 .anat .nm span{background:var(--accent-soft);color:var(--accent)}
+#s8 .anat .tg span{background:var(--navy);color:#fff}
+#s8 .anat .col{padding:4px 8px;color:var(--muted)}
+#s8 .anat small{font:500 19px var(--f-mono);letter-spacing:.12em;color:var(--muted);margin-top:12px;text-align:center}
+#s8 .ladder{left:140px;top:440px;width:900px}
+.lr{display:grid;grid-template-columns:100px 1fr 100px;align-items:center;gap:16px;height:52px;font:500 22px var(--f-mono)}
+.lr .bw{height:26px;position:relative}
+.lr .bw i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--b3);width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.lr.pick .bw i{background:var(--accent)}
+.lr .gb{text-align:right;color:var(--ink2);font-variant-numeric:tabular-nums}
+.lr .sz{font-weight:600}
+.lr.pick .sz{color:var(--accent)}
+.lr .tagl{position:absolute;top:-3px;font:500 15px var(--f-mono);letter-spacing:.1em;color:var(--accent);white-space:nowrap;padding:4px 8px;background:var(--accent-soft);border-radius:6px}
+#s8 .lk{display:flex;justify-content:space-between;margin-bottom:10px}
+#s8 .right{left:1110px;top:270px;width:670px;display:flex;flex-direction:column;gap:20px}
+#s8 .ctx{padding:20px 24px}
+#s8 .ctx .big{font-family:var(--f-display);font-weight:800;font-size:64px;color:var(--accent);line-height:1}
+#s8 .ctx .d{font-size:21px;color:var(--ink2);margin-top:8px;line-height:1.4}
+#s8 .cmp{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+#s8 .badges{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bdg{padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:var(--card);transition:.4s}
+.bdg .bn{font:600 20px var(--f-mono);display:inline-block;padding:4px 10px;border-radius:7px;background:var(--b1);color:var(--ink2)}
+.bdg .bd{font-size:19px;color:var(--ink2);margin-top:8px;line-height:1.35}
+.bdg.has{border-color:var(--accent)}
+.bdg.has .bn{background:var(--accent);color:#fff}
+.bdg.warn .bn{background:var(--bad-soft);color:var(--bad)}
+
+/* ===== S9 next ===== */
+#s9 .steps9{left:140px;top:330px;width:1640px;display:flex;gap:26px}
+#s9 .st{flex:1;padding:30px;min-height:300px}
+#s9 .st .t{font-family:var(--f-display);font-weight:700;font-size:40px;margin:10px 0 14px}
+#s9 .st code{font:500 24px var(--f-mono);color:var(--accent);background:var(--accent-soft);padding:6px 10px;border-radius:8px;display:inline-block}
+#s9 .st .d{font-size:24px;color:var(--ink2);line-height:1.4;margin-top:12px}
+#s9 .flow9{left:140px;top:700px;width:1640px;display:flex;align-items:center;gap:20px;font:600 28px var(--f-mono)}
+#s9 .flow9 .nd{padding:18px 26px;border-radius:14px;background:var(--card);border:2px solid var(--line)}
+#s9 .flow9 .nd.dk{background:var(--navy);color:#fff;border-color:var(--navy)}
+#s9 .flow9 .ar{color:var(--b4);font-size:34px}
+
+
+/* ===== S10-S14 · stateless ===== */
+#s10 h1,#s11 h1,#s12 h1,#s13 h1,#s14 h1{font-size:64px}
+
+#s10 .rq10{left:140px;top:300px;width:660px;height:350px;padding:22px 26px}
+#s10 .rq10 .top{display:flex;justify-content:space-between;align-items:baseline}
+#s10 .rq10 .t{font-family:var(--f-display);font-weight:700;font-size:30px}
+#s10 pre{margin:12px 0 0;font:500 20px/1.55 var(--f-mono);white-space:pre;color:var(--ink);transition:opacity .3s}
+#s10 pre .key{color:var(--accent)}
+#s10 pre .hist{background:#FFE9A8;border-radius:5px}
+#s10 .histnote{font:500 15px var(--f-mono);letter-spacing:.08em;color:#8A6A00;background:#FFF4CF;padding:4px 10px;border-radius:6px;opacity:0;transition:opacity .4s}
+#s10 .histnote.on{opacity:1}
+#s10 .grow10{left:140px;top:676px;width:660px}
+.g10{display:grid;grid-template-columns:130px 1fr 110px;align-items:center;gap:14px;height:44px;font:500 20px var(--f-mono);opacity:0;transition:opacity .4s}
+.g10.in{opacity:1}
+.g10 .gb{height:22px;border-radius:6px;background:var(--b1);overflow:hidden}
+.g10 .gb i{display:block;height:100%;width:0;background:var(--accent);transition:width .8s .1s}
+.g10.in .gb i{width:var(--w)}
+.g10 .gn{text-align:right;color:var(--ink2);font-variant-numeric:tabular-nums}
+#s10 .win10{left:860px;top:300px;width:920px;height:320px;transition:border-color .3s,box-shadow .3s}
+#s10 .win10.reading{border-color:var(--accent);box-shadow:0 0 0 8px var(--accent-soft)}
+#s10 .win10 .meter{font:600 22px var(--f-mono);color:var(--accent);font-variant-numeric:tabular-nums}
+#s10 .win10 .meter small{font-size:16px;color:var(--muted);font-weight:500}
+#s10 .chips10{display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;min-height:150px;position:relative}
+#s10 .empty10{position:absolute;left:0;top:44px;font:500 20px var(--f-mono);color:var(--muted);letter-spacing:.06em;transition:opacity .3s}
+.wt{font:500 21px var(--f-mono);padding:7px 11px;border-radius:9px;background:var(--b1);color:var(--ink);opacity:0;transform:translateY(-16px) scale(.9);transition:opacity .35s,transform .35s,background .25s,color .25s}
+.wt.in{opacity:1;transform:none}
+.wt.role{background:var(--navy);color:#fff;font-size:17px}
+.wt.rd{background:var(--accent);color:#fff}
+.wt.role.rd{background:#2B4470}
+.wt.keyw{background:#FFE9A8;color:var(--ink);box-shadow:0 0 0 3px #F2C94C}
+.wt.out{opacity:0;transform:scale(.6)}
+#s10 .miss10{position:absolute;left:24px;bottom:18px;opacity:0;transition:opacity .4s}
+#s10 .miss10.on{opacity:1}
+#s10 .mdl10{left:860px;top:646px;width:920px;height:200px;background:var(--navy);border-radius:20px;color:#fff;padding:22px 28px}
+#s10 .mdl10 .s{font:500 17px var(--f-mono);letter-spacing:.12em;color:var(--sky)}
+#s10 .mdl10 .rep{font-size:32px;margin-top:16px;min-height:44px;font-weight:500}
+#s10 .mdl10 .rep.bad{color:#FFB4A6}
+#s10 .mdl10 .rep.ok{color:#7BE0A3}
+#s11 .app11{left:140px;top:300px;width:440px;height:550px;padding:22px 24px}
+#s11 .app11 .t{font-family:var(--f-display);font-weight:700;font-size:30px;margin:4px 0 16px}
+.msg{display:flex;gap:10px;align-items:baseline;font-size:21px;line-height:1.3;padding:9px 12px;border-radius:10px;background:var(--bg);margin-bottom:8px;opacity:0;transform:translateX(-12px);transition:opacity .4s,transform .4s}
+.msg.in{opacity:1;transform:none}
+.msg .r{font:600 15px var(--f-mono);letter-spacing:.08em;width:46px;flex:none;color:var(--accent)}
+.msg.a .r{color:var(--ok)}
+#s11 .model{left:680px;top:380px;width:360px;height:310px;background:var(--navy);border-radius:20px;color:#fff;padding:26px 28px}
+#s11 .model .n{font-family:var(--f-display);font-weight:800;font-size:44px}
+#s11 .model .s{font:500 17px var(--f-mono);letter-spacing:.12em;color:var(--sky);margin-top:4px}
+#s11 .model .lock{margin-top:22px;font:500 19px var(--f-mono);color:#B8C4D8}
+#s11 .st{margin-top:22px;font:600 20px var(--f-mono);padding:12px 14px;border-radius:10px;background:var(--navy2);color:#B8C4D8;transition:background .3s,color .3s}
+#s11 .st.busy{background:#2B4470;color:#fff}
+#s11 .st.wipe{background:var(--bad);color:#fff}
+#s11 .log11{left:1120px;top:300px;width:660px;display:flex;flex-direction:column;gap:16px}
+.rq11{padding:18px 22px;opacity:0;transform:translateY(12px);transition:opacity .45s,transform .45s}
+.rq11.in{opacity:1;transform:none}
+.rq11 .top{display:flex;justify-content:space-between;align-items:baseline}
+.rq11 .t{font-family:var(--f-display);font-weight:700;font-size:28px}
+.rq11 .n{font:500 19px var(--f-mono);color:var(--ink2);font-variant-numeric:tabular-nums}
+.rq11 .chips{display:flex;gap:6px;margin:12px 0}
+.rq11 .chips i{width:40px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font:600 15px var(--f-mono);font-style:normal;background:var(--accent-soft);color:var(--accent)}
+.rq11 .chips i.a{background:var(--ok-soft);color:var(--ok)}
+.tb{height:12px;border-radius:6px;background:var(--b1);overflow:hidden}
+.tb i{display:block;height:100%;background:var(--accent);width:0;transition:width .9s .25s}
+.rq11.in .tb i{width:var(--w)}
+#s11 .why{left:680px;top:290px;width:1100px;height:570px;padding:34px 40px;display:flex;flex-direction:column;gap:26px;z-index:5}
+
+#s12 .chat{left:140px;top:300px;width:580px;height:580px;padding:22px 24px}
+#s12 .chat .bub{font-size:20px;margin-top:14px;padding:14px 18px}
+#s12 .chat .bub.u{margin-left:60px}
+#s12 .chat .bub.a{margin-right:20px;min-height:0}
+#s12 .stats{position:absolute;left:24px;right:24px;bottom:22px;border-top:2px solid var(--line);padding-top:14px}
+#ch12{display:flex;gap:12px;align-items:flex-end;height:84px;margin:8px 0 4px}
+.c12{width:44px;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;height:100%;position:relative}
+.c12 i{display:block;height:0;transition:height .6s cubic-bezier(.2,.7,.2,1)}
+.c12 i.r{background:var(--accent);border-radius:5px 5px 0 0}
+.c12 i.p{background:var(--navy)}
+.c12 span{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font:500 15px var(--f-mono);color:var(--muted)}
+#s12 .stats .ln{font-size:19px;color:var(--ink2);margin-top:26px;line-height:1.45}
+#s12 .stats .ln b{font-family:var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+#s12 .stats .lg{position:absolute;right:0;top:40px;font-size:17px;color:var(--ink2);line-height:1.8}
+#s12 .stats .lg i{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:8px;vertical-align:-1px}
+.ctx{border:3px solid var(--navy);border-radius:22px;background:#fff;padding:20px 24px}
+.ctx .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.ctx .hd .t{font-family:var(--f-display);font-weight:700;font-size:30px}
+.tot{font:600 28px var(--f-mono);color:var(--accent);font-variant-numeric:tabular-nums}
+.tot small{font-size:18px;color:var(--muted);font-weight:500}
+#s12 .ctx{left:780px;top:300px;width:1000px;height:580px}
+.cb{border-radius:12px;padding:12px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border:2px solid var(--line);background:var(--card)}
+.cb .l{min-width:0}
+.cb .l .k{font-size:15px}
+.cb .l .d{font-size:20px;color:var(--ink2);margin-top:3px;line-height:1.35}
+.cb .v{font:600 22px var(--f-mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+.cb .v small{font-size:15px;color:var(--muted);font-weight:500}
+.cb.pol{height:190px;background:var(--b1);border-color:var(--b3);position:relative;overflow:hidden}
+.cb.pol .lines{position:absolute;left:18px;right:140px;top:78px;bottom:12px;background:repeating-linear-gradient(to bottom,var(--b2) 0 7px,transparent 7px 19px)}
+.cb .tag2{display:inline-block;font:500 14px var(--f-mono);letter-spacing:.06em;padding:3px 8px;border-radius:6px;background:var(--ok-soft);color:var(--ok);margin-left:8px;text-transform:none;vertical-align:1px}
+
+#s13 .half{top:282px;width:780px}
+#s13 .half .t{font-family:var(--f-display);font-weight:700;font-size:36px;margin-top:4px}
+#s13 .rows{left:140px;top:378px;width:780px;display:flex;flex-direction:column;gap:22px}
+.brow .lbl{font-size:22px;color:var(--ink2);margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
+.brow .lbl b{font-family:var(--f-mono);font-weight:600;color:var(--ink)}
+.brow .lbl b.bad{color:var(--bad)}
+.brow .trk{height:34px;position:relative;background:var(--b1);border-radius:8px}
+.brow .trk i{position:absolute;left:0;top:0;bottom:0;border-radius:8px;width:0;transition:width 1.8s cubic-bezier(.3,.1,.2,1)}
+#bw13{background:var(--accent);width:64px!important}
+#bp13{background:var(--bad)}
+#bp13.in{width:750px}
+#s13 .edge{position:absolute;left:64px;top:30px;height:150px;border-left:3px dashed var(--accent)}
+#s13 .orders{padding:18px 22px}
+#s13 .orders .t{font-family:var(--f-display);font-weight:700;font-size:30px}
+#s13 .orders .d{font-size:22px;color:var(--ink2);margin:4px 0 12px}
+#s13 .win13{left:1000px;top:360px;width:780px;height:520px}
+#s14 .lbl14{left:140px;top:282px}
+#s14 .win14{left:140px;top:320px;width:1640px;height:240px;display:flex;gap:14px;align-items:stretch;padding:18px}
+.fx{width:180px;flex:none;border-radius:14px;background:var(--navy);color:#fff;padding:16px;display:flex;flex-direction:column;justify-content:center}
+.fx .k{color:var(--sky);font-size:15px}
+.fx .t{font-family:var(--f-display);font-weight:700;font-size:26px;margin-top:6px}
+.slot14{flex:1;min-width:0;border:2px dashed var(--b3);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center;transition:border-color .5s,background .5s}
+.slot14 > *{opacity:0;transform:translateY(10px);transition:opacity .5s .15s,transform .5s .15s}
+.slot14.in{border-style:solid;border-color:var(--accent);background:var(--accent-soft)}
+.slot14.in > *{opacity:1;transform:none}
+.slot14 .chip{align-self:flex-start;font-size:16px;background:var(--accent);color:#fff}
+.slot14 .t{font-family:var(--f-display);font-weight:700;font-size:30px;margin-top:12px}
+.slot14 .d{font-size:20px;color:var(--ink2);margin-top:6px;line-height:1.35}
+#s14 .cap14{left:140px;top:610px;width:1640px;font-size:34px;color:var(--ink2);line-height:1.4}
+#s14 .cap14 b{color:var(--ink);font-family:var(--f-display)}
+#auto{position:absolute;left:28px;bottom:16px;z-index:6;display:flex;align-items:center;gap:10px;font:14px var(--f-mono);letter-spacing:.08em;color:#9aa4b5}
+#auto .ring{width:90px;height:4px;border-radius:2px;background:#2a3446;overflow:hidden}
+#auto .ring i{display:block;height:100%;width:0;background:var(--sky)}
+#auto.off .ring{opacity:.3}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:rgba(10,14,22,.95);color:#dfe6f2;font:16px/1.55 var(--f-body);padding:16px 26px;display:none;z-index:9}
+#notes b{color:var(--sky);font-family:var(--f-mono);font-weight:500}
+@media (prefers-reduced-motion: reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
+
+<div class="stage" id="stage">
+
+<!-- ============ 1 · TITLE ============ -->
+<section class="slide" id="s1" data-steps="0" data-label="Title"
+ data-notes="Episode 3. Last time we saw how an LLM thinks. Today we stop watching and start talking to one, with code. And we'll run the model on our own computer.">
+  <div class="port">localhost:11434</div>
+  <div class="eyebrow">AI Explained · Episode 3</div>
+  <h1>Talking to an LLM <em>with code</em></h1>
+  <div class="sub">Your first API call, in Java. And a model running on your own computer, with Ollama.</div>
+  <div class="series"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span>From zero to building an AI agent</span></div>
+</section>
+
+<!-- ============ 2 · A MODEL FILE DOES NOTHING ============ -->
+<section class="slide" id="s2" data-steps="5" data-auto="2:3200,3:3000" data-label="A model file does nothing"
+ data-notes="Step 0: Remember the end of last episode? Training finishes and all the weights are saved in a file. Here's a real one: Qwen 3.5, 4 billion weights, about 3.4 GB. | 1: But double-click it and… nothing. A model file on its own does nothing. It's just numbers. | 2: First, something has to download it from a model library. | 3: Then keep it organised: you'll have several models, with names and sizes. | 4: And run it: load those numbers into memory and predict tokens, one at a time, exactly what we saw in Ep 2. | 5: Read the statement. Then: here's where Ollama comes in.">
+  <div class="eyebrow">Last episode, the model ended as a file</div>
+  <h1>A model file on its own does nothing</h1>
+  <div class="card filecard abs" id="file2">
+    <div class="fileicon"><div class="grid">-0.37 0.82 -0.13 1.47 0.05 -0.96 0.64 2.10 -1.18 0.33 -0.71 0.29 1.02 -0.44 0.85 -0.12 0.57 -1.30 0.08 0.91 -0.66 0.40 1.21 -0.05</div><span class="ext">.gguf</span></div>
+    <div class="fname">qwen3.5-4b.gguf</div>
+    <div class="fmeta">3.4 GB · about 4 billion weights</div>
+  </div>
+  <div class="q abs b" data-s="1">?</div>
+  <div class="idle abs b k" data-s="1" style="text-transform:none;letter-spacing:.04em;font-size:22px">Double-click it. Nothing happens.</div>
+  <div class="jobs abs">
+    <div class="card jrow b" data-s="2">
+      <div class="lbl"><div class="k">Job 1</div><div class="t">Download it</div></div>
+      <div class="viz"><span>library →</span><div class="bar"><i></i></div><span class="pct" id="pct2">0%</span></div>
+    </div>
+    <div class="card jrow b" data-s="3">
+      <div class="lbl"><div class="k">Job 2</div><div class="t">Keep it organised</div></div>
+      <div class="viz"><div class="shelf"><div class="slot full">gemma3:4b</div><div class="slot drop">qwen3.5:4b</div><div class="slot full">llama3.2:3b</div></div></div>
+    </div>
+    <div class="card jrow b" data-s="4">
+      <div class="lbl"><div class="k">Job 3</div><div class="t">Run it</div></div>
+      <div class="viz"><div class="mem"><small>LOADED IN MEMORY</small>qwen3.5:4b</div><span>→</span>
+        <span class="tk" style="transition-delay:.3s">RAG</span><span class="tk" style="transition-delay:.6s">·means</span><span class="tk" style="transition-delay:.9s">·look</span><span class="tk" style="transition-delay:1.2s">·up</span><span class="tk" style="transition-delay:1.5s">·first</span></div>
+    </div>
+  </div>
+  <div class="statement b" data-s="5"><span class="tag">SO</span>Something has to download it, organise it, and run it.</div>
+</section>
+
+<!-- ============ 3 · MEET OLLAMA ============ -->
+<section class="slide" id="s3" data-steps="4" data-auto="0:1800" data-label="Meet Ollama"
+ data-notes="Step 0: Here's one option for that something: Ollama. A free app. It runs on your own computer. | 1: It does all three jobs: downloads models, keeps them organised, and runs them. | 2: Because the model runs on your machine, your question goes to Ollama and the answer comes back. It never goes out to the internet. Private. | 3: Turn the Wi-Fi off. It still answers. (You only need the internet once, to download the model.) | 4: And there's no bill per question. Ask one or a thousand: zero per question. You pay with your own computer's memory and power instead.">
+  <div class="eyebrow">Here's one option</div>
+  <h1>Ollama: a free app that does all three, <em>on your computer</em></h1>
+  <div class="laptop abs"><div class="k lk">Your computer</div></div>
+  <div class="base abs"></div>
+  <div class="wifi abs b" data-s="3" id="wifi3">WI-FI: ON</div>
+  <div class="you abs b" data-s="2"><div class="bub u">Explain RAG in one line.</div></div>
+  <div class="ans abs b" data-s="2"><div class="bub a" id="ans3"></div></div>
+  <div class="counter abs b" data-s="4">Questions asked: <b id="qn3">0</b><br>Cost per question: <b>0</b></div>
+  <div class="oll abs">
+    <div class="n">Ollama</div><div class="s">FREE · RUNS LOCALLY</div>
+    <div class="jobchips"><div data-s="1">Download <b>✓</b></div><div data-s="1">Organise <b>✓</b></div><div data-s="1">Run <b>✓</b></div></div>
+    <div class="modelchip">qwen3.5:4b</div>
+  </div>
+  <svg class="link" viewBox="0 0 1920 1080"><path class="b" data-s="2" d="M1000 553 L1040 520" stroke="#9DBBEA" stroke-width="3" stroke-dasharray="6 8" fill="none"/></svg>
+  <div class="cloud abs">INTERNET</div>
+  <div class="blk abs b" data-s="2">✕</div>
+  <div class="pts abs">
+    <div class="pt b" data-s="2"><div class="k">Private</div><div class="t">Never leaves your machine</div><div class="d">Your questions and documents stay on your computer.</div></div>
+    <div class="pt b" data-s="3"><div class="k">Offline</div><div class="t">Works without internet</div><div class="d">Internet only for the first download.</div></div>
+    <div class="pt b" data-s="4"><div class="k">No bill</div><div class="t">No cost per question</div><div class="d">You spend your own memory and power instead.</div></div>
+  </div>
+</section>
+
+<!-- ============ 4 · VIDEO PLAYER ============ -->
+<section class="slide" id="s4" data-steps="4" data-auto="1:5200,2:5600" data-label="Movie and player"
+ data-notes="Step 0: Think of it like this. These are movies. The player is Ollama. | 1: Put in the Qwen movie. The player plays it: the model answers. | 2: Swap in a different movie, Gemma. Same player, it just plays. You don't install a new app for every model. | 3: So: the model is the movie, Ollama is the player, ollama.com is the video store, and the commands and API are your remote. | 4: Read the statement.">
+  <div class="eyebrow">Think of it like</div>
+  <h1>The model is the movie. Ollama is the <em>video player</em>.</h1>
+  <div class="k abs shelfk">Movies (model files)</div>
+  <div class="cas" id="casA"><div class="k">MOVIE</div><div class="nm">qwen3.5:4b</div><div class="reels"><i></i><i></i></div></div>
+  <div class="cas" id="casB"><div class="k">MOVIE</div><div class="nm">gemma3:4b</div><div class="reels"><i></i><i></i></div></div>
+  <div class="cas" id="casC"><div class="k">MOVIE</div><div class="nm">llama3.2:3b</div><div class="reels"><i></i><i></i></div></div>
+  <div class="screen abs"><div class="hd" id="scrHd4">NO MOVIE INSERTED</div><div id="scr4"></div></div>
+  <div class="stand abs"></div>
+  <div class="player abs"><div class="n">Ollama</div><div class="s">THE PLAYER</div><div class="slotbox"></div><div class="led" id="led4"></div></div>
+  <div class="map abs">
+    <div class="card mrow b" data-s="3"><div class="a">Movie</div><div class="bb">= the <b>model file</b> (its weights)</div></div>
+    <div class="card mrow b" data-s="3" style="transition-delay:.15s"><div class="a">Player</div><div class="bb">= <b>Ollama</b></div></div>
+    <div class="card mrow b" data-s="3" style="transition-delay:.3s"><div class="a">Video store</div><div class="bb">= <b>ollama.com</b> model library</div></div>
+    <div class="card mrow b" data-s="3" style="transition-delay:.45s"><div class="a">Remote</div><div class="bb">= <b>commands</b> and the <b>API</b></div></div>
+  </div>
+  <div class="statement b" data-s="4"><span class="tag">IN ONE LINE</span>Swap the movie. The same player plays it.</div>
+</section>
+
+<!-- ============ 5 · ARCHITECTURE ============ -->
+<section class="slide" id="s5" data-steps="7" data-auto="2:3000,3:3800,4:3800,5:3600" data-label="How Ollama works"
+ data-notes="Step 0: Here's what actually happens inside. On the left, the things that talk to Ollama. In the middle, Ollama itself. It runs quietly in the background as a small server. | 1: Everything talks to one address: localhost port 11434. Even the ollama command in your terminal is just a client talking to that address. Your Java or Python code does exactly the same. | 2: A request goes in: which model, and your messages. | 3: Ollama checks its model store on disk. If the model isn't there yet, it downloads it from the ollama.com library. That's the only time it needs the internet. | 4: It loads the model's weights from disk into memory, RAM or GPU. It keeps them there for a few minutes (about 5 by default), so the next question is fast. | 5: The runner predicts the answer one token at a time, the same loop from Ep 2. | 6: The answer comes back as JSON: streamed piece by piece, or as one JSON if you set stream to false. | 7: Read the statement.">
+  <div class="eyebrow">Under the hood</div>
+  <h1>How Ollama answers a request</h1>
+  <svg class="wires" viewBox="0 0 1920 1080">
+    <path class="wire" id="w1" d="M520 379 H666"/>
+    <path class="wire" id="w2" d="M520 559 H666"/>
+    <path class="wire" id="w3" d="M520 739 H666"/>
+    <path class="wire" id="wl" d="M1394 430 H1510"/>
+    <path class="wire ret" id="wr" d="M666 600 H520"/>
+  </svg>
+  <div class="cl card" id="c1" style="top:310px"><div class="k">Terminal</div><div class="t">ollama CLI</div><div class="c">ollama run qwen3.5:4b</div></div>
+  <div class="cl card" id="c2" style="top:490px"><div class="k">Your code</div><div class="t">Java</div><div class="c">HttpClient → POST /api/chat</div></div>
+  <div class="cl card" id="c3" style="top:670px"><div class="k">Anything else</div><div class="t">Python · curl</div><div class="c">same JSON, same address</div></div>
+  <div class="server abs">
+    <div class="hd">OLLAMA · RUNS IN THE BACKGROUND</div>
+    <div class="port">localhost:11434</div>
+    <div class="api"><span>HTTP API</span></div>
+    <div class="store" id="store5"><div class="tt">Model store</div><div class="sub">on disk · ~/.ollama/models</div></div>
+    <div class="runner" id="run5"><div class="tt">Runner</div><div class="sub">in memory · RAM / GPU · predicts tokens</div>
+      <div class="toks" id="toks5"><span class="tk">RAG</span><span class="tk">·means</span><span class="tk">·the</span><span class="tk">·model</span><span class="tk">·looks</span><span class="tk">·up</span><span class="tk">·facts</span><span class="tk">·first</span></div>
+    </div>
+  </div>
+  <div class="mchip" id="mA5" style="left:1000px;top:420px">qwen3.5:4b</div>
+  <div class="mchip ghost" style="left:1190px;top:420px">gemma3:4b</div>
+  <div class="lib abs" id="lib5"><div class="k">Internet</div><div class="t">ollama.com</div><div class="c">the model library</div></div>
+  <div class="libnote abs b" data-s="3">Used only to <b>download</b> a model the first time.</div>
+  <div class="pkt" id="pkt5">{ model, messages }</div>
+  <div class="cap" id="cap5"></div>
+  <div class="statement b" data-s="7" style="bottom:50px"><span class="tag">REMEMBER</span>Your code never opens the model file. It only talks HTTP to Ollama.</div>
+</section>
+
+<!-- ============ 6 · COMMANDS ============ -->
+<section class="slide" id="s6" data-steps="6" data-auto="1:2200,3:3200,5:2600" data-label="Commands"
+ data-notes="Step 0: Five commands you need, plus one bonus. Watch the right side: what's on disk and what's in memory. | 1: ollama --version: is it installed? | 2: ollama run qwen3.5:4b. First time, it downloads the model, then opens a chat. Now the model is on disk AND loaded in memory. Type /bye to leave. | 3: ollama list: every model on your disk, with its size. | 4: Bonus: ollama ps shows what's loaded in memory right now, and until when. | 5: ollama stop: unloads it from memory. Still on disk, so next run starts without downloading. | 6: ollama rm: deletes it from disk. Frees the 3.4 GB. (Output values here are examples; yours will differ.)">
+  <div class="eyebrow">Your remote control</div>
+  <h1>Six commands to know</h1>
+  <div class="cmds abs" id="cmds6"><span>--version</span><span>run</span><span>list</span><span>ps</span><span>stop</span><span>rm</span></div>
+  <div class="term abs"><div class="bar3"><i></i><i></i><i></i></div><div id="t6"></div></div>
+  <div class="what abs" id="what6"></div>
+  <div class="state abs">
+    <div class="card box"><div class="k">On disk</div><div class="t">Model store</div><div class="place" id="disk6">empty</div></div>
+    <div class="card box"><div class="k">In memory</div><div class="t">Loaded and ready</div><div class="place" id="mem6">nothing loaded</div></div>
+    <div class="lib6"><b>stop</b> clears memory only.<br><b>rm</b> deletes it from disk.</div>
+  </div>
+</section>
+
+<!-- ============ 7 · REST API ============ -->
+<section class="slide" id="s7" data-steps="6" data-auto="0:3600,1:2600,3:4200,4:2600" data-label="REST API"
+ data-notes="Step 0: The terminal is just one client. The same server takes plain HTTP. First endpoint: /api/generate. One prompt in. (On Windows cmd the quotes are escaped like this.) | 1: The request: which model, the prompt, and stream false so we get one JSON back instead of a stream. | 2: The answer is in the response field. And eval_count: that's how many tokens it wrote. Hold on to that, it's how cost works later in this episode. | 3: Second endpoint: /api/chat. | 4: Instead of one prompt, a list of messages, each with a role: user, assistant, and later system. | 5: The reply comes back as a message with role assistant. | 6: This exact JSON is what our Java code will send in a few minutes. Tip: qwen3.5 thinks before answering by default; add think false to skip that.">
+  <div class="eyebrow">Same server, from code</div>
+  <h1>The Ollama REST API</h1>
+  <div class="ep abs"><span id="e7a" class="cur">POST /api/generate</span><span id="e7b">POST /api/chat</span></div>
+  <div class="term cmd abs"><div class="ln" id="cmd7"></div></div>
+  <div class="card req abs"><div class="k">Request · you send</div><pre id="req7"></pre></div>
+  <div class="arrow abs">→</div>
+  <div class="card res abs"><div class="k">Response · Ollama sends back <span class="ex">EXAMPLE OUTPUT</span></div><pre id="res7"></pre></div>
+  <div class="note abs b" data-s="6"><span class="chip">NEXT</span>This exact JSON is what our Java code sends. <span class="chip bad" style="margin-left:auto">qwen3.5 thinks first · "think": false to skip</span></div>
+</section>
+
+<!-- ============ 8 · MODEL TAGS ============ -->
+<section class="slide" id="s8" data-steps="4" data-auto="0:1600" data-label="Model tags"
+ data-notes="Step 0: When you open a model page on ollama.com, here's how to read it. | 1: The name before the colon is the model family. After the colon is the tag, usually the size. No tag means :latest, which for qwen3.5 is the 9b. | 2: B means billion weights, like Ep 2. Bigger is smarter but needs more memory. Download sizes are to scale. We'll use 4b: 3.4 GB, fits most laptops. | 3: 256K context: it can see about 256,000 tokens at once. Our tiny lab saw 1. | 4: Badges tell you what a model can do. Qwen 3.5 has vision, tools and thinking. Careful with cloud: those run on Ollama's servers, not your machine, so they're not private or offline.">
+  <div class="eyebrow">Reading a model page</div>
+  <h1>What <em>qwen3.5:4b</em> actually tells you</h1>
+  <div class="anat abs">
+    <div class="p nm"><span>qwen3.5</span><small class="b" data-s="1">MODEL FAMILY</small></div>
+    <div class="col">:</div>
+    <div class="p tg"><span>4b</span><small class="b" data-s="1">TAG · SIZE</small></div>
+  </div>
+  <div class="ladder abs b" data-s="2">
+    <div class="lk"><span class="k">Size · billion weights</span><span class="k">Download</span></div>
+    <div id="lad8"></div>
+  </div>
+  <div class="right abs">
+    <div class="card ctx b" data-s="3"><div class="k">Context window</div><div class="big">256K</div><div class="d">tokens it can see at once</div>
+      <div class="cmp"><span class="chip">Tiny LLM lab · 1</span><span class="chip">GPT-2 · 1,024</span><span class="chip ok">qwen3.5 · 256K</span></div></div>
+    <div class="badges b" data-s="4">
+      <div class="bdg has"><span class="bn">vision</span><div class="bd">Reads images too</div></div>
+      <div class="bdg has"><span class="bn">tools</span><div class="bd">Can ask to call functions (agents)</div></div>
+      <div class="bdg has"><span class="bn">thinking</span><div class="bd">Reasons before it answers</div></div>
+      <div class="bdg"><span class="bn">audio</span><div class="bd">Works with sound (some models)</div></div>
+      <div class="bdg"><span class="bn">embedding</span><div class="bd">Turns text into numbers (RAG, later)</div></div>
+      <div class="bdg warn"><span class="bn">cloud</span><div class="bd">Runs on Ollama's servers, not yours</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9 · NEXT ============ -->
+<section class="slide" id="s9" data-steps="3" data-auto="1:1800,2:1800" data-label="Hands on"
+ data-notes="Step 0: Enough slides. Let's do it. | 1: Install Ollama from ollama.com. | 2: Run qwen3.5:4b. | 3: Ask it to write a short article on a concept. Then we move to Java and do the same thing with code, through localhost 11434.">
+  <div class="eyebrow">Hands on</div>
+  <h1>Now let's install it and run a model</h1>
+  <div class="steps9 abs">
+    <div class="card st b" data-s="1"><div class="k">Step 1</div><div class="t">Install Ollama</div><code>ollama.com/download</code><div class="d">Check it with <b>ollama --version</b>.</div></div>
+    <div class="card st b" data-s="2"><div class="k">Step 2</div><div class="t">Pull and run</div><code>ollama run qwen3.5:4b</code><div class="d">First run downloads 3.4 GB, then opens a chat.</div></div>
+    <div class="card st b" data-s="3"><div class="k">Step 3</div><div class="t">Ask for an article</div><code>Write a short article on RAG</code><div class="d">Then we do the same thing from Java.</div></div>
+  </div>
+  <div class="flow9 abs b" data-s="3"><div class="nd">Java code</div><div class="ar">→</div><div class="nd dk">localhost:11434</div><div class="ar">→</div><div class="nd dk">Ollama</div><div class="ar">→</div><div class="nd">qwen3.5:4b</div></div>
+  <div class="foot b" data-s="3"><span class="tag">LATER</span>RAG, MCP and agents all build on this same setup.</div>
+</section>
+
+
+<!-- ============ 10 · THE WINDOW STARTS EMPTY ============ -->
+<section class="slide" id="s10" data-steps="5" data-auto="0:1500,1:1200" data-label="Window starts empty"
+ data-notes="Step 0: First request. I send one message: 'This is Prasad.' | 1: It's cut into tokens, and the tokens fill the context window. That's all the model will see. (Token splits are illustrative.) | 2: The model reads the whole window at once and answers: 'Nice to meet you, Prasad!' And then the request is over. The window is cleared. Nothing is kept. | 3: Second request: 'What is my name?' Only this goes into the window. Look: there's no 'Prasad' in there. So the model can't know. It's not forgetting; it simply never sees it. | 4: The fix: our app sends the history too. The old message, the old answer, and the new question all go in. Now 'Prasad' is in the window, and it answers. But look at the size: 5, then 6, then 20 tokens. Every turn, the window has to hold more. | 5: Read the statement.">
+  <div class="eyebrow">Stateless · step by step</div>
+  <h1>The window starts empty every time</h1>
+  <div class="card rq10 abs"><div class="top"><span class="t" id="rqt10">Request 1</span><span class="histnote" id="hn10">HISTORY · RESENT BY YOUR APP</span></div><pre id="rq10"></pre></div>
+  <div class="grow10 abs"><div class="k" style="margin-bottom:8px">Tokens in the window, per request</div><div id="grow10"></div></div>
+  <div class="card ctx win10 abs" id="win10">
+    <div class="hd"><span class="t">Context window</span><span class="meter"><span id="cnt10">0</span> <small>tokens used · fits up to 256K</small></span></div>
+    <div class="chips10" id="chips10"><div class="empty10" id="empty10">empty · nothing here yet</div></div>
+    <div class="chip bad miss10" id="miss10">no "Prasad" in the window</div>
+  </div>
+  <div class="mdl10 abs"><div class="s">THE MODEL · READS THE WHOLE WINDOW AT ONCE</div><div class="rep" id="rep10"></div></div>
+  <div class="statement b" data-s="5"><span class="tag">SO</span>The window starts empty. To remember, your app sends the history again.</div>
+</section>
+
+<!-- ============ 11 · WHO REMEMBERS ============ -->
+<section class="slide" id="s11" data-steps="5" data-auto="0:1500,1:1800,2:1800" data-label="Who remembers"
+ data-notes="Step 0: So who remembers the conversation? Not the model. From Ep 2: its weights are frozen. Chatting only reads them. | 1: Request 1: one message. The model reads it, answers, and keeps nothing. | 2: Request 2: our app sends the old message, the old answer, and the new message. Three messages. | 3: Request 3: 'What is my name?' Five messages go. It says Prasad only because message 1 is inside this request. Look at the tokens: 12, 41, 70. They grow every turn. | 4: Why is it built like this? Three reasons. (Side note: cloud providers can cache a repeated beginning, called prompt caching, to make it cheaper and faster. You still send it every time.) | 5: Read the statement. In our Java chatbot, that memory was just a List.">
+  <div class="eyebrow">Stateless · why resend everything</div>
+  <h1>Who remembers? Not the model.</h1>
+  <div class="card app11 abs"><div class="k">Your app (Java)</div><div class="t">List&lt;Message&gt; history</div><div id="list11"></div></div>
+  <div class="model abs"><div class="n">The model</div><div class="s">QWEN3.5:4B</div><div class="lock">weights: frozen, read-only</div><div class="st" id="st11">memory: empty</div></div>
+  <div class="log11 abs" id="log11"></div>
+  <div class="pkt" id="pkt11"></div>
+  <div class="card why abs b" data-s="4">
+    <div class="k">Why is it built this way?</div>
+    <div class="pt in"><div class="t">Weights are frozen</div><div class="d">Chatting doesn't change them. Only training does (Episode 2).</div></div>
+    <div class="pt in"><div class="t">One model, many users</div><div class="d">The same model answers everyone, so each request has to stand on its own.</div></div>
+    <div class="pt in"><div class="t">It reads everything to predict</div><div class="d">Every next token is chosen by looking at all the tokens in the window.</div></div>
+  </div>
+  <div class="statement b" data-s="5"><span class="tag">REMEMBER</span>The model doesn't remember. Your app does.</div>
+</section>
+
+<!-- ============ 12 · REFUND BOT ============ -->
+<section class="slide" id="s12" data-steps="6" data-auto="0:1800,1:1600,2:2000,3:1500" data-label="Refund bot"
+ data-notes="Step 0: Now the bigger picture. A support bot for a shop, TechBazaar. A customer wants a refund. What must be in the model's window to answer well? | 1: The rules: a system prompt. | 2: The refund policy. Say we paste the whole document: about 6,000 tokens. | 3: The customer's order, from our database. The model can't know this. It's our private, live data. | 4: And the question. About 6,300 tokens in total, and now it answers correctly. | 5: But it's stateless. On every next message, all of this goes again. Six messages later we've sent about 40,000 tokens, and 36,000 of that was the same policy. That's the dark part of each bar. (Sizes are examples.) | 6: Read the statement. Locally it's free; on a cloud API you pay per token.">
+  <div class="eyebrow">The bigger picture</div>
+  <h1>A refund bot: everything goes in the window</h1>
+  <div class="card chat abs">
+    <div class="k">TechBazaar support chat</div>
+    <div class="bub u">I want a refund for my headphones. Order #4521.</div>
+    <div class="bub a b" data-s="4" id="ans12"></div>
+    <div class="stats b" data-s="5">
+      <div class="k">6 messages later</div>
+      <div id="ch12"></div>
+      <div class="lg"><div><i style="background:var(--navy)"></i>same policy</div><div><i style="background:var(--accent)"></i>everything else</div></div>
+      <div class="ln">Sent in total: <b id="sum12">0</b> tokens<br>The same policy, 6 times: <b id="pol12">0</b> tokens (90%)</div>
+    </div>
+  </div>
+  <div class="ctx abs">
+    <div class="hd"><span class="t">Context window</span><span class="tot"><span id="tot12">0</span> <small>tokens · example sizes</small></span></div>
+    <div class="cb b" data-s="1"><div class="l"><div class="k">System prompt</div><div class="d">You are TechBazaar support. Follow the refund policy.</div></div><div class="v">120</div></div>
+    <div class="cb pol b" data-s="2"><div class="l"><div class="k">Refund policy · the whole 12-page document</div><div class="d">Returns, refunds, warranty, shipping, electronics, clothing…</div></div><div class="v">6,000</div><div class="lines"></div></div>
+    <div class="cb b" data-s="3"><div class="l"><div class="k">Order #4521 · from your database</div><div class="d">Headphones · delivered 6 days ago · unopened</div></div><div class="v">180</div></div>
+    <div class="cb b" data-s="4"><div class="l"><div class="k">Customer's question</div><div class="d">I want a refund for my headphones. Order #4521.</div></div><div class="v">25</div></div>
+  </div>
+  <div class="statement b" data-s="6"><span class="tag">COST</span>On a cloud API, you'd pay for that same policy on every message.</div>
+</section>
+
+<!-- ============ 13 · SEND ONLY WHAT'S NEEDED ============ -->
+<section class="slide" id="s13" data-steps="5" data-auto="0:1200,3:2400" data-label="Send only what's needed"
+ data-notes="Step 0: And that was one policy. A real company has hundreds. | 1: 500 policies is about 3 million tokens. qwen3.5 can see 256K. The bars are to scale: it doesn't fit, not even close. | 2: And orders: millions of them, changing every minute. The model was trained months ago. You can't put this in the weights, and you can't paste it all in. | 3: The fix: don't send everything, send what's needed. Search the policies and send only the matching paragraph. That's RAG, Episode 6. | 4: And instead of pasting the order, let the model ask for it: get_order(4521). That's a tool, Episode 4. MCP in Episode 5 makes tools plug-and-play. | 5: Same correct answer, about 285 tokens instead of 6,325.">
+  <div class="eyebrow">At company scale</div>
+  <h1>Too much to send. So send only what's needed.</h1>
+  <div class="half abs" style="left:140px"><div class="k">Option A</div><div class="t">Send everything</div></div>
+  <div class="half abs" style="left:1000px"><div class="k">Option B</div><div class="t">Send only what's needed</div></div>
+  <div class="rows abs">
+    <div class="brow"><div class="lbl">What qwen3.5 can see <b>256K tokens</b></div><div class="trk"><i id="bw13"></i></div></div>
+    <div class="brow"><div class="lbl">All 500 refund policies <b class="bad b" data-s="1">≈ 3,000,000 tokens</b></div><div class="trk"><i id="bp13" data-s="1"></i></div></div>
+    <div class="card orders b" data-s="2"><div class="t">2 million orders</div><div class="d">New ones every minute. The model was trained months ago.</div><span class="chip bad">doesn't fit</span> <span class="chip bad">out of date</span></div>
+  </div>
+  <div class="ctx win13 abs">
+    <div class="hd"><span class="t">Context window</span><span class="tot"><span id="tot13">0</span> <small>tokens</small></span></div>
+    <div class="cb b" data-s="3"><div class="l"><div class="k">System prompt</div><div class="d">You are TechBazaar support. Follow the refund policy.</div></div><div class="v">120</div></div>
+    <div class="cb b" data-s="3"><div class="l"><div class="k">Policy · one matching paragraph <span class="tag2">found by search · RAG · Ep 6</span></div><div class="d">Unopened electronics can be returned within 10 days of delivery.</div></div><div class="v">80</div></div>
+    <div class="cb b" data-s="4"><div class="l"><div class="k">Order #4521 · asked for by the model <span class="tag2">a tool · Ep 4 · MCP · Ep 5</span></div><div class="d">get_order(4521) → headphones, unopened, 6 days ago</div></div><div class="v">60</div></div>
+    <div class="cb b" data-s="3"><div class="l"><div class="k">Customer's question</div><div class="d">I want a refund for my headphones. Order #4521.</div></div><div class="v">25</div></div>
+  </div>
+  <div class="statement b" data-s="5"><span class="tag">RESULT</span>Same right answer. About 285 tokens instead of 6,325.</div>
+</section>
+
+<!-- ============ 14 · SERIES MAP ============ -->
+<section class="slide" id="s14" data-steps="5" data-auto="0:1200,1:2600,2:2600,3:2600" data-label="Fill the window"
+ data-notes="Step 0: So here's the rest of the series in one picture. The window is everything the model sees. Today we filled it by hand. | 1: Episode 4, tools: the model asks for live data, like the order. | 2: Episode 5, MCP: one standard way to plug tools into any AI app. | 3: Episode 6, RAG: search your documents and send only what matches. | 4: Episode 7, memory with LangChain4j: keep the history that matters, drop the rest. | 5: Read the statement. See you in Episode 4.">
+  <div class="eyebrow">Where the series goes</div>
+  <h1>Every episode from here fills this window</h1>
+  <div class="k abs lbl14">Context window · everything the model sees</div>
+  <div class="ctx win14 abs">
+    <div class="fx"><div class="k">Today · Ep 3</div><div class="t">System prompt</div></div>
+    <div class="slot14" data-s="1"><span class="chip">Ep 4 · Tools</span><div class="t">Live data</div><div class="d">get_order(4521) returns the real order</div></div>
+    <div class="slot14" data-s="2"><span class="chip">Ep 5 · MCP</span><div class="t">Tools from anywhere</div><div class="d">one standard plug for any AI app</div></div>
+    <div class="slot14" data-s="3"><span class="chip">Ep 6 · RAG</span><div class="t">The right paragraph</div><div class="d">search your documents, send only what matches</div></div>
+    <div class="slot14" data-s="4"><span class="chip">Ep 7 · Memory</span><div class="t">The right history</div><div class="d">keep what matters, drop the rest</div></div>
+    <div class="fx"><div class="k">Today · Ep 3</div><div class="t">Question</div></div>
+  </div>
+  <div class="cap14 abs">Today you filled this list by hand, in Java.<br>From Episode 4, <b>the agent starts filling it for you.</b></div>
+  <div class="statement b" data-s="5"><span class="tag">IN ONE LINE</span>The model only knows what's in the window. Building an agent is deciding what goes in it.</div>
+</section>
+
+<div class="progress" id="prog"></div>
+</div>
+<div class="hint" id="hint">→ / click: next · ← back · A: auto on/off · N: notes · H: hide</div>
+<div id="auto"><span id="autoL">AUTO ON</span><span class="ring"><i id="autoBar"></i></span></div>
+<div id="notes"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+let RUN=0; // token to cancel running sequences
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ---------- typing helpers ---------- */
+async function typeInto(el,text,tok,speed=22){for(let i=1;i<=text.length;i++){if(tok!==RUN)return false;el.textContent=text.slice(0,i);await sleep(speed)}return true}
+async function streamWords(el,text,tok,gap=120,cls){const w=text.split(/(\s+)/).filter(x=>x.length);let s='';for(const x of w){if(tok!==RUN)return false;s+=x;el.innerHTML=esc(s)+'<span class="cursor"></span>';await sleep(x.trim()?gap:0)}el.innerHTML=esc(s);return true}
+
+/* ---------- S2 ---------- */
+function s2(step,prev){
+  const f=$('#file2');f.classList.remove('shake');if(step===1){void f.offsetWidth;f.classList.add('shake')}
+  const p=$('#pct2');
+  if(step>=2&&prev<2){const tok=RUN,t0=performance.now();(function f(t){if(tok!==RUN)return;const v=Math.min(100,Math.max(0,(t-t0-200)/2200*100));p.textContent=Math.round(v)+'%';if(v<100)requestAnimationFrame(f)})(t0)}
+  else p.textContent=step>=2?'100%':'0%';
+}
+
+/* ---------- S3 ---------- */
+const ANS3='RAG means the model looks up relevant facts first, then answers using them.';
+function s3(step,prev){
+  const tok=RUN;
+  $('#wifi3').classList.toggle('off',step>=3);$('#wifi3').textContent=step>=3?'WI-FI: OFF':'WI-FI: ON';
+  const a=$('#ans3');
+  if(step===2||step===3){a.textContent='';sleep(700).then(()=>streamWords(a,ANS3,tok,110))}else if(step>3)a.textContent=ANS3;else a.textContent='';
+  const q=$('#qn3');
+  if(step>=4&&prev<4){const t0=performance.now();(function f(t){if(tok!==RUN)return;const p=Math.min(1,(t-t0)/2000);q.textContent=Math.round(1000*p*p).toLocaleString('en-US');if(p<1)requestAnimationFrame(f)})(t0)}
+  else q.textContent=step>=4?'1,000':'0';
+}
+
+/* ---------- S4 ---------- */
+const SHELF={casA:[140,350],casB:[140,490],casC:[140,630]};
+const SLOT=[980,688];
+const PLAY4={casA:['qwen3.5:4b ▶ PLAYING','RAG lets a model look things up before it answers, so its replies use your own documents.'],
+             casB:['gemma3:4b ▶ PLAYING','Retrieval-augmented generation: search first, then write the answer from what was found.']};
+function s4(step){
+  const tok=RUN;
+  const ins=step===1?'casA':(step>=2?'casB':null);
+  for(const id in SHELF){const e=document.getElementById(id);const at=id===ins?SLOT:SHELF[id];e.style.left=at[0]+'px';e.style.top=at[1]+'px';e.classList.toggle('play',id===ins)}
+  $('#led4').classList.toggle('on',!!ins);
+  const hd=$('#scrHd4'),sc=$('#scr4');
+  if(!ins){hd.textContent='NO MOVIE INSERTED';sc.textContent='';return}
+  hd.textContent=PLAY4[ins][0];sc.textContent='';
+  if(step<=2)sleep(950).then(()=>streamWords(sc,PLAY4[ins][1],tok,110));else sc.textContent=PLAY4[ins][1];
+}
+for(const id in SHELF){const e=document.getElementById(id);e.style.left=SHELF[id][0]+'px';e.style.top=SHELF[id][1]+'px'}
+
+/* ---------- S5 ---------- */
+const CAP5=[
+ ['','Three kinds of client on the left. Ollama in the middle, running quietly as a small server.'],
+ ['1','<b>One address for everything.</b> Even the ollama command is just a client of localhost:11434.'],
+ ['2','<b>A request arrives</b> over HTTP: which model, and your messages.'],
+ ['3','<b>Is the model on disk?</b> If not, Ollama downloads it from ollama.com first.'],
+ ['4','<b>Load the weights into memory.</b> They stay loaded for about 5 minutes, so the next question is fast.'],
+ ['5','<b>Predict, one token at a time.</b> The same loop you saw in Ep 2.'],
+ ['6','<b>The answer goes back as JSON.</b> Streamed in pieces, or one JSON with "stream": false.'],
+ ['','']
+];
+function s5(step,prev){
+  const tok=RUN;
+  ['c1','c2','c3'].forEach(i=>$('#'+i).classList.toggle('hot',step===1||(i==='c2'&&step>=2&&step<=6)));
+  ['w1','w2','w3'].forEach(i=>$('#'+i).classList.toggle('live',step===1||(i==='w2'&&step===2)));
+  $('#wl').classList.toggle('live',step===3);$('#lib5').classList.toggle('hot',step===3);
+  $('#wr').classList.toggle('live',step===6);
+  $('#store5').classList.toggle('hot2',step===3);$('#run5').classList.toggle('hot2',step===4||step===5);
+  const m=$('#mA5');
+  if(step>=4){m.style.left='812px';m.style.top='684px';m.classList.add('loaded')}else{m.style.left='1000px';m.style.top='420px';m.classList.remove('loaded')}
+  const pk=$('#pkt5');pk.classList.remove('ret');
+  const P={2:[690,530],3:[800,500],4:[800,500],5:[800,500]};
+  if(step>=2&&step<=5){pk.textContent='{ model, messages }';pk.style.opacity=1;
+    if(step===2&&prev<2){pk.style.transition='none';pk.style.left='360px';pk.style.top='540px';void pk.offsetWidth;pk.style.transition=''}
+    pk.style.left=P[step][0]+'px';pk.style.top=P[step][1]+'px';if(step>=4)pk.style.opacity=.0}
+  else if(step===6){pk.classList.add('ret');pk.textContent='{ "message": … }';pk.style.transition='none';pk.style.left='690px';pk.style.top='620px';pk.style.opacity=1;void pk.offsetWidth;pk.style.transition='';pk.style.left='330px';pk.style.top='620px'}
+  else pk.style.opacity=0;
+  const tks=[...document.querySelectorAll('#toks5 .tk')];
+  tks.forEach(t=>t.classList.toggle('in',step>=6));
+  if(step===5){tks.forEach((t,i)=>sleep(250+i*260).then(()=>{if(tok===RUN)t.classList.add('in')}))}
+  const c=CAP5[step];$('#cap5').innerHTML=c[1]?(c[0]?`<span class="stepn">STEP ${c[0]}</span>`:'')+c[1]:'';
+}
+
+/* ---------- S6 ---------- */
+const P6='<span class="pr">$</span> ';
+const CMD6=[
+ null,
+ {c:'ollama --version',o:['ollama version is 0.40.12'],what:'<b>Is it installed?</b> Prints the version. Yours may be newer.',disk:0,mem:0},
+ {c:'ollama run qwen3.5:4b',o:['<span class="dim">pulling manifest</span>','<span class="dim">pulling 81fb60c7daa8: 100% ▕████████████████▏ 3.4 GB</span>','<span class="dim">verifying sha256 digest · writing manifest</span>','success','<span class="hl">&gt;&gt;&gt; Explain RAG in one line</span>','RAG looks up relevant facts first, then answers using them.','<span class="hl">&gt;&gt;&gt; /bye</span>'],what:'<b>Download (first time) and chat.</b> Now it is on disk and loaded in memory.',disk:1,mem:1},
+ {c:'ollama list',o:['<span class="dim">NAME          ID              SIZE      MODIFIED</span>','qwen3.5:4b    2a7d3c91f0e4    3.4 GB    2 minutes ago'],what:'<b>What is on my disk?</b> Every downloaded model and its size.',disk:1,mem:1},
+ {c:'ollama ps',o:['<span class="dim">NAME          SIZE      PROCESSOR    UNTIL</span>','qwen3.5:4b    5.1 GB    100% GPU     4 minutes from now'],what:'<b>Bonus: what is in memory right now?</b> And when it will unload by itself.',disk:1,mem:1},
+ {c:'ollama stop qwen3.5:4b',o:[],what:'<b>Unload from memory.</b> Still on disk, so the next run starts without downloading.',disk:1,mem:0},
+ {c:'ollama rm qwen3.5:4b',o:["deleted 'qwen3.5:4b'"],what:'<b>Delete from disk.</b> Frees the 3.4 GB. Pull it again any time.',disk:0,mem:0}
+];
+function setState6(d,m){const D=$('#disk6'),M=$('#mem6');D.className='place'+(d?' full':'');D.textContent=d?'qwen3.5:4b · 3.4 GB':'empty';M.className='place'+(m?' fullnavy':'');M.textContent=m?'qwen3.5:4b':'nothing loaded'}
+async function s6(step){
+  const tok=RUN,t=$('#t6');
+  [...$('#cmds6').children].forEach((e,i)=>{e.className=i+1===step?'cur':(i+1<step?'done':'')});
+  if(step===0){t.innerHTML='<div class="ln">'+P6+'<span class="cursor"></span></div>';$('#what6').innerHTML='Watch the right side: <b>disk</b> and <b>memory</b>.';setState6(0,0);return}
+  const c=CMD6[step];const prevState=CMD6[step-1]||{disk:0,mem:0};setState6(prevState.disk,prevState.mem);
+  $('#what6').innerHTML=c.what;
+  t.innerHTML='<div class="ln">'+P6+'<span id="ty6"></span><span class="cursor"></span></div>';
+  if(!await typeInto($('#ty6'),c.c,tok,38))return;
+  t.querySelector('.cursor').remove();await sleep(350);
+  for(const line of c.o){if(tok!==RUN)return;t.insertAdjacentHTML('beforeend','<div class="ln">'+line+'</div>');await sleep(step===2?520:260)}
+  if(tok!==RUN)return;
+  setState6(c.disk,c.mem);
+  t.insertAdjacentHTML('beforeend','<div class="ln">'+P6+'<span class="cursor"></span></div>');
+}
+
+/* ---------- S7 ---------- */
+const K=s=>`<span class="key">${s}</span>`;
+const GEN={cmd:'curl http://localhost:11434/api/generate -d "{\\"model\\":\\"qwen3.5:4b\\",\\"prompt\\":\\"Explain RAG in simple terms\\",\\"stream\\":false}"',
+ req:`{\n  ${K('"model"')}: "qwen3.5:4b",\n  <span class="mk" data-m="1">${K('"prompt"')}: "Explain RAG in simple terms"</span>,\n  <span class="mk" data-m="1">${K('"stream"')}: false</span>\n}`,
+ res:`{\n  ${K('"model"')}: "qwen3.5:4b",\n  <span class="mk" data-m="2">${K('"response"')}: "RAG means the model first looks up\n    relevant facts, then answers with them…"</span>,\n  ${K('"done"')}: true,\n  ${K('"prompt_eval_count"')}: 15,\n  <span class="mk" data-m="2">${K('"eval_count"')}: 118</span>\n}`};
+const CHAT={cmd:'curl http://localhost:11434/api/chat -d "{\\"model\\":\\"qwen3.5:4b\\",\\"messages\\":[{\\"role\\":\\"user\\",\\"content\\":\\"Explain MCP with an example\\"}],\\"stream\\":false}"',
+ req:`{\n  ${K('"model"')}: "qwen3.5:4b",\n  <span class="mk" data-m="4">${K('"messages"')}: [\n    { ${K('"role"')}: "user",\n      ${K('"content"')}: "Explain MCP with an example" }\n  ]</span>,\n  ${K('"stream"')}: false\n}`,
+ res:`{\n  ${K('"model"')}: "qwen3.5:4b",\n  <span class="mk" data-m="5">${K('"message"')}: {\n    ${K('"role"')}: "assistant",\n    ${K('"content"')}: "MCP lets an AI app plug into\n      tools like a calendar…"\n  }</span>,\n  ${K('"done"')}: true,\n  ${K('"eval_count"')}: 142\n}`};
+let s7mode=null;
+async function s7(step){
+  const tok=RUN,mode=step>=3?'chat':'gen',D=mode==='chat'?CHAT:GEN;
+  $('#e7a').className=mode==='gen'?'cur':'';$('#e7b').className=mode==='chat'?'cur':'';
+  const showRes=(mode==='gen'&&step>=2)||(mode==='chat'&&step>=5);
+  if(s7mode!==mode){s7mode=mode;$('#req7').innerHTML=D.req;$('#res7').innerHTML='';
+    const c=$('#cmd7');c.textContent='';var typing=typeInto(c,D.cmd,tok,9)}
+  if(showRes&&!$('#res7').innerHTML)$('#res7').innerHTML=D.res;
+  if(!showRes)$('#res7').innerHTML='';
+  document.querySelectorAll('#s7 .mk').forEach(e=>e.classList.toggle('on',+e.dataset.m===step));
+  return typing;
+}
+
+/* ---------- S8 ---------- */
+const SIZES=[['0.8b',1.0],['2b',2.7],['4b',3.4],['9b',6.6],['27b',17],['35b',24],['122b',81]];
+$('#lad8').innerHTML=SIZES.map(([s,g])=>`<div class="lr${s==='4b'?' pick':''}"><span class="sz">${s}</span><div class="bw"><i data-w="${(g/81*100).toFixed(2)}"></i>${s==='9b'?'<span class="tagl" data-off="'+(g/81*100+2)+'">= :latest</span>':''}${s==='4b'?'<span class="tagl" data-off="'+(g/81*100+2)+'">OUR PICK</span>':''}</div><span class="gb">${g<10?g.toFixed(1):g} GB</span></div>`).join('');
+document.querySelectorAll('#lad8 .tagl').forEach(e=>e.style.left=e.dataset.off+'%');
+function s8(step){document.querySelectorAll('#lad8 .bw i').forEach((e,i)=>{e.style.transitionDelay=(i*.12)+'s';e.style.width=step>=2?e.dataset.w+'%':'0'})}
+
+
+/* ---------- S10-S14 · stateless ---------- */
+const nf=n=>Math.round(n).toLocaleString('en-US');
+function countTo(el,from,to,ms,tok){return new Promise(res=>{const t0=performance.now();(function f(t){if(tok!==RUN)return res();const p=Math.min(1,(t-t0)/ms),e=p*p*(3-2*p);el.textContent=nf(from+(to-from)*e);if(p<1)requestAnimationFrame(f);else res()})(t0)})}
+
+const R10=[
+ {req:'[\n  { <span class="key">"role"</span>: "user",\n    <span class="key">"content"</span>: "This is Prasad" }\n]',
+  toks:[['user','role'],'This','·is','·Pras','ad'],reply:'Nice to meet you, Prasad!',cls:''},
+ {req:'[\n  { <span class="key">"role"</span>: "user",\n    <span class="key">"content"</span>: "What is my name?" }\n]',
+  toks:[['user','role'],'What','·is','·my','·name','?'],reply:"Sorry, I don't know your name.",cls:'bad'},
+ {req:'[\n<span class="hist">  { <span class="key">"role"</span>: "user",\n    <span class="key">"content"</span>: "This is Prasad" },\n  { <span class="key">"role"</span>: "assistant",\n    <span class="key">"content"</span>: "Nice to meet you, Prasad!" },</span>\n  { <span class="key">"role"</span>: "user",\n    <span class="key">"content"</span>: "What is my name?" }\n]',
+  toks:[['user','role'],'This','·is','·Pras','ad',['assistant','role'],'Nice','·to','·meet','·you',',','·Pras','ad','!',['user','role'],'What','·is','·my','·name','?'],reply:'Your name is Prasad.',cls:'ok'}];
+const N10=R10.map(r=>r.toks.length);
+$('#grow10').innerHTML=R10.map((r,i)=>`<div class="g10"><span>Request ${i+1}</span><div class="gb"><i style="--w:${(N10[i]/20*100).toFixed(0)}%"></i></div><span class="gn">${N10[i]} tokens</span></div>`).join('');
+function req10(i){$('#rqt10').textContent='Request '+(i+1);$('#rq10').innerHTML='"messages": '+R10[i].req;$('#hn10').classList.toggle('on',i===2)}
+function grow10(n){document.querySelectorAll('#grow10 .g10').forEach((e,i)=>e.classList.toggle('in',i<n))}
+function chips10(i){return R10[i].toks.map(t=>{const [x,c]=Array.isArray(t)?t:[t,''];return `<span class="wt ${c}${/Pras|ad/.test(x)&&!c?' p':''}">${esc(x)}</span>`}).join('')}
+function setWin10(i,state){ // state: 'empty' | 'in' | 'read'
+  const box=$('#chips10');
+  box.innerHTML='<div class="empty10" id="empty10" style="opacity:'+(i<0?1:0)+'">'+(state==='cleared'?'cleared · the request is over':'empty · nothing here yet')+'</div>'+(i>=0?chips10(i):'');
+  box.querySelectorAll('.wt').forEach(e=>{e.classList.add('in');if(state==='read')e.classList.add('rd');if(state==='read'&&i===2&&e.classList.contains('p'))e.classList.add('keyw')});
+  $('#cnt10').textContent=i>=0?N10[i]:0;
+}
+async function fill10(i,tok){
+  const box=$('#chips10');box.innerHTML='<div class="empty10" id="empty10" style="opacity:0">empty</div>'+chips10(i);
+  const els=[...box.querySelectorAll('.wt')];let n=0;
+  for(const e of els){if(tok!==RUN)return false;await sleep(i===2?110:170);e.classList.add('in');$('#cnt10').textContent=++n}
+  return true}
+async function read10(i,tok){
+  const w=$('#win10');w.classList.add('reading');
+  const els=[...document.querySelectorAll('#chips10 .wt')];
+  for(const e of els){if(tok!==RUN)return false;e.classList.add('rd');await sleep(45)}
+  if(i===2)els.filter(e=>e.classList.contains('p')).forEach(e=>e.classList.add('keyw'));
+  await sleep(350);w.classList.remove('reading');return tok===RUN}
+async function clear10(tok){
+  document.querySelectorAll('#chips10 .wt').forEach(e=>e.classList.add('out'));
+  await sleep(450);if(tok!==RUN)return false;
+  $('#chips10').innerHTML='<div class="empty10" id="empty10">cleared · the request is over</div>';$('#cnt10').textContent='0';return true}
+function rep10(i,txt){const r=$('#rep10');r.className='rep'+(i>=0&&txt?' '+R10[i].cls:'');r.textContent=txt||''}
+async function s10(step,prev){
+  const tok=RUN;$('#win10').classList.remove('reading');$('#miss10').classList.remove('on');
+  const anim=prev===step-1;
+  if(step===0){req10(0);grow10(0);setWin10(-1,'empty');rep10(-1,'');return}
+  if(step===1){req10(0);grow10(1);rep10(-1,'');if(anim){await fill10(0,tok)}else setWin10(0,'in');return}
+  if(step===2){req10(0);grow10(1);
+    if(anim){if(!await read10(0,tok))return;rep10(0,'');$('#rep10').className='rep';await streamWords($('#rep10'),R10[0].reply,tok,180);if(tok!==RUN)return;await sleep(1100);if(tok!==RUN)return;await clear10(tok)}
+    else{rep10(0,R10[0].reply);$('#chips10').innerHTML='<div class="empty10">cleared · the request is over</div>';$('#cnt10').textContent='0'}
+    return}
+  if(step===3){req10(1);rep10(-1,'');
+    if(anim){$('#chips10').innerHTML='<div class="empty10">empty · nothing here yet</div>';$('#cnt10').textContent='0';await sleep(700);if(tok!==RUN)return;grow10(2);if(!await fill10(1,tok))return;await sleep(300);if(!await read10(1,tok))return;$('#miss10').classList.add('on');$('#rep10').className='rep bad';await streamWords($('#rep10'),R10[1].reply,tok,180)}
+    else{grow10(2);setWin10(1,'read');$('#miss10').classList.add('on');rep10(1,R10[1].reply)}
+    return}
+  // step 4 and 5
+  req10(2);
+  if(step===4&&anim){rep10(-1,'');grow10(2);if(!await clear10(tok))return;await sleep(500);if(tok!==RUN)return;grow10(3);if(!await fill10(2,tok))return;await sleep(300);if(!await read10(2,tok))return;$('#rep10').className='rep ok';await streamWords($('#rep10'),R10[2].reply,tok,200)}
+  else{grow10(3);setWin10(2,'read');rep10(2,R10[2].reply)}
+}
+
+const M11=[['user','This is Prasad.'],['assistant','Nice to meet you, Prasad!'],['user',"I'm learning Java."],['assistant','Great choice. Java is a solid first language.'],['user','What is my name?'],['assistant','Your name is Prasad.']];
+const TOK11=[12,41,70];
+$('#list11').innerHTML=M11.map(([r,t])=>`<div class="msg${r==='assistant'?' a':''}"><span class="r">${r==='user'?'USER':'AI'}</span><span>${esc(t)}</span></div>`).join('');
+$('#log11').innerHTML=[1,2,3].map(k=>`<div class="card rq11"><div class="top"><span class="t">Request ${k}</span><span class="n">${2*k-1} message${k>1?'s':''} · ${TOK11[k-1]} tokens</span></div><div class="chips">${Array.from({length:2*k-1},(_,i)=>`<i class="${i%2?'a':''}">${i%2?'AI':'U'}</i>`).join('')}</div><div class="tb"><i style="--w:${(TOK11[k-1]/70*100).toFixed(1)}%"></i></div></div>`).join('');
+function draw11(done,flight){
+  const shown=flight?2*flight-1:2*done;
+  document.querySelectorAll('#list11 .msg').forEach((e,i)=>e.classList.toggle('in',i<shown));
+  document.querySelectorAll('#log11 .rq11').forEach((e,i)=>e.classList.toggle('in',i<Math.max(done,flight)));
+}
+async function s11(step,prev){
+  const tok=RUN,st=$('#st11'),pk=$('#pkt11');
+  const setSt=(t,c)=>{st.textContent=t;st.className='st'+(c?' '+c:'')};
+  pk.style.opacity=0;
+  const k=Math.min(step,3);
+  if(step>=1&&step<=3&&prev<step){
+    draw11(k-1,k);setSt('memory: empty');
+    await sleep(450);if(tok!==RUN)return;
+    pk.textContent=`${2*k-1} message${k>1?'s':''} →`;
+    pk.style.transition='none';pk.style.left='400px';pk.style.top='520px';pk.style.opacity=1;void pk.offsetWidth;pk.style.transition='';pk.style.left='720px';
+    await sleep(1050);if(tok!==RUN)return;pk.style.opacity=0;
+    setSt(`reading ${2*k-1} message${k>1?'s':''}…`,'busy');
+    await sleep(1300);if(tok!==RUN)return;
+    draw11(k,0);setSt('answered · memory wiped','wipe');
+    await sleep(1100);if(tok!==RUN)return;setSt('memory: empty');
+    return}
+  draw11(k,0);setSt('memory: empty');
+}
+
+const T12=[0,120,6120,6300,6325];let tot12=0;
+const A12='Yes. Unopened electronics can be returned within 10 days. Yours arrived 6 days ago, so your refund has started.';
+(function(){const sc=84/7075;$('#ch12').innerHTML=[1,2,3,4,5,6].map(n=>{const t=6325+150*(n-1);return `<div class="c12"><i class="r" data-h="${((t-6000)*sc).toFixed(1)}"></i><i class="p" data-h="${(6000*sc).toFixed(1)}"></i><span>${n}</span></div>`}).join('')})();
+async function s12(step,prev){
+  const tok=RUN,el=$('#tot12'),target=T12[Math.min(step,4)];
+  if(prev<step&&step<=4)countTo(el,tot12,target,800,tok);else el.textContent=nf(target);
+  tot12=target;
+  const cols=[...document.querySelectorAll('#ch12 .c12')];
+  const setBars=(on,anim)=>cols.forEach((c,i)=>c.querySelectorAll('i').forEach(b=>{b.style.transitionDelay=anim?(i*0.22)+'s':'0s';b.style.height=on?b.dataset.h+'px':'0'}));
+  if(step>=5){
+    if(step===5&&prev<5){setBars(true,true);countTo($('#sum12'),0,40200,1600,tok);countTo($('#pol12'),0,36000,1600,tok)}
+    else{setBars(true,false);$('#sum12').textContent='40,200';$('#pol12').textContent='36,000'}
+  }else{setBars(false,false);$('#sum12').textContent='0';$('#pol12').textContent='0'}
+  const ans=$('#ans12');
+  if(step>=4){if(step===4&&prev<4){ans.textContent='';await sleep(900);await streamWords(ans,A12,tok,85)}else ans.textContent=A12}
+  else ans.textContent='';
+}
+
+const T13=[0,0,0,225,285,285];let tot13=0;
+function s13(step,prev){
+  const tok=RUN,el=$('#tot13'),target=T13[step];
+  if(prev<step&&(step===3||step===4))countTo(el,tot13,target,700,tok);else el.textContent=nf(target);
+  tot13=target;
+}
+
+/* ---------- deck engine ---------- */
+const HOOKS={s2,s3,s4,s5,s6,s7,s8,s10,s11,s12,s13};
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0,step=0;
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);$('#stage').style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener('resize',fit);fit();
+let AUTO=true,autoTimer=null;
+function clearAuto(){clearTimeout(autoTimer);autoTimer=null;const b=$('#autoBar');b.style.transition='none';b.style.width='0'}
+function scheduleAuto(ms,tok){
+  if(!AUTO||tok!==RUN)return;
+  const b=$('#autoBar');b.style.transition='none';b.style.width='0';void b.offsetWidth;b.style.transition=`width ${ms}ms linear`;b.style.width='100%';
+  autoTimer=setTimeout(()=>{if(tok===RUN)next(true)},ms);
+}
+function autoFor(s,st){const m=(s.dataset.auto||'').split(',').map(x=>x.split(':')).find(x=>+x[0]===st);return m?+m[1]:0}
+function render(prevStep,changedSlide,forward){
+  RUN++;clearAuto();const TOK=RUN;
+  slides.forEach((s,i)=>s.classList.toggle('on',i===cur));
+  const s=slides[cur];
+  if(changedSlide&&s.id==='s7')s7mode=null;
+  s.querySelectorAll('[data-s]').forEach(e=>e.classList.toggle('in',+e.dataset.s<=step));
+  const hr=HOOKS[s.id]?HOOKS[s.id](step,changedSlide?-1:prevStep):null;
+  const wait=forward?autoFor(s,step):0;
+  if(wait){Promise.resolve(hr).then(()=>scheduleAuto(wait,TOK))}
+  $('#prog').style.width=((cur+(step/(+s.dataset.steps+1)))/slides.length*100)+'%';
+  const n=s.dataset.notes.split('|').map(x=>x.trim());
+  $('#notes').innerHTML=`<b>${cur+1}/${slides.length} · ${s.dataset.label} · step ${step}/${s.dataset.steps}</b><br>`+n.map((x,i)=>i===step?`<span style="color:#fff">▶ ${x}</span>`:`<span style="opacity:.55">${x}</span>`).join('<br>');
+  try{history.replaceState(null,'','#'+(cur+1))}catch(e){}
+}
+function next(){const p=step,max=+slides[cur].dataset.steps;let ch=false;if(step<max)step++;else if(cur<slides.length-1){cur++;step=0;ch=true}else return;render(p,ch,true)}
+function prev(){const p=step;let ch=false;if(step>0)step--;else if(cur>0){cur--;step=+slides[cur].dataset.steps;ch=true}else return;render(p,ch)}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next()}
+  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
+  else if(e.key==='n'||e.key==='N'){const n=$('#notes');n.style.display=n.style.display==='block'?'none':'block'}
+  else if(e.key==='h'||e.key==='H'){const h=$('#hint'),a=$('#auto'),v=h.style.display==='none';h.style.display=v?'block':'none';a.style.display=v?'flex':'none'}
+  else if(e.key==='a'||e.key==='A'){AUTO=!AUTO;$('#auto').classList.toggle('off',!AUTO);$('#autoL').textContent=AUTO?'AUTO ON':'AUTO OFF';if(!AUTO)clearAuto();else{const s=slides[cur],w=autoFor(s,step);if(w)scheduleAuto(w,RUN)}}
+  else if(/^[1-9]$/.test(e.key)&&+e.key<=slides.length){cur=+e.key-1;step=0;render(-1,true,true)}
+});
+document.addEventListener('click',e=>{if(e.target.closest('#notes'))return;next()});
+const m=location.hash.match(/^#(\d+)/);cur=m?Math.min(slides.length-1,Math.max(0,+m[1]-1)):0;
+render(-1,true,true);
+</script>

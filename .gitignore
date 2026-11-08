@@ -1,0 +1,25 @@
+# Java / Maven
+target/
+*.class
+*.log
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python (Ep 2 tiny-llm-lab)
+__pycache__/
+tiny_model.json
+tiny_model.safetensors
+
+# Secrets: never commit API keys
+.env
+*.env

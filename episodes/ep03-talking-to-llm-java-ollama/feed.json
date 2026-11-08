@@ -1,0 +1,32 @@
+[
+  {
+    "source": "Anthropic",
+    "title": "Introducing Claude Opus 5.5",
+    "description": "Our newest Opus model, built for complex reasoning, long coding tasks and agents. Available today in the Claude apps and the API."
+  },
+  {
+    "source": "OpenAI",
+    "title": "How a logistics company cut support time in half with ChatGPT",
+    "description": "A customer story about rolling out ChatGPT Enterprise to 4,000 support staff."
+  },
+  {
+    "source": "Google",
+    "title": "Gemini app adds new color themes",
+    "description": "You can now pick from six new themes in the Gemini app on Android and iOS."
+  },
+  {
+    "source": "Google",
+    "title": "A new Gemini model for developers",
+    "description": "We are releasing a faster, cheaper Gemini model with a longer context window, available now in the Gemini API and Google AI Studio."
+  },
+  {
+    "source": "OpenAI",
+    "title": "Our partnership with a national university system",
+    "description": "Students and faculty across 20 campuses will get access to ChatGPT Edu."
+  },
+  {
+    "source": "Anthropic",
+    "title": "Updates to our usage policy",
+    "description": "We have clarified how our usage policy applies to political content and elections."
+  }
+]
