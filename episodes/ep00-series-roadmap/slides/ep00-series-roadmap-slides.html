@@ -1,0 +1,319 @@
+<title>Zero to AI Agent Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: fixed 1920x1080 stage scaled to fit, click-to-step slides — same system as the Ep 3 deck (single light look, by choice) */
+:root{
+  --bg:#F3F5F9; --ink:#152033; --ink2:#3A4659; --muted:#6B7689;
+  --accent:#2B6FD6; --accent-soft:#E3ECFA; --line:#D5DDE9;
+  --b1:#DCE6F4; --b2:#C3D4EE; --b3:#9DBBEA; --b4:#5E8FDC;
+  --card:#FBFCFD; --navy:#152033; --navy2:#22314B; --sky:#8FB3EE;
+  --ok:#1F8A4C; --ok-soft:#E2F3E9;
+  --letterbox:#0b0f17; --white:#fff; --hintc:#9aa4b5; --notesbg:rgba(10,14,22,.95); --notesink:#dfe6f2;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--letterbox);overflow:hidden;font-family:var(--f-body);color:var(--ink)}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--bg);padding:96px 140px;opacity:0;pointer-events:none;transition:opacity .5s ease;overflow:hidden}
+.slide.on{opacity:1;pointer-events:auto}
+.eyebrow{font-family:var(--f-mono);font-size:26px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase}
+h1{font-family:var(--f-display);font-weight:800;font-size:76px;line-height:1.04;letter-spacing:-.02em;margin:22px 0 0;max-width:1640px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.b{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+.b.in{opacity:1;transform:none}
+.abs{position:absolute}
+.k{font-family:var(--f-mono);font-size:19px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px}
+.statement{position:absolute;left:140px;right:140px;bottom:64px;background:var(--navy);color:var(--white);border-radius:18px;padding:28px 44px;font-family:var(--f-display);font-weight:700;font-size:40px;display:flex;align-items:center;gap:24px}
+.statement .tag{font:500 20px var(--f-mono);letter-spacing:.16em;color:var(--sky);white-space:nowrap}
+.chip{display:inline-block;font:500 19px var(--f-mono);letter-spacing:.08em;padding:9px 15px;border-radius:10px;background:var(--accent-soft);color:var(--accent)}
+.hint{position:absolute;right:28px;bottom:20px;font:14px var(--f-mono);color:var(--hintc);letter-spacing:.08em;z-index:5}
+.progress{position:absolute;left:0;bottom:0;height:5px;background:var(--accent);transition:width .4s;z-index:4}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:var(--notesbg);color:var(--notesink);font:16px/1.55 var(--f-body);padding:16px 26px;display:none;z-index:9}
+#notes b{color:var(--sky);font-family:var(--f-mono);font-weight:500}
+
+/* ===== S1 title ===== */
+#s1 .sub{font-family:var(--f-display);font-weight:700;font-size:54px;color:var(--ink2);margin-top:26px;letter-spacing:-.01em}
+#s1 .sub em{font-style:normal;color:var(--accent)}
+#s1 .series{margin-top:80px;display:flex;gap:16px;align-items:center;font:500 22px var(--f-mono);letter-spacing:.14em;color:var(--muted)}
+#s1 .series i{display:block;width:60px;height:10px;border-radius:5px;background:var(--b2)}
+#s1 .tagbox{position:absolute;right:140px;top:110px;font:600 28px var(--f-mono);color:var(--accent);background:var(--card);border:2px solid var(--line);border-radius:14px;padding:16px 24px}
+
+
+/* ===== S1 hook ===== */
+.hk-row{left:140px;width:1640px}
+.hk-lab{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
+.hk-num{font-family:var(--f-display);font-weight:800;font-size:64px;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+.hk-num.acc{color:var(--accent)}
+.hk-track{position:relative;height:96px;border-radius:14px;background:var(--b1);overflow:hidden;display:flex}
+.hk-fill{height:100%;width:0;flex:none;transition:width 1.6s cubic-bezier(.3,.6,.2,1)}
+.hk-fill.long{background:repeating-linear-gradient(90deg,var(--b3) 0 52px,var(--b2) 52px 55px)}
+.hk-fill.short{display:flex;gap:3px;background:var(--bg);transition-duration:1s}
+.hk-fill.short i{flex:1;background:var(--accent)}
+.hk-fill.prac{background:repeating-linear-gradient(135deg,var(--ok-soft) 0 18px,var(--card) 18px 30px);display:flex;align-items:center;justify-content:center;transition-duration:1.4s}
+.hk-fill.prac span{font:600 24px var(--f-mono);letter-spacing:.12em;color:var(--ok);text-transform:uppercase;white-space:nowrap}
+.hk-scale{left:140px;top:760px;font-size:16px}
+
+/* ===== S2 map ===== */
+#s2 .rail{left:140px;right:140px;top:492px;height:6px;background:var(--b1);border-radius:3px}
+#s2 .acts{left:140px;top:340px;width:1640px;display:flex;gap:26px}
+.act{display:flex;flex-direction:column;gap:18px}
+.act .ah{display:flex;align-items:baseline;gap:14px;border-bottom:3px solid var(--b2);padding-bottom:12px;height:58px}
+.act.in .ah{border-color:var(--accent)}
+.act .ah .an{font:600 18px var(--f-mono);letter-spacing:.14em;color:var(--muted)}
+.act .ah .at{font-family:var(--f-display);font-weight:800;font-size:34px;letter-spacing:-.01em}
+.act .row{display:flex;gap:18px}
+.stn{width:216px;display:flex;flex-direction:column;align-items:flex-start}
+.stn .dot{width:46px;height:46px;border-radius:50%;background:var(--accent);color:var(--white);font:600 22px var(--f-mono);display:flex;align-items:center;justify-content:center;margin:56px 0 28px;box-shadow:0 0 0 8px var(--bg)}
+.stn .t{font-family:var(--f-display);font-weight:700;font-size:31px;line-height:1.1;letter-spacing:-.01em}
+.stn .d{font-size:21px;color:var(--ink2);line-height:1.38;margin-top:10px}
+.stn .tech{margin-top:14px;font:500 16px var(--f-mono);color:var(--accent);background:var(--accent-soft);padding:6px 10px;border-radius:8px;letter-spacing:.04em}
+
+/* ===== S3 episode detail ===== */
+#s3 .list{left:140px;top:300px;width:470px;display:flex;flex-direction:column;gap:8px}
+.li{display:flex;align-items:center;gap:18px;padding:14px 18px;border-radius:12px;transition:background .35s,color .35s;color:var(--muted)}
+.li .n{width:40px;height:40px;border-radius:50%;border:2px solid var(--b3);font:600 18px var(--f-mono);display:flex;align-items:center;justify-content:center;flex:none;transition:all .35s}
+.li .t{font-family:var(--f-display);font-weight:700;font-size:25px;line-height:1.15}
+.li.done{color:var(--ink2)}
+.li.done .n{background:var(--b1);border-color:var(--b1);color:var(--accent)}
+.li.cur{background:var(--navy);color:var(--white)}
+.li.cur .n{background:var(--accent);border-color:var(--accent);color:var(--white)}
+#s3 .panel{left:660px;top:290px;width:1120px;height:690px;padding:40px 46px;display:flex;flex-direction:column}
+#s3 .panel .inner{transition:opacity .3s;display:flex;flex-direction:column;height:100%}
+#s3 .panel .inner.fade{opacity:0}
+#s3 .ptitle{font-family:var(--f-display);font-weight:800;font-size:54px;letter-spacing:-.02em;line-height:1.05;margin-top:16px}
+#s3 .psub{font-size:26px;color:var(--ink2);margin-top:10px}
+#s3 .cols{display:flex;gap:36px;margin-top:30px}
+#s3 .cover{flex:1;min-width:0}
+#s3 .cover ul{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+#s3 .cover li{font-size:23px;line-height:1.35;padding-left:26px;position:relative}
+#s3 .cover li::before{content:"";position:absolute;left:0;top:13px;width:11px;height:11px;border-radius:3px;background:var(--b4)}
+#s3 .build{width:380px;flex:none;background:var(--accent-soft);border-radius:14px;padding:22px 24px}
+#s3 .build .bt{font-family:var(--f-display);font-weight:700;font-size:27px;line-height:1.2;margin-top:10px}
+#s3 .build .stack{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+#s3 .build .stack span{font:500 16px var(--f-mono);background:var(--card);color:var(--accent);padding:6px 10px;border-radius:8px}
+#s3 .take{margin-top:auto;background:var(--navy);color:var(--white);border-radius:14px;padding:22px 30px;display:flex;gap:22px;align-items:center}
+#s3 .take .tag{font:500 18px var(--f-mono);letter-spacing:.16em;color:var(--sky);white-space:nowrap}
+#s3 .take .tx{font-family:var(--f-display);font-weight:700;font-size:31px;line-height:1.2}
+#s3 .meter{display:flex;align-items:center;gap:18px;margin-top:20px}
+#s3 .meter .bars{display:flex;gap:6px}
+#s3 .meter .bars i{display:block;width:44px;height:12px;border-radius:6px;background:var(--b1);transition:background .4s}
+#s3 .meter .bars i.on{background:var(--accent)}
+#s3 .meter .lv{font-family:var(--f-display);font-weight:700;font-size:24px}
+#s3 .meter .lv span{color:var(--accent)}
+
+/* ===== S4 staircase ===== */
+#s4 .stairs{left:140px;top:300px;width:1640px;height:560px;display:flex;gap:16px;align-items:flex-end}
+.stp{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.stp .lab{opacity:0;transform:translateY(12px);transition:opacity .5s .25s,transform .5s .25s;padding:0 4px 14px}
+.stp .lab .v{font-family:var(--f-display);font-weight:800;font-size:34px;letter-spacing:-.01em;color:var(--ink)}
+.stp .lab .w{font-size:19px;color:var(--ink2);line-height:1.35;margin-top:6px}
+.stp .bar{height:0;border-radius:12px 12px 0 0;background:var(--b2);transition:height .7s cubic-bezier(.2,.7,.2,1),background .4s;display:flex;align-items:flex-end;padding:14px 16px;overflow:hidden}
+.stp .bar span{font:600 18px var(--f-mono);letter-spacing:.1em;color:var(--white);white-space:nowrap}
+.stp:not(.in) .bar{padding:0}
+.stp.in .lab{opacity:1;transform:none}
+.stp.in .bar{background:var(--b4)}
+.stp.top .bar{background:var(--accent)}
+#s4 .base{left:140px;right:140px;top:860px;height:4px;background:var(--ink);border-radius:2px}
+#s4 .startlab{left:140px;top:878px}
+
+/* ===== S5 before / after ===== */
+#s5 .before{left:140px;top:320px;width:560px;height:560px;padding:40px}
+#s5 .after{left:740px;top:320px;width:1040px;height:560px;padding:40px 46px;border-color:var(--accent)}
+#s5 .ct{font-family:var(--f-display);font-weight:800;font-size:40px;margin-top:12px;letter-spacing:-.01em}
+#s5 ul{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:18px}
+#s5 .before li{font-size:27px;color:var(--ink2);line-height:1.35;padding-left:30px;position:relative}
+#s5 .before li::before{content:"";position:absolute;left:0;top:14px;width:12px;height:12px;border-radius:50%;border:2px solid var(--b3)}
+#s5 .after ul{gap:16px}
+#s5 .after li{font-size:27px;line-height:1.3;display:flex;gap:18px;align-items:baseline}
+#s5 .after li .ck{flex:none;width:34px;height:34px;border-radius:9px;background:var(--ok-soft);color:var(--ok);font:700 22px var(--f-mono);display:flex;align-items:center;justify-content:center;transform:translateY(5px)}
+#s5 .after li .ep{font:500 16px var(--f-mono);color:var(--muted);letter-spacing:.08em;margin-left:auto;white-space:nowrap}
+#s5 .need{left:140px;right:140px;top:920px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+#s5 .need .lead{font-family:var(--f-display);font-weight:700;font-size:30px;margin-right:6px}
+
+/* ===== S6 close ===== */
+#s6{display:flex;flex-direction:column;justify-content:center}
+#s6 h1{font-size:110px}
+#s6 .sub{font-size:38px;color:var(--ink2);margin-top:24px;line-height:1.35;max-width:1300px}
+#s6 .need{margin-top:56px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+#s6 .need .lead{font-family:var(--f-display);font-weight:700;font-size:30px;margin-right:6px}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.stp .here{font-size:17px;padding:7px 12px;margin-bottom:12px}
+#s6 .next{margin-top:48px;display:flex;align-items:center;gap:26px}
+#s6 .next .box{background:var(--navy);color:var(--white);border-radius:16px;padding:24px 32px}
+#s6 .next .box .k{color:var(--sky)}
+#s6 .next .box .t{font-family:var(--f-display);font-weight:700;font-size:44px;margin-top:6px}
+#s6 .series{display:flex;gap:12px}
+#s6 .series i{display:block;width:50px;height:10px;border-radius:5px;background:var(--b2)}
+#s6 .series i.on{background:var(--accent)}
+
+@media (prefers-reduced-motion: reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
+
+<div class="stage" id="stage">
+
+<!-- ============ 1 · HOOK: 30+ HRS -> UNDER 4 ============ -->
+<section class="slide" id="s1" data-steps="3" data-label="Under 4 hours"
+ data-notes="Step 0: Hello everyone, and welcome to Zero to AI Agent. By the end of this series, you'll build your own AI agent, in Java, from scratch. And you don't need to know anything about AI to start. | 1: I did a lot of research for this series. If I put in every detail, it would easily be 30 hours of videos. That's too much watching. | 2: So I planned it differently. From what is AI to building real agents, in under 4 hours. Every episode covers only what you need. | 3: And the time you save goes into practice. Less watching, more building. Let me show you the plan.">
+  <div class="eyebrow">Welcome to Zero to AI Agent</div>
+  <h1>From zero to AI agents, <em>in under 4 hours</em></h1>
+  <div class="hk-row abs" style="top:330px">
+    <div class="hk-lab"><span class="k">Everything, in full detail</span><span class="hk-num" id="n1">0 hrs</span></div>
+    <div class="hk-track"><div class="hk-fill long" id="f1"></div></div>
+  </div>
+  <div class="hk-row abs b" data-s="2" style="top:550px">
+    <div class="hk-lab"><span class="k" style="color:var(--accent)">This series · 7 episodes</span><span class="hk-num acc" id="n2">0 hrs</span></div>
+    <div class="hk-track"><div class="hk-fill short" id="f2"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="hk-fill prac" id="f3"><span>Your practice time</span></div></div>
+  </div>
+  <div class="hk-scale abs k">Each block = 1 hour · drawn to scale</div>
+  <div class="statement b" data-s="3"><span class="tag">THE PLAN</span>Less watching. More building.</div>
+</section>
+
+<!-- ============ 2 · THE MAP ============ -->
+<section class="slide" id="s2" data-steps="4" data-label="The road in 3 acts"
+ data-notes="Step 0: Here's the whole road. Seven stops, in three acts. | 1: Act one, understand. Episode 1 is the AI map: where ML, LLMs and agents sit. Episode 2 opens the LLM and shows how it actually picks its words. No code yet, just a clear picture. | 2: Act two, build. Episode 3, we call an LLM from Java, running locally with Ollama. Episode 4, we give it hands: tools and the agent loop. That's your first real agent, no framework. | 3: Act three, connect and ship. Episode 5, MCP: tools you can plug into any AI app, with the Java MCP SDK. Episode 6, RAG: the agent answers from your own documents. Episode 7, we take everything to a real agent with LangChain4j. | 4: Read the statement.">
+  <div class="eyebrow">The road · 3 acts, 7 stops</div>
+  <h1>From <em>what is AI?</em> to an agent you ship</h1>
+  <div class="rail abs"></div>
+  <div class="acts abs">
+    <div class="act b" data-s="1">
+      <div class="ah"><span class="an">ACT 1</span><span class="at">Understand</span></div>
+      <div class="row">
+        <div class="stn"><div class="dot">1</div><div class="t">The AI Map</div><div class="d">Where ML, LLMs and agents fit</div><div class="tech">concepts</div></div>
+        <div class="stn"><div class="dot">2</div><div class="t">How an LLM “thinks”</div><div class="d">Tokens in, next token out</div><div class="tech">concepts</div></div>
+      </div>
+    </div>
+    <div class="act b" data-s="2">
+      <div class="ah"><span class="an">ACT 2</span><span class="at">Build</span></div>
+      <div class="row">
+        <div class="stn"><div class="dot">3</div><div class="t">Your first API call</div><div class="d">Talk to an LLM with Java code</div><div class="tech">Java · Ollama</div></div>
+        <div class="stn"><div class="dot">4</div><div class="t">Giving the LLM hands</div><div class="d">Tools and the agent loop</div><div class="tech">tool calling</div></div>
+      </div>
+    </div>
+    <div class="act b" data-s="3">
+      <div class="ah"><span class="an">ACT 3</span><span class="at">Connect &amp; ship</span></div>
+      <div class="row">
+        <div class="stn"><div class="dot">5</div><div class="t">MCP</div><div class="d">Plug-and-play tools for any AI app</div><div class="tech">Java MCP SDK</div></div>
+        <div class="stn"><div class="dot">6</div><div class="t">RAG</div><div class="d">Give the agent your knowledge</div><div class="tech">embeddings</div></div>
+        <div class="stn"><div class="dot">7</div><div class="t">Demo to real agent</div><div class="d">Everything together, production-style</div><div class="tech">LangChain4j</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="statement b" data-s="4"><span class="tag">THE RULE</span>Each episode adds one piece. Nothing is skipped.</div>
+</section>
+
+<!-- ============ 3 · KNOWLEDGE LEVEL ============ -->
+<section class="slide" id="s4" data-steps="7" data-label="Every episode is one step up"
+ data-notes="Step 0: And here's how your level climbs. Right now you're here: you know some Java, and you've used ChatGPT. That's enough. | 1: After Episode 1, you can name it: every AI term has a place. | 2: Episode 2, you can explain it: how an LLM picks its next word. | 3: Episode 3, you can call it, from your own Java code. | 4: Episode 4, you can build it: your first agent, from scratch. | 5: Episode 5, you can connect it: tools any AI app can plug in. | 6: Episode 6, you can ground it: answers from your own data. | 7: And Episode 7, you can ship it: a real agent, with a real framework.">
+  <div class="eyebrow">Your knowledge level</div>
+  <h1>Every episode is <em>one step up</em></h1>
+  <div class="stairs abs" id="stairs4"></div>
+  <div class="base abs"></div>
+  <div class="startlab abs k"><span class="chip ok" style="font-size:16px;padding:6px 10px;margin-right:12px">You are here</span>you know some Java and you've used ChatGPT</div>
+</section>
+
+<!-- ============ 4 · CLOSE ============ -->
+<section class="slide" id="s6" data-steps="1" data-label="Where you finish"
+ data-notes="Step 0: So by Episode 7, you won't just use AI. You'll build agents in Java, and you'll know how every piece works underneath. | 1: And all you need is basic Java, a laptop and Ollama, which is free. No ML math, no paid API key. So let's begin. First question: what is AI, really? Instead of starting with definitions, let's teach a computer something ourselves, with Google's Teachable Machine.">
+  <div class="eyebrow">By Episode 7</div>
+  <h1>You don't just use AI.<br><em>You build it.</em></h1>
+  <div class="sub">An agent in Java with tools, MCP and your own data, and you know how every piece works.</div>
+  <div class="need b" data-s="1"><span class="lead">All you need:</span><span class="chip">Java basics</span><span class="chip">a laptop</span><span class="chip">Ollama (free)</span><span class="chip ok">no ML math</span><span class="chip ok">no paid API key</span></div>
+  <div class="next b" data-s="1">
+    <div class="box"><div class="k">Starting now · Episode 1</div><div class="t">The AI Map</div></div>
+    <div class="series"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+</section>
+
+<div class="progress" id="prog"></div>
+</div>
+<div class="hint" id="hint">→ / click: next · ← back · N: notes · H: hide · 1–4: jump</div>
+<div id="notes"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const EPS=[
+ {t:'The AI Map',s:'Where ML, LLMs and agents fit in the world of AI',
+  c:['Rules vs. learning: teaching a computer by example','AI → ML → deep learning → generative AI → LLMs','Training a model vs. using a model','Where AI agents sit on the map'],
+  b:'Teach a computer a pattern by example, no rules written',k:['concepts','no setup'],
+  take:'AI is a model that learned patterns from examples. Not magic.',lv:'Can <span>name it</span>'},
+ {t:'How an LLM “thinks”',s:'What happens between your prompt and its answer',
+  c:['Tokens: how text becomes numbers','Next-token prediction, one token at a time','Training leaves a file of weights','Temperature, context window, and why it hallucinates'],
+  b:'Watch a model pick its next token, step by step',k:['concepts','tokens','weights'],
+  take:'An LLM predicts the next token. It doesn’t look things up.',lv:'Can <span>explain it</span>'},
+ {t:'Talking to an LLM with code',s:'Your first API call, in Java, to a model on your own laptop',
+  c:['Run a model locally with Ollama','Call its REST API from Java','System, user and assistant messages','The model remembers nothing: you resend the history'],
+  b:'A Java program that chats with a local LLM',k:['Java HttpClient','Ollama','/api/chat','JSON'],
+  take:'The model only knows what’s in the window. Your code decides what goes in.',lv:'Can <span>call it</span>'},
+ {t:'Giving the LLM hands',s:'From a model that talks to an agent that acts',
+  c:['Why an LLM alone can only talk','Tool calling: describe a Java method to the model','The agent loop: think → act → observe → repeat','Stop conditions and step limits'],
+  b:'Your first agent, from scratch, no framework',k:['tool schema','while loop','Java methods'],
+  take:'Agent = LLM + tools + a loop.',lv:'Can <span>build it</span>'},
+ {t:'MCP: plug-and-play tools',s:'One standard way to connect tools to any AI app',
+  c:['The problem: every app wires its own tools','MCP clients, servers, tools and resources','Build an MCP server with the Java MCP SDK','Plug it into your agent and other MCP apps'],
+  b:'An MCP server in Java that any MCP client can use',k:['Java MCP SDK','stdio / HTTP','MCP client'],
+  take:'Write a tool once. Every MCP-ready app can use it.',lv:'Can <span>connect it</span>'},
+ {t:'RAG: give the agent your knowledge',s:'Answers from your documents, not from guesses',
+  c:['Why the model doesn’t know your data','Chunking and embeddings','Vector search: find the closest chunks','Answer with sources, or say “I don’t know”'],
+  b:'A Q&A agent over your own documents',k:['embeddings','vector store','top-k search'],
+  take:'Search first, then answer from what you found.',lv:'Can <span>ground it</span>'},
+ {t:'From demo to real agent',s:'Everything together, with LangChain4j',
+  c:['Why 10 lines of demo become 500 lines of real app','LangChain4j: AI services, @Tool and chat memory','Tools + MCP + RAG in one agent','Errors, retries, limits and logging'],
+  b:'The full agent, rebuilt the way real apps are built',k:['LangChain4j','AiServices','@Tool','ChatMemory'],
+  take:'Frameworks save the boilerplate. You already know what’s underneath.',lv:'Can <span>ship it</span>'}
+];
+const VERBS=['Name it','Explain it','Call it','Build it','Connect it','Ground it','Ship it'];
+const WHAT=['Every AI term has a place','How an LLM picks its next word','From your own Java code','Your first agent, from scratch','Tools any AI app can plug in','Answers from your own data','A real agent, real framework'];
+
+/* build S3 list + S4 stairs */
+$('#stairs4').innerHTML=VERBS.map((v,i)=>`<div class="stp" data-i="${i}"><div class="lab"><div class="v">${v}</div><div class="w">${WHAT[i]}</div></div><div class="bar" data-h="${110+i*58}"><span>EP ${i+1}</span></div></div>`).join('');
+function s4(step){
+  document.querySelectorAll('#stairs4 .stp').forEach(el=>{const i=+el.dataset.i,on=i<step;el.classList.toggle('in',on);el.classList.toggle('top',on&&i===step-1);const b=el.querySelector('.bar');b.style.height=on?b.dataset.h+'px':'0'});
+}
+
+/* ---------- deck engine (same controls as Ep 3) ---------- */
+let RUN=0;
+function countTo(el,to,ms,suffix,tok){const t0=performance.now();(function f(t){if(tok!==RUN)return;const k=Math.min(1,(t-t0)/ms),e=1-Math.pow(1-k,3);el.textContent=Math.round(to*e)+suffix;if(k<1)requestAnimationFrame(f)})(t0)}
+const PX=1640/30;
+function s1(step){
+  const tok=++RUN;
+  $('#f1').style.width=step>=1?'100%':'0';
+  if(step===1){countTo($('#n1'),30,1600,' hrs',tok);setTimeout(()=>{if(tok===RUN)$('#n1').textContent='30+ hrs'},1700)}else $('#n1').textContent=step>=1?'30+ hrs':'0 hrs';
+  if(step>=1&&step!==1)$('#n1').textContent='30+ hrs';
+  $('#f2').style.width=step>=2?(PX*4)+'px':'0';
+  if(step===2){$('#n2').textContent='0 hrs';setTimeout(()=>{if(tok===RUN)countTo($('#n2'),4,900,' hrs',tok)},350);setTimeout(()=>{if(tok===RUN)$('#n2').textContent='< 4 hrs'},1400)}
+  else $('#n2').textContent=step>=2?'< 4 hrs':'0 hrs';
+  $('#f3').style.width=step>=3?(1640-PX*4)+'px':'0';
+}
+const HOOKS={s1,s4};
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0,step=0;
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);$('#stage').style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener('resize',fit);fit();
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('on',i===cur));
+  const s=slides[cur];
+  s.querySelectorAll('[data-s]').forEach(e=>e.classList.toggle('in',+e.dataset.s<=step));
+  if(HOOKS[s.id])HOOKS[s.id](step);
+  $('#prog').style.width=((cur+(step/(+s.dataset.steps+1)))/slides.length*100)+'%';
+  const n=s.dataset.notes.split('|').map(x=>x.trim());
+  $('#notes').innerHTML=`<b>${cur+1}/${slides.length} · ${s.dataset.label} · step ${step}/${s.dataset.steps}</b><br>`+n.map((x,i)=>i===step?`<span style="color:var(--white)">▶ ${x}</span>`:`<span style="opacity:.55">${x}</span>`).join('<br>');
+  try{history.replaceState(null,'','#'+(cur+1))}catch(e){}
+}
+function next(){const max=+slides[cur].dataset.steps;if(step<max)step++;else if(cur<slides.length-1){cur++;step=0}else return;render()}
+function prev(){if(step>0)step--;else if(cur>0){cur--;step=+slides[cur].dataset.steps}else return;render()}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next()}
+  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
+  else if(e.key==='n'||e.key==='N'){const n=$('#notes');n.style.display=n.style.display==='block'?'none':'block'}
+  else if(e.key==='h'||e.key==='H'){const h=$('#hint');h.style.display=h.style.display==='none'?'block':'none'}
+  else if(/^[1-9]$/.test(e.key)&&+e.key<=slides.length){cur=+e.key-1;step=0;render()}
+});
+document.addEventListener('click',e=>{if(e.target.closest('#notes'))return;next()});
+const m=location.hash.match(/^#(\d+)/);cur=m?Math.min(slides.length-1,Math.max(0,+m[1]-1)):0;
+render();
+</script>

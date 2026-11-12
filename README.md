@@ -17,6 +17,7 @@ Every episode has slides, and from Episode 3 on, every episode has a Java lab yo
 
 | # | Episode | Type | Slides | Code / Lab |
 |---|---|---|---|---|
+| 0 | **The Roadmap** — the whole series in 3 acts, 7 stops, under 4 hours | Series intro | [Open slides](https://kagitha-dev.github.io/zero-to-ai-agent/episodes/ep00-series-roadmap/slides/ep00-series-roadmap-slides.html) | [ep00](episodes/ep00-series-roadmap) |
 | 1 | **The AI Map** — AI vs ML vs neural networks vs GenAI vs LLMs | Foundations | [Open slides](https://kagitha-dev.github.io/zero-to-ai-agent/episodes/ep01-the-ai-map/slides/ep01-what-is-ai-slides.html) | [Teachable Machine lab](episodes/ep01-the-ai-map) |
 | 2 | **How an LLM actually "thinks"** — tokens, weights, embeddings, next-token prediction | Foundations | [PDF](episodes/ep02-how-an-llm-thinks/slides/ep02-how-an-llm-thinks.pdf) · [PPTX](episodes/ep02-how-an-llm-thinks/slides/ep02-how-an-llm-thinks.pptx) | [Tiny LLM Lab](https://kagitha-dev.github.io/tiny-llm-lab/) (browser) |
 | 3 | **Talking to an LLM with code** — your first API call in Java, with Ollama | Java lab | [Open slides](https://kagitha-dev.github.io/zero-to-ai-agent/episodes/ep03-talking-to-llm-java-ollama/slides/ep03-ollama-java-slides.html) | [ep03 code](episodes/ep03-talking-to-llm-java-ollama) |
@@ -24,6 +25,8 @@ Every episode has slides, and from Episode 3 on, every episode has a Java lab yo
 | 5 | **MCP: plug-and-play tools** — the official Java MCP SDK | Java lab | coming soon | [ep05](episodes/ep05-mcp-java-sdk) |
 | 6 | **RAG: giving the agent your knowledge** — embeddings and vector search | Java lab | coming soon | [ep06](episodes/ep06-rag-java) |
 | 7 | **From demo to real agent** — LangChain4j + Spring Boot | Java lab | coming soon | [ep07](episodes/ep07-langchain4j-agent) |
+
+New here? Start with **[Ep 0 · The Roadmap](episodes/ep00-series-roadmap)**: what each episode covers and how your level climbs from one to the next.
 
 Each episode folder has its own README with what it covers, what you need, and how to run it.
 
@@ -84,6 +87,7 @@ Or open the repo in IntelliJ IDEA (**File → Open → `pom.xml`**) and press **
 zero-to-ai-agent/
 ├── pom.xml                                  Maven parent: one module per Java episode
 ├── episodes/
+│   ├── ep00-series-roadmap/                 slides (HTML): the series intro, start here
 │   ├── ep01-the-ai-map/                     slides (HTML)
 │   ├── ep02-how-an-llm-thinks/              slides (PPTX + PDF); lab lives in its own repo, tiny-llm-lab
 │   ├── ep03-talking-to-llm-java-ollama/     slides (HTML) + Java lab

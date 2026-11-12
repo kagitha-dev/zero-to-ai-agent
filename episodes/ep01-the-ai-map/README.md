@@ -35,4 +35,4 @@ Then break it: move your left hand to the right side of the frame. The model say
 
 ## Next
 
-[Ep 2 · How an LLM actually "thinks" →](../ep02-how-an-llm-thinks)
+[← Ep 0 · The Roadmap](../ep00-series-roadmap) · [Ep 2 · How an LLM actually "thinks" →](../ep02-how-an-llm-thinks)
