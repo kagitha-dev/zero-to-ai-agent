@@ -262,6 +262,63 @@ h1 em{font-style:normal;color:var(--accent)}
 #s9 .flow9 .nd.dk{background:var(--navy);color:#fff;border-color:var(--navy)}
 #s9 .flow9 .ar{color:var(--b4);font-size:34px}
 
+/* ===== S5b · four ways to work with Ollama ===== */
+#s5b h1{font-size:64px}
+#s5b .ways{left:140px;top:290px;width:1640px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.way{height:480px;padding:24px 24px 22px;display:flex;flex-direction:column}
+.way .num{display:flex;justify-content:space-between;align-items:center}
+.way .num b{font:600 18px var(--f-mono);color:#fff;background:var(--accent);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.way .t{font-family:var(--f-display);font-weight:700;font-size:34px;margin:12px 0 4px;line-height:1.1}
+.way .s{font:500 18px var(--f-mono);color:var(--muted)}
+.way .viz{margin-top:18px;height:190px;border-radius:14px;overflow:hidden;position:relative}
+.way .good{margin-top:auto;font-size:21px;color:var(--ink2);line-height:1.4;border-top:2px solid var(--line);padding-top:14px}
+.way .good b{font:500 15px var(--f-mono);letter-spacing:.12em;color:var(--accent);display:block;margin-bottom:4px}
+.vz-term{background:var(--term);color:var(--term-ink);font:500 18px/1.6 var(--f-mono);padding:16px 18px}
+.vz-term .pr{color:#7BE0A3}.vz-term .dim{color:#8592A8}.vz-term .hl{color:#fff}
+.vz-app{background:#fff;border:2px solid var(--line)}
+.vz-app .bar{height:34px;background:var(--b1);display:flex;align-items:center;gap:7px;padding:0 12px}
+.vz-app .bar i{width:11px;height:11px;border-radius:50%;background:var(--b3);display:block}
+.vz-app .bar span{margin-left:auto;font:500 14px var(--f-mono);color:var(--ink2);background:#fff;border:1px solid var(--b3);border-radius:6px;padding:2px 8px}
+.vz-app .bu{position:absolute;right:14px;top:46px;max-width:230px;background:var(--navy);color:#fff;font-size:17px;padding:9px 13px;border-radius:12px}
+.vz-app .ba{position:absolute;left:14px;top:90px;max-width:260px;background:var(--bg);border:1px solid var(--line);font-size:16px;line-height:1.3;padding:8px 12px;border-radius:12px;color:var(--ink)}
+.vz-app .inp{position:absolute;left:14px;right:14px;bottom:10px;height:28px;border:1px solid var(--b3);border-radius:8px;font:500 14px var(--f-mono);color:var(--muted);padding:4px 10px}
+.vz-pm{background:#fff;border:2px solid var(--line);padding:14px 16px}
+.vz-pm .url{display:flex;gap:8px;align-items:center;font:500 16px var(--f-mono)}
+.vz-pm .url .m{background:#FFE9A8;color:#8A6A00;font-weight:600;padding:5px 9px;border-radius:7px}
+.vz-pm .url .u{flex:1;border:1px solid var(--b3);border-radius:7px;padding:5px 8px;white-space:nowrap;overflow:hidden}
+.vz-pm .tabs{display:flex;gap:14px;margin:12px 0 6px;font:500 14px var(--f-mono);color:var(--muted)}
+.vz-pm .tabs .on{color:var(--accent);border-bottom:2px solid var(--accent)}
+.vz-pm pre{margin:0;font:500 15px/1.45 var(--f-mono);color:var(--ink)}
+.vz-pm pre .key,.vz-code .key{color:var(--accent)}
+.vz-code{background:var(--term);color:var(--term-ink);font:500 16px/1.55 var(--f-mono);padding:14px 16px;white-space:pre}
+.vz-code .kw{color:#8FB3EE}.vz-code .st{color:#7BE0A3}.vz-code .dim{color:#8592A8}
+#s5b .flowb{left:140px;top:800px;width:1640px;display:flex;align-items:center;gap:18px;font:600 24px var(--f-mono)}
+#s5b .flowb .nd{padding:14px 22px;border-radius:12px;background:var(--card);border:2px solid var(--line)}
+#s5b .flowb .nd.dk{background:var(--navy);color:#fff;border-color:var(--navy)}
+#s5b .flowb .ar{color:var(--b4);font-size:30px}
+
+/* ===== S9b · three roles ===== */
+#s9b h1{font-size:64px}
+#s9b .roles{left:140px;top:290px;width:780px;display:flex;flex-direction:column;gap:20px}
+.role{padding:20px 26px;border-left:8px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:4px 20px;align-items:start}
+.role .rn{font:600 22px var(--f-mono);padding:6px 14px;border-radius:9px;justify-self:start}
+.role .who{font:500 16px var(--f-mono);letter-spacing:.1em;color:var(--muted);text-transform:uppercase;align-self:center}
+.role .t{grid-column:1 / -1;font-family:var(--f-display);font-weight:700;font-size:34px;margin-top:8px}
+.role .d{grid-column:1 / -1;font-size:22px;color:var(--ink2);line-height:1.4}
+.role.sys{border-left-color:var(--navy)}.role.sys .rn{background:var(--navy);color:#fff}
+.role.usr{border-left-color:var(--accent)}.role.usr .rn{background:var(--accent-soft);color:var(--accent)}
+.role.ast{border-left-color:var(--ok)}.role.ast .rn{background:var(--ok-soft);color:var(--ok)}
+#s9b .json{left:1000px;top:290px;width:780px;height:590px;padding:24px 28px}
+#s9b .json .top{display:flex;justify-content:space-between;align-items:baseline}
+#s9b .json .ep{font:600 18px var(--f-mono);color:var(--ink2)}
+#s9b .json .code{font:500 21px/1.5 var(--f-mono);color:var(--ink);margin-top:14px;white-space:pre}
+#s9b .json .key{color:var(--accent)}
+#s9b .json .mb{border-left:5px solid var(--line);padding:6px 0 6px 14px;margin:8px 0 8px 26px;border-radius:4px}
+#s9b .json .mb.sys{border-color:var(--navy);background:#EEF1F6}
+#s9b .json .mb.usr{border-color:var(--accent);background:var(--accent-soft)}
+#s9b .json .mb.ast{border-color:var(--ok);background:var(--ok-soft)}
+#s9b .json .note{font:500 15px var(--f-mono);letter-spacing:.06em;color:var(--muted);margin:2px 0 0 26px}
+
 
 /* ===== S10-S14 · stateless ===== */
 #s10 h1,#s11 h1,#s12 h1,#s13 h1,#s14 h1{font-size:64px}
@@ -520,6 +577,48 @@ h1 em{font-style:normal;color:var(--accent)}
   <div class="statement b" data-s="7" style="bottom:50px"><span class="tag">REMEMBER</span>Your code never opens the model file. It only talks HTTP to Ollama.</div>
 </section>
 
+<!-- ============ 5b · FOUR WAYS TO WORK WITH OLLAMA ============ -->
+<section class="slide" id="s5b" data-steps="5" data-label="Four ways to use Ollama"
+ data-notes="Step 0: So how will we actually talk to Ollama in this session? Four ways. | 1: One: the command line. Open a terminal, type ollama run, and chat. Also how we download, list and remove models. | 2: Two: the Ollama desktop app. A normal chat window. Pick a model from the dropdown and type. No commands needed. | 3: Three: Postman. We call the REST API directly and see the raw JSON going in and coming out. | 4: Four: code. Java sends that same JSON with HttpClient. This is how real apps are built. | 5: And all four talk to the same Ollama, at the same address: localhost 11434. Different doors, one server.">
+  <div class="eyebrow">In this session</div>
+  <h1>Four ways we'll work with Ollama</h1>
+  <div class="ways abs">
+    <div class="card way b" data-s="1">
+      <div class="num"><span class="k">Way 1</span><b>1</b></div>
+      <div class="t">CLI</div><div class="s">command prompt</div>
+      <div class="viz vz-term"><div><span class="pr">$</span> ollama run qwen3.5:4b</div><div class="hl">&gt;&gt;&gt; Explain RAG</div><div>RAG looks up facts</div><div>first, then answers.</div><div class="dim">&gt;&gt;&gt; /bye</div></div>
+      <div class="good"><b>GOOD FOR</b>Quick tests. Pulling, listing and removing models.</div>
+    </div>
+    <div class="card way b" data-s="2">
+      <div class="num"><span class="k">Way 2</span><b>2</b></div>
+      <div class="t">Desktop app</div><div class="s">Ollama's chat window</div>
+      <div class="viz vz-app"><div class="bar"><i></i><i></i><i></i><span>qwen3.5:4b ▾</span></div><div class="bu">Explain RAG</div><div class="ba">RAG looks up facts first, then answers.</div><div class="inp">Send a message</div></div>
+      <div class="good"><b>GOOD FOR</b>Chatting with a model. No commands to type.</div>
+    </div>
+    <div class="card way b" data-s="3">
+      <div class="num"><span class="k">Way 3</span><b>3</b></div>
+      <div class="t">Postman</div><div class="s">REST API · by hand</div>
+      <div class="viz vz-pm"><div class="url"><span class="m">POST</span><span class="u">localhost:11434/api/chat</span></div><div class="tabs"><span>Params</span><span>Headers</span><span class="on">Body</span></div><pre>{ <span class="key">"model"</span>: "qwen3.5:4b",
+  <span class="key">"messages"</span>: [ … ],
+  <span class="key">"stream"</span>: false }</pre></div>
+      <div class="good"><b>GOOD FOR</b>Seeing the raw JSON that goes in and comes out.</div>
+    </div>
+    <div class="card way b" data-s="4">
+      <div class="num"><span class="k">Way 4</span><b>4</b></div>
+      <div class="t">Code</div><div class="s">Java · HttpClient</div>
+      <div class="viz vz-code"><span class="kw">var</span> req = HttpRequest
+  .newBuilder(URI.create(
+    <span class="st">"…:11434/api/chat"</span>))
+  .POST(ofString(json))
+  .build();
+<span class="dim">// same JSON as Postman</span></div>
+      <div class="good"><b>GOOD FOR</b>Building real apps. Where this series is headed.</div>
+    </div>
+  </div>
+  <div class="flowb abs b" data-s="5"><div class="nd">CLI · App · Postman · Code</div><div class="ar">→</div><div class="nd dk">localhost:11434</div><div class="ar">→</div><div class="nd dk">Ollama</div><div class="ar">→</div><div class="nd">qwen3.5:4b</div></div>
+  <div class="statement b" data-s="5"><span class="tag">IN ONE LINE</span>Four doors. One Ollama behind all of them.</div>
+</section>
+
 <!-- ============ 6 · COMMANDS ============ -->
 <section class="slide" id="s6" data-steps="6" data-auto="1:2200,3:3200,5:2600" data-label="Commands"
  data-notes="Step 0: Five commands you need, plus one bonus. Watch the right side: what's on disk and what's in memory. | 1: ollama --version: is it installed? | 2: ollama run qwen3.5:4b. First time, it downloads the model, then opens a chat. Now the model is on disk AND loaded in memory. Type /bye to leave. | 3: ollama list: every model on your disk, with its size. | 4: Bonus: ollama ps shows what's loaded in memory right now, and until when. | 5: ollama stop: unloads it from memory. Still on disk, so next run starts without downloading. | 6: ollama rm: deletes it from disk. Frees the 3.4 GB. (Output values here are examples; yours will differ.)">
@@ -588,6 +687,35 @@ h1 em{font-style:normal;color:var(--accent)}
   </div>
   <div class="flow9 abs b" data-s="3"><div class="nd">Java code</div><div class="ar">→</div><div class="nd dk">localhost:11434</div><div class="ar">→</div><div class="nd dk">Ollama</div><div class="ar">→</div><div class="nd">qwen3.5:4b</div></div>
   <div class="foot b" data-s="3"><span class="tag">LATER</span>RAG, MCP and agents all build on this same setup.</div>
+</section>
+
+<!-- ============ 9b · THREE ROLES ============ -->
+<section class="slide" id="s9b" data-steps="4" data-label="Three roles"
+ data-notes="Step 0: Before we write code, one thing about the messages list. Every message has a role. There are three. | 1: System: the rules. You, the developer, write it once at the top. Who the bot is, its tone, its limits. The person chatting never sees it. | 2: User: what the person types. The question. | 3: Assistant: what the model answered. When we send the history back, the model's old replies go in with this role. | 4: Read the statement. In Java, each of these is just one Message in our list.">
+  <div class="eyebrow">Inside the messages list</div>
+  <h1>Three roles: <em>system</em>, <em>user</em>, <em>assistant</em></h1>
+  <div class="roles abs">
+    <div class="card role sys b" data-s="1"><span class="rn">system</span><span class="who">written by you</span><div class="t">The rules</div><div class="d">Who the bot is, its tone, its limits. Set once, at the top. The person never sees it.</div></div>
+    <div class="card role usr b" data-s="2"><span class="rn">user</span><span class="who">written by the person</span><div class="t">The question</div><div class="d">What the person types into the chat.</div></div>
+    <div class="card role ast b" data-s="3"><span class="rn">assistant</span><span class="who">written by the model</span><div class="t">The answer</div><div class="d">The model's reply. Sent back as history on the next request.</div></div>
+  </div>
+  <div class="card json abs">
+    <div class="top"><span class="k">Request · you send</span><span class="ep">POST /api/chat</span></div>
+<div class="code">{
+  <span class="key">"model"</span>: "qwen3.5:4b",
+  <span class="key">"messages"</span>: [</div>
+    <div class="mb sys b code" data-s="1" style="margin-top:0">{ <span class="key">"role"</span>: "system",
+  <span class="key">"content"</span>: "You are a friendly tutor.
+     Answer in two lines." }</div>
+    <div class="mb usr b code" data-s="2" style="margin-top:0">{ <span class="key">"role"</span>: "user",
+  <span class="key">"content"</span>: "Explain RAG" }</div>
+    <div class="mb ast b code" data-s="3" style="margin-top:0">{ <span class="key">"role"</span>: "assistant",
+  <span class="key">"content"</span>: "RAG looks up facts first,
+     then answers using them." }</div>
+<div class="code" style="margin-top:0">  ]
+}</div>
+  </div>
+  <div class="statement b" data-s="4"><span class="tag">IN ONE LINE</span>System sets the rules. User asks. Assistant answers.</div>
 </section>
 
 
