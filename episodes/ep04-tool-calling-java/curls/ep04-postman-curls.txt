@@ -1,0 +1,554 @@
+EP 4 · POSTMAN / CURL REQUESTS
+==============================
+
+How to use
+- Postman: Import > Raw text > paste ONE curl command (from "curl" to the last quote) > Import > Send.
+- Terminal: paste into bash, zsh or Git Bash. (Windows cmd needs different quoting: use Postman or Git Bash.)
+- Ollama must be running, with the model pulled:  ollama pull qwen3.5:4b
+
+These requests replay the agent from the slides, one request at a time.
+Requests 3 to 5 contain a history with example tool calls. Your model may ask for slightly
+different steps: that's fine. To follow your own run, copy the "message" from each reply into
+the next request's "messages", then add a {"role": "tool", ...} message with the result.
+
+
+=====================================================================
+0 · Is Ollama running? Does the model support tools?
+=====================================================================
+
+curl http://localhost:11434
+
+ollama show qwen3.5:4b
+   -> look for "tools" under Capabilities
+
+
+=====================================================================
+1 · The LLM alone (no tools)
+=====================================================================
+Expect: an answer in text. It can't read Trends.txt or save files.
+
+curl --location 'http://localhost:11434/api/chat' \
+--header 'Content-Type: application/json' \
+--data '{
+  "model": "qwen3.5:4b",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, and save each article as its own .md file in the articles folder.\nConditions: skip topics I have already written, and merge similar topics into one article."
+    }
+  ],
+  "think": false,
+  "stream": false,
+  "options": {
+    "temperature": 0,
+    "seed": 42
+  }
+}'
+
+
+=====================================================================
+2 · Same job, now with tools
+=====================================================================
+Expect: "content": "" and "tool_calls": read_file(path="Trends.txt").
+The LLM asks. It doesn't run anything.
+
+curl --location 'http://localhost:11434/api/chat' \
+--header 'Content-Type: application/json' \
+--data '{
+  "model": "qwen3.5:4b",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an article-writing agent working on my computer.\nYou cannot see any file unless you use a tool. Use the tools to do the whole job, one step at a time.\nWhen the job is finished, reply with a one-line summary and no tool call."
+    },
+    {
+      "role": "user",
+      "content": "Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, and save each article as its own .md file in the articles folder.\nConditions: skip topics I have already written, and merge similar topics into one article."
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "read_file",
+        "description": "Read a text file from my computer and return its content. Example path: Trends.txt",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "The file path, for example Trends.txt"
+            }
+          },
+          "required": [
+            "path"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_files",
+        "description": "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "description": "The folder name, for example articles"
+            }
+          },
+          "required": [
+            "folder"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "save_file",
+        "description": "Save one article as a new markdown file in the articles folder. Fails if the file already exists.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The file name, for example rag.md"
+            },
+            "content": {
+              "type": "string",
+              "description": "The full article, in markdown"
+            }
+          },
+          "required": [
+            "name",
+            "content"
+          ]
+        }
+      }
+    }
+  ],
+  "think": false,
+  "stream": false,
+  "options": {
+    "temperature": 0,
+    "seed": 42
+  }
+}'
+
+
+=====================================================================
+3 · Send the read_file result back
+=====================================================================
+History = request 2 + the LLM's tool call + a "tool" message with the file content.
+Expect: tool_calls: list_files(folder="articles").
+
+curl --location 'http://localhost:11434/api/chat' \
+--header 'Content-Type: application/json' \
+--data '{
+  "model": "qwen3.5:4b",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an article-writing agent working on my computer.\nYou cannot see any file unless you use a tool. Use the tools to do the whole job, one step at a time.\nWhen the job is finished, reply with a one-line summary and no tool call."
+    },
+    {
+      "role": "user",
+      "content": "Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, and save each article as its own .md file in the articles folder.\nConditions: skip topics I have already written, and merge similar topics into one article."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "read_file",
+            "arguments": {
+              "path": "Trends.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_name": "read_file",
+      "content": "RAG\nMCP\nModel Context Protocol\nTokens\n"
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "read_file",
+        "description": "Read a text file from my computer and return its content. Example path: Trends.txt",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "The file path, for example Trends.txt"
+            }
+          },
+          "required": [
+            "path"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_files",
+        "description": "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "description": "The folder name, for example articles"
+            }
+          },
+          "required": [
+            "folder"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "save_file",
+        "description": "Save one article as a new markdown file in the articles folder. Fails if the file already exists.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The file name, for example rag.md"
+            },
+            "content": {
+              "type": "string",
+              "description": "The full article, in markdown"
+            }
+          },
+          "required": [
+            "name",
+            "content"
+          ]
+        }
+      }
+    }
+  ],
+  "think": false,
+  "stream": false,
+  "options": {
+    "temperature": 0,
+    "seed": 42
+  }
+}'
+
+
+=====================================================================
+4 · Send the list_files result back
+=====================================================================
+The folder has tokens.md, so the LLM should skip Tokens.
+Expect: tool_calls: save_file(name="rag.md", ...) and then mcp.md (one file for both MCP lines).
+The article text is in the "content" argument.
+
+curl --location 'http://localhost:11434/api/chat' \
+--header 'Content-Type: application/json' \
+--data '{
+  "model": "qwen3.5:4b",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an article-writing agent working on my computer.\nYou cannot see any file unless you use a tool. Use the tools to do the whole job, one step at a time.\nWhen the job is finished, reply with a one-line summary and no tool call."
+    },
+    {
+      "role": "user",
+      "content": "Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, and save each article as its own .md file in the articles folder.\nConditions: skip topics I have already written, and merge similar topics into one article."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "read_file",
+            "arguments": {
+              "path": "Trends.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_name": "read_file",
+      "content": "RAG\nMCP\nModel Context Protocol\nTokens\n"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "list_files",
+            "arguments": {
+              "folder": "articles"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_name": "list_files",
+      "content": "tokens.md"
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "read_file",
+        "description": "Read a text file from my computer and return its content. Example path: Trends.txt",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "The file path, for example Trends.txt"
+            }
+          },
+          "required": [
+            "path"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_files",
+        "description": "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "description": "The folder name, for example articles"
+            }
+          },
+          "required": [
+            "folder"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "save_file",
+        "description": "Save one article as a new markdown file in the articles folder. Fails if the file already exists.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The file name, for example rag.md"
+            },
+            "content": {
+              "type": "string",
+              "description": "The full article, in markdown"
+            }
+          },
+          "required": [
+            "name",
+            "content"
+          ]
+        }
+      }
+    }
+  ],
+  "think": false,
+  "stream": false,
+  "options": {
+    "temperature": 0,
+    "seed": 42
+  }
+}'
+
+
+=====================================================================
+5 · Send the save_file results back
+=====================================================================
+Both files saved. Expect: NO tool_calls, just a short summary in "content".
+No tool call = done. That's when the agent loop stops.
+
+curl --location 'http://localhost:11434/api/chat' \
+--header 'Content-Type: application/json' \
+--data '{
+  "model": "qwen3.5:4b",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an article-writing agent working on my computer.\nYou cannot see any file unless you use a tool. Use the tools to do the whole job, one step at a time.\nWhen the job is finished, reply with a one-line summary and no tool call."
+    },
+    {
+      "role": "user",
+      "content": "Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, and save each article as its own .md file in the articles folder.\nConditions: skip topics I have already written, and merge similar topics into one article."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "read_file",
+            "arguments": {
+              "path": "Trends.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_name": "read_file",
+      "content": "RAG\nMCP\nModel Context Protocol\nTokens\n"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "list_files",
+            "arguments": {
+              "folder": "articles"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_name": "list_files",
+      "content": "tokens.md"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "save_file",
+            "arguments": {
+              "name": "rag.md",
+              "content": "# RAG\n\n(the article the model wrote, shortened here)"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_name": "save_file",
+      "content": "saved articles/rag.md (150 words)"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "save_file",
+            "arguments": {
+              "name": "mcp.md",
+              "content": "# MCP: Model Context Protocol\n\n(the article the model wrote, shortened here)"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_name": "save_file",
+      "content": "saved articles/mcp.md (148 words)"
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "read_file",
+        "description": "Read a text file from my computer and return its content. Example path: Trends.txt",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "The file path, for example Trends.txt"
+            }
+          },
+          "required": [
+            "path"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_files",
+        "description": "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "description": "The folder name, for example articles"
+            }
+          },
+          "required": [
+            "folder"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "save_file",
+        "description": "Save one article as a new markdown file in the articles folder. Fails if the file already exists.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The file name, for example rag.md"
+            },
+            "content": {
+              "type": "string",
+              "description": "The full article, in markdown"
+            }
+          },
+          "required": [
+            "name",
+            "content"
+          ]
+        }
+      }
+    }
+  ],
+  "think": false,
+  "stream": false,
+  "options": {
+    "temperature": 0,
+    "seed": 42
+  }
+}'

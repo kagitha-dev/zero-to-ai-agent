@@ -1,0 +1,3 @@
+# Articles the agent writes while you run the lab (tokens.md is the starting file)
+workspace/articles/*
+!workspace/articles/tokens.md

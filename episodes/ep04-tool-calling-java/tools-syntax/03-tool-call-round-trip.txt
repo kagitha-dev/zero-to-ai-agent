@@ -1,0 +1,79 @@
+EP 4 · ONE TOOL CALL, ROUND TRIP
+================================
+
+The LLM never runs anything. It asks, your code runs it, the result goes back.
+
+  1 · You send      messages + "tools"
+  2 · LLM asks      reply has "tool_calls" (and usually empty "content")
+  3 · You run it    call your Java method with the arguments
+  4 · You send back the same history + the LLM's request + a "tool" message
+  ... repeat until a reply has NO tool_calls: that's the final answer.
+
+
+2 · What the LLM sends back when it wants a tool
+------------------------------------------------
+{
+  "model": "qwen3.5:4b",
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+      {
+        "function": {
+          "name": "read_file",
+          "arguments": { "path": "Trends.txt" }      <- already a JSON object, not a string
+        }
+      }
+    ]
+  },
+  "done": true
+}
+
+Notes
+- "tool_calls" is an array: one reply can ask for more than one tool. Run them all.
+- Newer Ollama versions may add extra fields to each call (like "type" or "index").
+  Just send the whole message back as it came.
+
+
+4a · Add the LLM's request to the history, exactly as it came
+-------------------------------------------------------------
+{ "role": "assistant", "content": "", "tool_calls": [ { "function": { "name": "read_file", "arguments": { "path": "Trends.txt" } } } ] }
+
+
+4b · Add the result as a "tool" message
+---------------------------------------
+{ "role": "tool", "tool_name": "read_file", "content": "RAG\nMCP\nModel Context Protocol\nTokens\n" }
+
+- "tool_name" tells the LLM which tool this result belongs to.
+- "content" is always text. Errors too: "error: file not found: notes.txt"
+  (don't crash: let the LLM read the error and decide).
+
+
+The final reply (no tool_calls = done)
+--------------------------------------
+{
+  "message": {
+    "role": "assistant",
+    "content": "Done. Wrote rag.md and mcp.md, skipped Tokens (already written), merged the two MCP lines."
+  },
+  "done": true
+}
+
+
+The whole history after the agent finishes
+------------------------------------------
+system     You are an article-writing agent ...
+user       Read Trends.txt. Write one short article ...
+assistant  tool_calls: read_file(path="Trends.txt")
+tool       RAG / MCP / Model Context Protocol / Tokens
+assistant  tool_calls: list_files(folder="articles")
+tool       tokens.md
+assistant  tool_calls: save_file(name="rag.md", content="# RAG ...")
+tool       saved articles/rag.md
+assistant  tool_calls: save_file(name="mcp.md", content="# MCP ...")
+tool       saved articles/mcp.md
+assistant  Done. 2 written, 1 skipped.
+
+Every line above is sent again on every request (Ep 3: stateless), so the window grows.
+
+Field names follow the Ollama tool-calling docs: https://docs.ollama.com/capabilities/tool-calling

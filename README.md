@@ -21,7 +21,7 @@ Every episode has slides, and from Episode 3 on, every episode has a Java lab yo
 | 1 | **The AI Map** — AI vs ML vs neural networks vs GenAI vs LLMs | Foundations | [Open slides](https://kagitha-dev.github.io/zero-to-ai-agent/episodes/ep01-the-ai-map/slides/ep01-what-is-ai-slides.html) | [Teachable Machine lab](episodes/ep01-the-ai-map) |
 | 2 | **How an LLM actually "thinks"** — tokens, weights, embeddings, next-token prediction | Foundations | [PDF](episodes/ep02-how-an-llm-thinks/slides/ep02-how-an-llm-thinks.pdf) · [PPTX](episodes/ep02-how-an-llm-thinks/slides/ep02-how-an-llm-thinks.pptx) | [Tiny LLM Lab](https://kagitha-dev.github.io/tiny-llm-lab/) (browser) |
 | 3 | **Talking to an LLM with code** — your first API call in Java, with Ollama | Java lab | [Open slides](https://kagitha-dev.github.io/zero-to-ai-agent/episodes/ep03-talking-to-llm-java-ollama/slides/ep03-ollama-java-slides.html) | [ep03 code](episodes/ep03-talking-to-llm-java-ollama) |
-| 4 | **Giving the LLM hands** — tool calling | Java lab | coming soon | [ep04](episodes/ep04-tool-calling-java) |
+| 4 | **From LLM to AI agent** — tool calling: LLM + tools + loop | Java lab | [Open slides](https://kagitha-dev.github.io/zero-to-ai-agent/episodes/ep04-tool-calling-java/slides/ep04-tool-calling-agent-slides.html) | [ep04 code](episodes/ep04-tool-calling-java) |
 | 5 | **MCP: plug-and-play tools** — the official Java MCP SDK | Java lab | coming soon | [ep05](episodes/ep05-mcp-java-sdk) |
 | 6 | **RAG: giving the agent your knowledge** — embeddings and vector search | Java lab | coming soon | [ep06](episodes/ep06-rag-java) |
 | 7 | **From demo to real agent** — LangChain4j + Spring Boot | Java lab | coming soon | [ep07](episodes/ep07-langchain4j-agent) |
@@ -41,7 +41,7 @@ From there, each episode puts something new into that window:
 ```
 Context window · everything the model sees
 ├── System prompt ............ Ep 3  the standing rules
-├── Live data from tools ..... Ep 4  get_order(4521) returns the real order
+├── Results from tools ....... Ep 4  read_file, list_files, save_file: our first agent
 ├── Tools from anywhere ...... Ep 5  one standard (MCP) instead of custom glue
 ├── Your knowledge ........... Ep 6  only the paragraph that matches (RAG)
 └── All of it, production-ready  Ep 7  LangChain4j + a web chat UI

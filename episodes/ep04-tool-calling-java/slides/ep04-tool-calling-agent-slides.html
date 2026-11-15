@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ep 4 Agent Slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: fixed 1920x1080 stage scaled to fit, click-to-step slides, same system as Ep 3 deck */
+:root{
+  --bg:#F3F5F9; --ink:#152033; --ink2:#3A4659; --muted:#6B7689;
+  --accent:#2B6FD6; --accent-soft:#E3ECFA; --line:#D5DDE9;
+  --b1:#DCE6F4; --b2:#C3D4EE; --b3:#9DBBEA; --b4:#5E8FDC;
+  --card:#FBFCFD; --navy:#152033; --navy2:#22314B; --sky:#8FB3EE;
+  --ok:#1F8A4C; --ok-soft:#E2F3E9; --bad:#B4432F; --bad-soft:#FBE9E7;
+  --amber:#8A6A00; --amber-soft:#FFF4CF; --amber-hl:#FFE9A8;
+  --letterbox:#0b0f17; --term:#0F1828; --term-ink:#DCE6F4;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--letterbox);overflow:hidden;font-family:var(--f-body);color:var(--ink)}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--bg);padding:96px 140px;opacity:0;pointer-events:none;transition:opacity .5s ease;overflow:hidden}
+.slide.on{opacity:1;pointer-events:auto}
+.eyebrow{font-family:var(--f-mono);font-size:26px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase}
+h1{font-family:var(--f-display);font-weight:800;font-size:64px;line-height:1.04;letter-spacing:-.02em;margin:22px 0 0;max-width:1640px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.b{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+.b.in{opacity:1;transform:none}
+.abs{position:absolute}
+.k{font-family:var(--f-mono);font-size:19px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px}
+.statement{position:absolute;left:140px;right:140px;bottom:64px;background:var(--navy);color:#fff;border-radius:18px;padding:28px 44px;font-family:var(--f-display);font-weight:700;font-size:42px;display:flex;align-items:center;gap:24px;z-index:6}
+.statement .tag{font:500 20px var(--f-mono);letter-spacing:.16em;color:var(--sky);white-space:nowrap}
+.foot{position:absolute;left:140px;right:140px;bottom:60px;font-family:var(--f-display);font-weight:700;font-size:36px;display:flex;gap:18px;align-items:center}
+.foot .tag{font:500 20px var(--f-mono);letter-spacing:.16em;color:var(--accent);background:var(--accent-soft);padding:10px 16px;border-radius:10px;white-space:nowrap}
+.cursor{display:inline-block;width:12px;height:26px;background:var(--accent);vertical-align:-4px;margin-left:3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.hint{position:absolute;right:28px;bottom:20px;font:14px var(--f-mono);color:#9aa4b5;letter-spacing:.08em;z-index:5}
+.progress{position:absolute;left:0;bottom:0;height:5px;background:var(--accent);transition:width .4s;z-index:4}
+.chip{display:inline-block;font:500 19px var(--f-mono);letter-spacing:.08em;padding:9px 15px;border-radius:10px;background:var(--accent-soft);color:var(--accent)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.dec{background:var(--amber-soft);color:var(--amber)}
+.term{background:var(--term);border-radius:18px;color:var(--term-ink);font:500 22px/1.55 var(--f-mono);padding:22px 30px;overflow:hidden}
+.term .bar3{display:flex;gap:9px;margin-bottom:14px}
+.term .bar3 i{width:14px;height:14px;border-radius:50%;background:#3A4659;display:block}
+.term pre{margin:0;font:inherit;white-space:pre}
+.term .cm{color:#7F8CA3}
+.term .kw{color:#8FB3EE}
+.term .st{color:#7BE0A3}
+.term .ln{display:block;border-radius:6px;padding:0 8px;margin:0 -8px;transition:background .3s}
+.term .ln.on{background:#2B4470}
+.bub{border-radius:16px;padding:18px 22px;font-size:23px;line-height:1.4}
+.bub.u{background:var(--navy);color:#fff}
+.bub.a{background:var(--card);border:2px solid var(--line)}
+#auto{position:absolute;left:28px;bottom:16px;z-index:6;display:flex;align-items:center;gap:10px;font:14px var(--f-mono);letter-spacing:.08em;color:#9aa4b5}
+#auto .ring{width:90px;height:4px;border-radius:2px;background:#2a3446;overflow:hidden}
+#auto .ring i{display:block;height:100%;width:0;background:var(--sky)}
+#auto.off .ring{opacity:.3}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:rgba(10,14,22,.95);color:#dfe6f2;font:16px/1.55 var(--f-body);padding:16px 26px;display:none;z-index:9}
+#notes b{color:var(--sky);font-family:var(--f-mono);font-weight:500}
+
+/* file + folder components */
+.fcard{padding:20px 24px}
+.fcard .hd{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.fcard .ic{font:600 16px var(--f-mono);color:#fff;background:var(--accent);padding:4px 10px;border-radius:7px}
+.fcard .nm{font:600 24px var(--f-mono)}
+.tline{font:500 25px var(--f-mono);padding:8px 14px;border-radius:9px;margin-bottom:6px;transition:background .4s,color .4s,box-shadow .4s}
+.tline.hl{background:var(--amber-hl);box-shadow:0 0 0 3px #F2C94C}
+.files{display:flex;flex-wrap:wrap;gap:12px}
+.fl{font:600 21px var(--f-mono);padding:12px 16px;border-radius:11px;border:2px solid var(--b4);background:#fff;transition:all .5s}
+.fl.old{border-color:var(--line);color:var(--ink2);background:var(--card)}
+.fl.hl{background:var(--amber-hl);box-shadow:0 0 0 3px #F2C94C;border-color:#F2C94C}
+.fl.new{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.fl.ghost{opacity:0;transform:translateY(10px) scale(.95)}
+.fl.ghost.show{opacity:1;transform:none}
+
+/* ===== S1 title ===== */
+#s1{display:flex;flex-direction:column;justify-content:center}
+#s1 h1{font-size:118px;max-width:1500px}
+#s1 .sub{font-size:36px;color:var(--ink2);margin-top:30px;max-width:1300px;line-height:1.35}
+#s1 .series{margin-top:70px;display:flex;gap:16px;align-items:center;font:500 22px var(--f-mono);letter-spacing:.14em;color:var(--muted)}
+#s1 .series i{display:block;width:60px;height:10px;border-radius:5px;background:var(--b2)}
+#s1 .series i.on{background:var(--accent)}
+#s1 .eq{position:absolute;right:140px;top:110px;font:600 30px var(--f-mono);color:var(--accent);background:var(--card);border:2px solid var(--line);border-radius:14px;padding:16px 24px}
+
+/* ===== S2 where we are ===== */
+#s2 .eps{left:140px;top:290px;width:1640px;display:flex;gap:26px}
+.epc{flex:1;padding:24px 28px;min-height:190px}
+.epc .t{font-family:var(--f-display);font-weight:700;font-size:36px;margin:8px 0 8px}
+.epc .d{font-size:22px;color:var(--ink2);line-height:1.4}
+.epc .chip{margin-top:14px;font-size:16px;padding:6px 10px}
+#s2 .chat{left:140px;top:540px;width:1640px;display:flex;gap:26px;align-items:flex-start}
+#s2 .chat .bub.u{width:520px;flex:none}
+#s2 .chat .bub.a{flex:1;min-height:260px;font-size:24px}
+#s2 .chat .who{font:500 16px var(--f-mono);letter-spacing:.12em;color:var(--muted);margin-bottom:8px}
+
+/* ===== S3 goal ===== */
+#s3 .tfile{left:140px;top:290px;width:540px}
+#s3 .folder{left:140px;top:640px;width:540px}
+#s3 .folder .files{min-height:70px}
+#s3 .goal{left:760px;top:290px;width:1020px;display:flex;flex-direction:column;gap:14px}
+.task{display:flex;align-items:center;gap:22px;padding:16px 24px}
+.task .n{width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;font:600 22px var(--f-mono);display:flex;align-items:center;justify-content:center;flex:none}
+.task .t{font-family:var(--f-display);font-weight:700;font-size:32px}
+.task code{font:600 26px var(--f-mono);color:var(--accent)}
+.goalk{margin-top:14px}
+.cond{display:flex;align-items:center;gap:22px;padding:16px 24px;border-color:#F2C94C;background:#FFFBEC}
+.cond .n{width:46px;height:46px;border-radius:12px;background:var(--amber-hl);color:var(--amber);font:700 24px var(--f-mono);display:flex;align-items:center;justify-content:center;flex:none}
+.cond .t{font-family:var(--f-display);font-weight:700;font-size:32px}
+.cond .chip{margin-left:auto}
+
+/* ===== S4 llm alone ===== */
+#s4 .chatc{left:140px;top:290px;width:860px;height:580px;padding:26px 28px}
+#s4 .chatc .bub{margin-top:16px}
+#s4 .chatc .bub.u{margin-left:80px}
+#s4 .chatc .bub.a{margin-right:40px;min-height:150px}
+#s4 .caps{left:1080px;top:290px;width:700px;display:flex;flex-direction:column;gap:16px}
+.cap{display:flex;align-items:center;gap:22px;padding:20px 26px}
+.cap .mk{width:50px;height:50px;border-radius:12px;font:700 28px var(--f-mono);display:flex;align-items:center;justify-content:center;flex:none}
+.cap.y .mk{background:var(--ok-soft);color:var(--ok)}
+.cap.n .mk{background:var(--bad-soft);color:var(--bad)}
+.cap .t{font-family:var(--f-display);font-weight:700;font-size:32px}
+.cap .d{font-size:20px;color:var(--ink2);margin-top:2px}
+#s4 .ep2{left:1080px;top:800px;width:700px;font-size:22px;color:var(--ink2)}
+
+/* ===== S5 why not a program ===== */
+#s5 .code5{left:140px;top:290px;width:1000px;height:400px}
+#s5 .code5 pre{font-size:21px}
+#s5 .res5{left:1200px;top:290px;width:580px;padding:22px 24px}
+.rr{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:2px solid var(--line);font:500 21px var(--f-mono)}
+.rr:last-child{border-bottom:0}
+.rr .tp{flex:1;min-width:0}
+.rr .tp small{display:block;font-size:16px;color:var(--muted);margin-top:2px}
+.rr.badrow{background:var(--bad-soft);border-radius:10px;padding:12px;margin:0 -12px;border-bottom-color:transparent}
+#s5 .q5{left:140px;top:720px;width:1000px;padding:20px 26px;border-color:var(--bad);display:flex;gap:26px;align-items:center}
+#s5 .q5 code{font:600 21px var(--f-mono);color:var(--bad);white-space:nowrap}
+#s5 .q5 .d{font-size:23px;color:var(--ink2);line-height:1.35}
+#s5 .note5{left:1200px;top:720px;width:580px;font-size:22px;color:var(--ink2);line-height:1.4}
+
+/* ===== S6 tool calling ===== */
+#s6 .ph{left:140px;top:262px;display:flex;gap:12px}
+#s6 .ph span{font:600 20px var(--f-mono);padding:10px 16px;border-radius:10px;background:var(--b1);color:var(--muted);transition:.3s}
+#s6 .ph span.cur{background:var(--navy);color:#fff}
+#s6 .ph span.done{background:var(--accent-soft);color:var(--accent)}
+#s6 .p6{top:330px;height:540px;padding:20px 26px;overflow:hidden}
+#s6 .left6{left:140px;width:860px}
+#s6 .right6{left:1060px;width:720px;transition:background .4s,border-color .4s}
+#s6 .right6.java{background:var(--term);border-color:var(--term);color:var(--term-ink)}
+#s6 .right6.java .k{color:var(--sky)}
+#s6 .arrow6{left:1005px;top:570px;width:50px;text-align:center;font:600 40px var(--f-display);color:var(--b4)}
+#s6 pre{margin:10px 0 0;font:500 19px/1.5 var(--f-mono);white-space:pre;color:inherit}
+#s6 pre .key{color:var(--accent)}
+#s6 .right6.java pre .key{color:var(--sky)}
+#s6 pre .mk{border-radius:6px;padding:1px 4px;transition:background .4s}
+#s6 pre .mk.on{background:var(--amber-hl);color:var(--ink)}
+#s6 pre .cm{color:#7F8CA3}
+#s6 pre .st{color:#7BE0A3}
+#s6 .wait{font:500 22px var(--f-mono);color:var(--muted);margin-top:30px}
+#s6 .tip6{right:140px;top:262px}
+
+/* ===== S7 the loop ===== */
+#s7 .code7{left:140px;top:290px;width:660px;height:380px;padding:20px 26px}
+#s7 .code7 pre{font-size:20px}
+#s7 .folder7{left:140px;top:700px;width:660px;padding:18px 22px}
+#s7 .log7{left:850px;top:290px;width:930px;display:flex;flex-direction:column;gap:12px}
+.lr7{display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:center;padding:12px 18px;min-height:80px}
+.lr7 .rq{font:600 16px var(--f-mono);letter-spacing:.08em;color:var(--accent);background:var(--accent-soft);border-radius:8px;padding:6px 0;text-align:center}
+.lr7 .call{font:600 22px var(--f-mono)}
+.lr7 .out{font-size:20px;color:var(--ink2);margin-top:3px}
+.lr7 .out b{color:var(--ok);font-weight:600}
+.lr7.dec{background:#FFFBEC;border-color:#F2C94C}
+.lr7.dec .rq{background:var(--amber-hl);color:var(--amber)}
+.lr7.dec .call{font-family:var(--f-display);font-size:25px}
+.lr7.done{border-color:var(--ok);background:var(--ok-soft)}
+.lr7.done .rq{background:var(--ok);color:#fff}
+.lr7.done .call{font-family:var(--f-display);font-size:25px;color:var(--ok)}
+
+/* ===== S8 reveal ===== */
+#s8 .eqn{left:140px;top:300px;width:1640px;display:flex;align-items:center;gap:18px}
+.blk{width:340px;height:230px;flex:none;padding:26px 28px;display:flex;flex-direction:column}
+.blk .t{font-family:var(--f-display);font-weight:800;font-size:58px;letter-spacing:-.01em;margin-top:6px}
+.blk .d{font-size:22px;color:var(--ink2);line-height:1.35;margin-top:auto}
+.blk.ag{background:var(--navy);border-color:var(--navy);color:#fff}
+.blk.ag .k{color:var(--sky)}
+.blk.ag .d{color:#C9D6EA}
+.op{font:800 60px var(--f-display);color:var(--b4);width:40px;text-align:center;flex:none}
+#s8 .cmp{left:140px;top:600px;width:1640px;display:flex;gap:26px}
+.cmpc{flex:1;padding:24px 30px}
+.cmpc .t{font-family:var(--f-display);font-weight:700;font-size:36px;margin:6px 0 8px}
+.cmpc .d{font-size:24px;color:var(--ink2);line-height:1.4}
+.cmpc.ag{border-color:var(--accent);background:var(--accent-soft)}
+
+/* ===== S9 rules ===== */
+#s9 .grid9{left:140px;top:290px;width:1640px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.rule{padding:24px 30px;min-height:170px}
+.rule .t{font-family:var(--f-display);font-weight:700;font-size:36px;margin:6px 0 8px}
+.rule .d{font-size:23px;color:var(--ink2);line-height:1.4}
+.rule code{font:600 21px var(--f-mono);color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px}
+
+/* ===== S10 hands on ===== */
+#s10 .steps10{left:140px;top:300px;width:1640px;display:flex;gap:22px}
+#s10 .st{flex:1;padding:26px;min-height:330px}
+#s10 .st .t{font-family:var(--f-display);font-weight:700;font-size:34px;margin:8px 0 14px}
+#s10 .st code{font:500 18px/1.5 var(--f-mono);color:var(--accent);background:var(--accent-soft);padding:10px 12px;border-radius:8px;display:block;white-space:pre}
+#s10 .st .d{font-size:21px;color:var(--ink2);line-height:1.4;margin-top:14px}
+#s10 .flow10{left:140px;top:700px;width:1640px;display:flex;align-items:center;gap:18px;font:600 25px var(--f-mono)}
+#s10 .flow10 .nd{padding:16px 22px;border-radius:14px;background:var(--card);border:2px solid var(--line)}
+#s10 .flow10 .nd.dk{background:var(--navy);color:#fff;border-color:var(--navy)}
+#s10 .flow10 .ar{color:var(--b4);font-size:30px}
+
+@media (prefers-reduced-motion: reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+<!-- ============ 1 · TITLE ============ -->
+<section class="slide" id="s1" data-steps="0" data-label="Title"
+ data-notes="Episode 4. For three episodes we worked with the LLM: what it is, how it thinks, and how to call it from Java. Today we build something new on top of it: our first AI agent.">
+  <div class="eq">LLM + ? = AGENT</div>
+  <div class="eyebrow">AI Explained · Episode 4</div>
+  <h1>From LLM to <em>AI agent</em></h1>
+  <div class="sub">Tool calling in Java. The LLM decides, your code acts, until the job is done.</div>
+  <div class="series"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span>From zero to building an AI agent</span></div>
+</section>
+
+<!-- ============ 2 · WHERE WE ARE ============ -->
+<section class="slide" id="s2" data-steps="3" data-label="Where we are"
+ data-notes="Step 0: Quick look back. | 1: Episode 1, the AI map. Episode 2, how an LLM thinks: tokens in, next token out. Episode 3, we called it from Java, on our own laptop with Ollama. | 2: And at the end of Episode 3 we asked it: write a short article on RAG. And it did. | 3: Read the statement. So far the LLM writes when we ask. Today we want more than that.">
+  <div class="eyebrow">Episodes 1 to 3</div>
+  <h1>So far, we worked with the <em>LLM</em></h1>
+  <div class="eps abs">
+    <div class="card epc b" data-s="1"><div class="k">Episode 1</div><div class="t">The AI map</div><div class="d">Where ML, LLMs and agents fit</div><span class="chip ok">name it ✓</span></div>
+    <div class="card epc b" data-s="1" style="transition-delay:.15s"><div class="k">Episode 2</div><div class="t">How an LLM thinks</div><div class="d">Tokens in, next token out</div><span class="chip ok">explain it ✓</span></div>
+    <div class="card epc b" data-s="1" style="transition-delay:.3s"><div class="k">Episode 3</div><div class="t">Call it from Java</div><div class="d">Ollama, /api/chat, message history</div><span class="chip ok">call it ✓</span></div>
+  </div>
+  <div class="chat abs b" data-s="2">
+    <div class="bub u"><div class="who" style="color:var(--sky)">YOU · END OF EP 3</div>Write a short article on RAG.</div>
+    <div class="bub a"><div class="who">QWEN3.5:4B</div><span id="art2"></span></div>
+  </div>
+  <div class="statement b" data-s="3"><span class="tag">SO FAR</span>We ask. The LLM writes.</div>
+</section>
+
+<!-- ============ 3 · THE GOAL ============ -->
+<section class="slide" id="s3" data-steps="6" data-label="Today's goal"
+ data-notes="Step 0: Here's today's job. On my laptop there's a file, Trends.txt, with topics I want to write about. And a folder, articles, where I keep what I've written. | 1: The job has three parts. Read Trends.txt. Write one article per topic. Save each one as its own .md file. | 2: Plus two conditions. First: skip what I've already written. Tokens is in the list, but tokens.md is already in my folder. | 3: Second: merge similar topics. MCP and Model Context Protocol are the same thing. One article, not two. | 4: So the right result is two new files: rag.md and mcp.md. Tokens untouched. | 5: Notice: these two conditions aren't steps you can just follow. They're decisions. | 6: Read the statement. We want the LLM to make them.">
+  <div class="eyebrow">Episode 4 · today's job</div>
+  <h1>Write an article for every topic in <em>Trends.txt</em></h1>
+  <div class="card fcard tfile abs">
+    <div class="hd"><span class="ic">TXT</span><span class="nm">Trends.txt</span></div>
+    <div class="tline" id="tl1">RAG</div>
+    <div class="tline" id="tl2">MCP</div>
+    <div class="tline" id="tl3">Model Context Protocol</div>
+    <div class="tline" id="tl4">Tokens</div>
+  </div>
+  <div class="card fcard folder abs">
+    <div class="hd"><span class="ic" style="background:var(--navy)">DIR</span><span class="nm">articles/</span><span class="k" id="fk3" style="margin-left:auto"></span></div>
+    <div class="files"><span class="fl old" id="f3tok">tokens.md</span><span class="fl new ghost" id="f3rag">rag.md</span><span class="fl new ghost" id="f3mcp">mcp.md</span></div>
+  </div>
+  <div class="goal abs">
+    <div class="card task b" data-s="1"><span class="n">1</span><span class="t">Read <code>Trends.txt</code></span></div>
+    <div class="card task b" data-s="1" style="transition-delay:.15s"><span class="n">2</span><span class="t">Write one article per topic</span></div>
+    <div class="card task b" data-s="1" style="transition-delay:.3s"><span class="n">3</span><span class="t">Save each as its own <code>.md</code> file</span></div>
+    <div class="k goalk b" data-s="2">With two conditions</div>
+    <div class="card cond b" data-s="2"><span class="n">!</span><span class="t">Skip topics I already wrote</span><span class="chip dec b" data-s="5">DECISION</span></div>
+    <div class="card cond b" data-s="3"><span class="n">!</span><span class="t">Merge similar topics</span><span class="chip dec b" data-s="5">DECISION</span></div>
+  </div>
+  <div class="statement b" data-s="6"><span class="tag">THE POINT</span>These are decisions. We want the LLM to make them.</div>
+</section>
+
+<!-- ============ 4 · LLM ALONE ============ -->
+<section class="slide" id="s4" data-steps="3" data-label="The LLM alone"
+ data-notes="Step 0: So let's just ask the LLM, like we did in Episode 3. | 1: And here's what comes back. It can't open the file. It asks me to paste the topics, and to save the files myself. (Exact reply varies by run.) | 2: Look at what it can and can't do. It can think and write. That's all. It can't read Trends.txt, it can't look at my folder, and it can't save a file. From Episode 2: all an LLM outputs is tokens. Text. | 3: Read the statement.">
+  <div class="eyebrow">Try it with the LLM alone</div>
+  <h1>The LLM can think. It <em>can't touch</em> your computer.</h1>
+  <div class="card chatc abs">
+    <div class="k">Ollama · qwen3.5:4b</div>
+    <div class="bub u">Read Trends.txt, write an article for each topic, and save each one as a .md file in my articles folder.</div>
+    <div class="bub a b" data-s="1"><span id="rep4"></span></div>
+  </div>
+  <div class="caps abs">
+    <div class="card cap y b" data-s="2"><span class="mk">✓</span><div><div class="t">Think and write</div><div class="d">plan, judge, write the articles</div></div></div>
+    <div class="card cap n b" data-s="2" style="transition-delay:.15s"><span class="mk">✕</span><div><div class="t">Read Trends.txt</div><div class="d">it can't open files</div></div></div>
+    <div class="card cap n b" data-s="2" style="transition-delay:.3s"><span class="mk">✕</span><div><div class="t">Look at your folder</div><div class="d">it can't see what's already written</div></div></div>
+    <div class="card cap n b" data-s="2" style="transition-delay:.45s"><span class="mk">✕</span><div><div class="t">Save .md files</div><div class="d">it can't write to disk</div></div></div>
+  </div>
+  <div class="ep2 abs b" data-s="2"><span class="chip">EP 2</span>&nbsp; All an LLM outputs is tokens: text.</div>
+  <div class="statement b" data-s="3"><span class="tag">ALONE</span>It thinks and writes. Nothing more.</div>
+</section>
+
+<!-- ============ 5 · WHY NOT A PROGRAM ============ -->
+<section class="slide" id="s5" data-steps="4" data-label="Why not just a program?"
+ data-notes="Step 0: Fair question: why not just write a program? Java can read the file and save files. Call the LLM for the writing part, like Episode 3. | 1: Let's run it. RAG: written. MCP: written. Tokens: skipped, because the file exists. The program handles that one fine. | 2: But Model Context Protocol: written again. A duplicate of MCP. The program has no idea these are the same topic. | 3: How would you even write that if? No if-statement understands meaning. That takes understanding, which is the LLM's job. So the program would have to stop and ask the LLM in the middle of its own steps. | 4: Read the statement. So let's flip it.">
+  <div class="eyebrow">Fair question</div>
+  <h1>Why not just write a <em>program</em>?</h1>
+  <div class="term code5 abs"><div class="bar3"><i></i><i></i><i></i></div><pre><span class="kw">var</span> topics = Files.readAllLines(Path.of(<span class="st">"Trends.txt"</span>));
+<span class="kw">for</span> (String topic : topics) {
+    Path file = Path.of(<span class="st">"articles"</span>, slug(topic) + <span class="st">".md"</span>);
+    <span class="kw">if</span> (Files.exists(file)) <span class="kw">continue</span>;   <span class="cm">// skip what exists</span>
+    String article = llm.write(topic);    <span class="cm">// the LLM, from Ep 3</span>
+    Files.writeString(file, article);
+}</pre></div>
+  <div class="card res5 abs b" data-s="1">
+    <div class="k" style="margin-bottom:6px">Run it</div>
+    <div class="rr"><span class="tp">RAG<small>→ rag.md</small></span><span class="chip ok">written</span></div>
+    <div class="rr"><span class="tp">MCP<small>→ mcp.md</small></span><span class="chip ok">written</span></div>
+    <div class="rr" id="dup5"><span class="tp">Model Context Protocol<small>→ model-context-protocol.md</small></span><span class="chip" id="dupc5">written</span></div>
+    <div class="rr"><span class="tp">Tokens<small>→ tokens.md exists</small></span><span class="chip ok">skipped ✓</span></div>
+  </div>
+  <div class="card q5 abs b" data-s="3"><code>if (sameTopic("MCP", "Model Context Protocol"))</code><div class="d">No if-statement understands meaning. That needs the LLM.</div></div>
+  <div class="note5 abs b" data-s="2">Skipping works: the file name matches. <b>Merging doesn't:</b> it's the same topic with a different name.</div>
+  <div class="statement b" data-s="4"><span class="tag">SO</span>The decisions need the LLM. So let the LLM drive the steps.</div>
+</section>
+
+<!-- ============ 6 · TOOL CALLING ============ -->
+<section class="slide" id="s6" data-steps="4" data-label="Tool calling"
+ data-notes="Step 0: Here's how. Same /api/chat as Episode 3, one new field: tools. We describe a Java method to the LLM: its name, what it does, and what it needs. Here, read_file, which needs a path. (We send list_files and save_file the same way.) The description matters: it's how the LLM chooses a tool. | 1: Look at the reply. No article. Content is empty. Instead: tool_calls. The LLM is asking: please run read_file with path Trends.txt. | 2: The LLM can't run it. Our Java code does: one line, Files.readString. And we get the four topics. | 3: We send the result back, as a new message with role tool. Same history list as Episode 3, plus this message. And the LLM replies… with another request: list_files on the articles folder. It wants to see what's already written. | 4: Read the statement. (Field names per current Ollama docs; check your version.)">
+  <div class="eyebrow">Tool calling</div>
+  <h1>The LLM asks. <em>Your code runs it.</em></h1>
+  <div class="ph abs"><span id="ph0">1 · Describe the tool</span><span id="ph1">2 · LLM asks</span><span id="ph2">3 · Your code runs it</span><span id="ph3">4 · Send the result back</span></div>
+  <div class="card p6 left6 abs"><div class="k" id="lk6">You send · POST /api/chat</div><pre id="req6"></pre></div>
+  <div class="arrow6 abs">→</div>
+  <div class="card p6 right6 abs" id="right6"><div class="k" id="rk6">LLM replies</div><pre id="res6"></pre></div>
+  <div class="statement b" data-s="4"><span class="tag">REMEMBER</span>The LLM never runs anything. It asks, and your code runs it.</div>
+</section>
+
+<!-- ============ 7 · THE LOOP ============ -->
+<section class="slide" id="s7" data-steps="7" data-label="The loop"
+ data-notes="Step 0: One tool call isn't the whole job. So we put it in a loop. Send, and if the LLM asks for a tool, run it, add the result, send again. Let's watch the whole job. | 1: Request 1. It asks for read_file Trends.txt. Four topics come back. | 2: Request 2. It asks for list_files on articles. tokens.md comes back. | 3: Now the LLM decides. Tokens is already written: skip. MCP and Model Context Protocol: one article. Nobody wrote an if for this. (It may show this in its thinking, or just act on it.) | 4: Request 3. save_file rag.md. Our code saves it. There it is in the folder. | 5: Request 4. save_file mcp.md. One file for both MCP lines. | 6: Request 5. No tool call this time, just a final message. That's how our loop knows it's done: break. | 7: Read the statement. And look at the code: it never says read, then list, then save. The LLM chose every step.">
+  <div class="eyebrow">Put it in a loop</div>
+  <h1>Ask, run, send back. <em>Until it's done.</em></h1>
+  <div class="term code7 abs"><div class="bar3"><i></i><i></i><i></i></div><pre><span class="ln" id="c7a"><span class="kw">while</span> (<span class="kw">true</span>) {</span><span class="ln" id="c7b">  reply = ollama.chat(messages, tools);</span><span class="ln" id="c7c">  <span class="kw">if</span> (reply.toolCalls().isEmpty()) <span class="kw">break</span>; <span class="cm">// done</span></span><span class="ln" id="c7d">  <span class="kw">for</span> (call : reply.toolCalls()) {</span><span class="ln" id="c7e">    result = run(call);       <span class="cm">// your Java method</span></span><span class="ln" id="c7f">    messages.add(toolMessage(result));</span><span class="ln" id="c7g">  }</span><span class="ln" id="c7h">}</span></pre></div>
+  <div class="card fcard folder7 abs">
+    <div class="hd"><span class="ic" style="background:var(--navy)">DIR</span><span class="nm">articles/</span></div>
+    <div class="files"><span class="fl old" id="f7tok">tokens.md</span><span class="fl new ghost" id="f7rag">rag.md</span><span class="fl new ghost" id="f7mcp">mcp.md</span></div>
+  </div>
+  <div class="log7 abs">
+    <div class="card lr7 b" data-s="1"><span class="rq">REQ 1</span><div><div class="call">read_file("Trends.txt")</div><div class="out">→ RAG · MCP · Model Context Protocol · Tokens</div></div></div>
+    <div class="card lr7 b" data-s="2"><span class="rq">REQ 2</span><div><div class="call">list_files("articles")</div><div class="out">→ tokens.md</div></div></div>
+    <div class="card lr7 dec b" data-s="3"><span class="rq">LLM</span><div><div class="call">Decides: skip Tokens · MCP = Model Context Protocol</div><div class="out">nobody wrote an if for this</div></div></div>
+    <div class="card lr7 b" data-s="4"><span class="rq">REQ 3</span><div><div class="call">save_file("rag.md", …)</div><div class="out">→ <b>saved</b></div></div></div>
+    <div class="card lr7 b" data-s="5"><span class="rq">REQ 4</span><div><div class="call">save_file("mcp.md", …)</div><div class="out">→ <b>saved</b> · one file for both MCP lines</div></div></div>
+    <div class="card lr7 done b" data-s="6"><span class="rq">REQ 5</span><div><div class="call">No tool call: “Done. 2 written, 1 skipped.”</div><div class="out">the loop breaks</div></div></div>
+  </div>
+  <div class="statement b" data-s="7"><span class="tag">LOOK</span>The code never lists the steps. The LLM chose every one.</div>
+</section>
+
+<!-- ============ 8 · REVEAL ============ -->
+<section class="slide" id="s8" data-steps="6" data-label="This is an agent"
+ data-notes="Step 0: So what did we just build? | 1: An LLM: it thinks and decides. | 2: Plus tools: our Java methods that act on the computer. Read, list, save. | 3: Plus a loop: keep going until the LLM says it's done. | 4: That is an AI agent. Not a new kind of model. The same LLM from Episode 3, with tools and a loop. | 5: And here's the line between them. If your code decides the steps, it's a program that uses an LLM. If the LLM decides the steps, it's an agent. | 6: Read the statement.">
+  <div class="eyebrow">What did we just build?</div>
+  <h1>LLM + tools + loop <em>= an AI agent</em></h1>
+  <div class="eqn abs">
+    <div class="card blk b" data-s="1"><div class="k">Ep 1–3</div><div class="t">LLM</div><div class="d">thinks and decides</div></div>
+    <div class="op b" data-s="2">+</div>
+    <div class="card blk b" data-s="2"><div class="k">Today</div><div class="t">Tools</div><div class="d">act on your computer: read, list, save</div></div>
+    <div class="op b" data-s="3">+</div>
+    <div class="card blk b" data-s="3"><div class="k">Today</div><div class="t">Loop</div><div class="d">repeat until the LLM says done</div></div>
+    <div class="op b" data-s="4">=</div>
+    <div class="card blk ag b" data-s="4"><div class="k">Our first</div><div class="t">Agent</div><div class="d">does the whole job by itself</div></div>
+  </div>
+  <div class="cmp abs b" data-s="5">
+    <div class="card cmpc"><div class="k">Program that uses an LLM</div><div class="t">Your code decides the steps</div><div class="d">The LLM only writes text, when your code asks.</div></div>
+    <div class="card cmpc ag"><div class="k" style="color:var(--accent)">Agent</div><div class="t">The LLM decides the steps</div><div class="d">Your code only runs the tools it asks for.</div></div>
+  </div>
+  <div class="statement b" data-s="6"><span class="tag">EPISODE 4</span>Three episodes of LLM. Today, our first AI agent.</div>
+</section>
+
+<!-- ============ 9 · RULES ============ -->
+<section class="slide" id="s9" data-steps="5" data-label="Four rules for the loop"
+ data-notes="Step 0: Before we code it, four rules, all from this same example. | 1: Stop condition. No tool call means done. That's our break. | 2: Step limit. A small model might get confused and keep asking. So we cap it: MAX_STEPS = 10, then stop. | 3: Errors go back to the LLM. If it asks for a file that doesn't exist, don't crash. Send 'file not found' as the result, and let it decide what to do. | 4: Careful with write tools. save_file can overwrite an article I care about. Reading is safe; writing should check first, or ask me. | 5: And remember Episode 3: every tool result goes into the history. Every article we save stays in the window. It still grows.">
+  <div class="eyebrow">Before we code</div>
+  <h1>Four rules for the loop</h1>
+  <div class="grid9 abs">
+    <div class="card rule b" data-s="1"><div class="k">1 · Stop condition</div><div class="t">No tool call = done</div><div class="d">That's the <code>break</code> in our loop.</div></div>
+    <div class="card rule b" data-s="2"><div class="k">2 · Step limit</div><div class="t">Cap the loop</div><div class="d"><code>MAX_STEPS = 10</code>. A confused model can't loop forever.</div></div>
+    <div class="card rule b" data-s="3"><div class="k">3 · Errors go back</div><div class="t">Don't crash, tell the LLM</div><div class="d">Missing file? Send <code>"file not found"</code> as the result and let it decide.</div></div>
+    <div class="card rule b" data-s="4"><div class="k">4 · Write tools</div><div class="t">Careful with save_file</div><div class="d">Reading is safe. Writing can overwrite: check first, or ask.</div></div>
+  </div>
+  <div class="statement b" data-s="5"><span class="tag">EP 3</span>Every tool result goes into the window. It still grows.</div>
+</section>
+
+<!-- ============ 10 · HANDS ON ============ -->
+<section class="slide" id="s10" data-steps="4" data-label="Hands on"
+ data-notes="Step 0: Enough slides. Let's build it, starting from our Episode 3 chatbot. | 1: Step 1: three plain Java methods. Nothing AI about them. | 2: Step 2: describe them in the tools JSON we send with every request. | 3: Step 3: when the reply has tool_calls, look up the method by name and run it. A simple Map. | 4: Step 4: wrap it in the loop, with MAX_STEPS. Then we run the Trends.txt job, live. Next episode: these tools live inside our app only. MCP lets any AI app use them.">
+  <div class="eyebrow">Hands on</div>
+  <h1>Now let's build it in Java</h1>
+  <div class="steps10 abs">
+    <div class="card st b" data-s="1"><div class="k">Step 1</div><div class="t">Three Java methods</div><code>readFile(path)
+listFiles(folder)
+saveFile(name, text)</code><div class="d">Plain Java. Nothing AI.</div></div>
+    <div class="card st b" data-s="2"><div class="k">Step 2</div><div class="t">Describe them</div><code>"tools": [ name,
+  description,
+  parameters ]</code><div class="d">Sent with every request.</div></div>
+    <div class="card st b" data-s="3"><div class="k">Step 3</div><div class="t">Run what it asks</div><code>Map&lt;String, Tool&gt;
+tools.get(name)
+     .run(args)</code><div class="d">Result goes back as role "tool".</div></div>
+    <div class="card st b" data-s="4"><div class="k">Step 4</div><div class="t">Wrap in a loop</div><code>while (step++ &lt; MAX)
+  if (no tool call)
+    break;</code><div class="d">Then run the Trends.txt job.</div></div>
+  </div>
+  <div class="flow10 abs b" data-s="4"><div class="nd">Java agent</div><div class="ar">→</div><div class="nd dk">localhost:11434</div><div class="ar">→</div><div class="nd dk">qwen3.5:4b</div><div class="ar">→</div><div class="nd">tool_calls</div><div class="ar">→</div><div class="nd">your Java methods</div></div>
+  <div class="foot b" data-s="4"><span class="tag">NEXT · EP 5</span>These tools only live in our app. MCP lets any AI app use them.</div>
+</section>
+
+<div class="progress" id="prog"></div>
+</div>
+<div class="hint" id="hint">→ / click: next · ← back · A: auto on/off · N: notes · H: hide</div>
+<div id="auto"><span id="autoL">AUTO ON</span><span class="ring"><i id="autoBar"></i></span></div>
+<div id="notes"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+let RUN=0;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+async function streamWords(el,text,tok,gap=110){const w=text.split(/(\s+)/).filter(x=>x.length);let s='';for(const x of w){if(tok!==RUN)return false;s+=x;el.innerHTML=esc(s)+'<span class="cursor"></span>';await sleep(x.trim()?gap:0)}el.innerHTML=esc(s);return true}
+
+/* ---------- S2 ---------- */
+const ART2='RAG, short for retrieval-augmented generation, lets a model look up relevant facts first and then write its answer from them. Instead of guessing from memory, it reads the right paragraph before it speaks…';
+function s2(step,prev){const tok=RUN,a=$('#art2');if(step===2&&prev<2){a.textContent='';sleep(700).then(()=>streamWords(a,ART2,tok,85))}else a.textContent=step>=2?ART2:''}
+
+/* ---------- S3 ---------- */
+function s3(step){
+  ['tl1','tl2','tl3','tl4'].forEach(i=>$('#'+i).classList.remove('hl'));$('#f3tok').classList.remove('hl');
+  if(step===2){$('#tl4').classList.add('hl');$('#f3tok').classList.add('hl')}
+  if(step===3){$('#tl2').classList.add('hl');$('#tl3').classList.add('hl')}
+  const res=step>=4;$('#f3rag').classList.toggle('show',res);$('#f3mcp').classList.toggle('show',res);
+  $('#fk3').textContent=res?'expected: 2 new':'';
+}
+
+/* ---------- S4 ---------- */
+const REP4="I can't open files on your computer. Paste the topics from Trends.txt here and I'll write an article for each. Then you can save each one as a .md file.";
+function s4(step,prev){const tok=RUN,r=$('#rep4');if(step===1&&prev<1){r.textContent='';sleep(600).then(()=>streamWords(r,REP4,tok,95))}else r.textContent=step>=1?REP4:''}
+
+/* ---------- S5 ---------- */
+function s5(step){const on=step>=2;$('#dup5').classList.toggle('badrow',on);const c=$('#dupc5');c.className='chip'+(on?' bad':'');c.textContent=on?'duplicate ✕':'written'}
+
+/* ---------- S6 ---------- */
+const K=s=>`<span class="key">${s}</span>`;
+const M=(s,on)=>`<span class="mk${on?' on':''}">${s}</span>`;
+const TOOLS6=(on)=>M(`${K('"tools"')}: [ {
+    ${K('"type"')}: "function",
+    ${K('"function"')}: {
+      ${K('"name"')}: "read_file",
+      ${K('"description"')}: "Read a text file from my computer",
+      ${K('"parameters"')}: {
+        ${K('"type"')}: "object",
+        ${K('"properties"')}: { ${K('"path"')}: { ${K('"type"')}: "string" } },
+        ${K('"required"')}: ["path"] } } },
+    <span class="cm">… list_files, save_file: same shape</span>
+  ]`,on);
+const REQ6A=`{
+  ${K('"model"')}: "qwen3.5:4b",
+  ${K('"messages"')}: [
+    { ${K('"role"')}: "user",
+      ${K('"content"')}: "Read Trends.txt, write an article…" }
+  ],
+  ${TOOLS6(true)}
+}`;
+const REQ6B=`{
+  ${K('"model"')}: "qwen3.5:4b",
+  ${K('"messages"')}: [
+    { ${K('"role"')}: "user", ${K('"content"')}: "Read Trends.txt, write…" },
+    { ${K('"role"')}: "assistant", ${K('"tool_calls"')}: [ read_file … ] },
+    ${M(`{ ${K('"role"')}: "tool", ${K('"tool_name"')}: "read_file",
+      ${K('"content"')}: "RAG\\nMCP\\nModel Context Protocol\\nTokens" }`,true)}
+  ],
+  ${K('"tools"')}: [ <span class="cm">… same 3 tools, every time …</span> ]
+}`;
+const RES6A=`{
+  ${K('"message"')}: {
+    ${K('"role"')}: "assistant",
+    ${K('"content"')}: "",
+    ${M(`${K('"tool_calls"')}: [ {
+      ${K('"function"')}: {
+        ${K('"name"')}: "read_file",
+        ${K('"arguments"')}: { ${K('"path"')}: "Trends.txt" }
+      } } ]`,true)}
+  },
+  ${K('"done"')}: true
+}`;
+const JAVA6=`<span class="cm">// the LLM asked: read_file("Trends.txt")</span>
+String result = Files.readString(
+    Path.of(<span class="st">"Trends.txt"</span>));
+
+<span class="cm">// result</span>
+RAG
+MCP
+Model Context Protocol
+Tokens`;
+const RES6B=`{
+  ${K('"message"')}: {
+    ${K('"role"')}: "assistant",
+    ${K('"content"')}: "",
+    ${M(`${K('"tool_calls"')}: [ {
+      ${K('"function"')}: {
+        ${K('"name"')}: "list_files",
+        ${K('"arguments"')}: { ${K('"folder"')}: "articles" }
+      } } ]`,true)}
+  }
+}`;
+function s6(step){
+  const ph=Math.min(step,3);
+  [0,1,2,3].forEach(i=>{$('#ph'+i).className=i===ph?'cur':(i<ph?'done':'')});
+  if(step===4)[0,1,2,3].forEach(i=>$('#ph'+i).className='done');
+  const R=$('#right6');R.classList.toggle('java',step===2);
+  $('#lk6').textContent=step>=3?'You send again · same history + the result':'You send · POST /api/chat';
+  $('#req6').innerHTML=step>=3?REQ6B:REQ6A;
+  if(step>=3)$('#req6').querySelectorAll('.mk').forEach((e,i)=>e.classList.toggle('on',true));
+  if(step===0){$('#rk6').textContent='LLM replies';$('#res6').innerHTML='<div class="wait">waiting for the request…</div>'}
+  else if(step===1){$('#rk6').textContent='LLM replies · a request, not an answer';$('#res6').innerHTML=RES6A}
+  else if(step===2){$('#rk6').textContent='Your Java code runs it';$('#res6').innerHTML=JAVA6}
+  else{$('#rk6').textContent='LLM replies · the next request';$('#res6').innerHTML=RES6B}
+  if(step!==0)$('#req6').querySelectorAll('.mk').forEach(e=>e.classList.toggle('on',step>=3));
+}
+
+/* ---------- S7 ---------- */
+const HL7={0:[],1:['c7b','c7e','c7f'],2:['c7b','c7e','c7f'],3:['c7b'],4:['c7b','c7e','c7f'],5:['c7b','c7e','c7f'],6:['c7b','c7c'],7:[]};
+function s7(step){
+  document.querySelectorAll('#s7 .ln').forEach(e=>e.classList.remove('on'));
+  (HL7[step]||[]).forEach(i=>$('#'+i).classList.add('on'));
+  $('#f7rag').classList.toggle('show',step>=4);$('#f7mcp').classList.toggle('show',step>=5);
+  $('#f7tok').classList.toggle('hl',step===3);
+}
+
+/* ---------- deck engine (same controls as Ep 3) ---------- */
+const HOOKS={s2,s3,s4,s5,s6,s7};
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0,step=0;
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);$('#stage').style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener('resize',fit);fit();
+let AUTO=true,autoTimer=null;
+function clearAuto(){clearTimeout(autoTimer);autoTimer=null;const b=$('#autoBar');b.style.transition='none';b.style.width='0'}
+function scheduleAuto(ms,tok){if(!AUTO||tok!==RUN)return;const b=$('#autoBar');b.style.transition='none';b.style.width='0';void b.offsetWidth;b.style.transition=`width ${ms}ms linear`;b.style.width='100%';autoTimer=setTimeout(()=>{if(tok===RUN)next(true)},ms)}
+function autoFor(s,st){const m=(s.dataset.auto||'').split(',').map(x=>x.split(':')).find(x=>+x[0]===st);return m?+m[1]:0}
+function render(prevStep,changedSlide,forward){
+  RUN++;clearAuto();const TOK=RUN;
+  slides.forEach((s,i)=>s.classList.toggle('on',i===cur));
+  const s=slides[cur];
+  s.querySelectorAll('[data-s]').forEach(e=>e.classList.toggle('in',+e.dataset.s<=step));
+  const hr=HOOKS[s.id]?HOOKS[s.id](step,changedSlide?-1:prevStep):null;
+  const wait=forward?autoFor(s,step):0;
+  if(wait){Promise.resolve(hr).then(()=>scheduleAuto(wait,TOK))}
+  $('#prog').style.width=((cur+(step/(+s.dataset.steps+1)))/slides.length*100)+'%';
+  const n=s.dataset.notes.split('|').map(x=>x.trim());
+  $('#notes').innerHTML=`<b>${cur+1}/${slides.length} · ${s.dataset.label} · step ${step}/${s.dataset.steps}</b><br>`+n.map((x,i)=>i===step?`<span style="color:#fff">▶ ${x}</span>`:`<span style="opacity:.55">${x}</span>`).join('<br>');
+  try{history.replaceState(null,'','#'+(cur+1))}catch(e){}
+}
+function next(){const p=step,max=+slides[cur].dataset.steps;let ch=false;if(step<max)step++;else if(cur<slides.length-1){cur++;step=0;ch=true}else return;render(p,ch,true)}
+function prev(){const p=step;let ch=false;if(step>0)step--;else if(cur>0){cur--;step=+slides[cur].dataset.steps;ch=true}else return;render(p,ch)}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next()}
+  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
+  else if(e.key==='n'||e.key==='N'){const n=$('#notes');n.style.display=n.style.display==='block'?'none':'block'}
+  else if(e.key==='h'||e.key==='H'){const h=$('#hint'),a=$('#auto'),v=h.style.display==='none';h.style.display=v?'block':'none';a.style.display=v?'flex':'none'}
+  else if(e.key==='a'||e.key==='A'){AUTO=!AUTO;$('#auto').classList.toggle('off',!AUTO);$('#autoL').textContent=AUTO?'AUTO ON':'AUTO OFF';if(!AUTO)clearAuto();else{const s=slides[cur],w=autoFor(s,step);if(w)scheduleAuto(w,RUN)}}
+  else if(e.key==='0'){cur=9;step=0;render(-1,true,true)}
+  else if(/^[1-9]$/.test(e.key)&&+e.key<=slides.length){cur=+e.key-1;step=0;render(-1,true,true)}
+});
+document.addEventListener('click',e=>{if(e.target.closest('#notes'))return;next()});
+const m=location.hash.match(/^#(\d+)/);cur=m?Math.min(slides.length-1,Math.max(0,+m[1]-1)):0;
+render(-1,true,true);
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+EP 4 · TOOL DEFINITION: ANATOMY
+==============================
+
+A tool is a description of one of YOUR Java methods, sent to the LLM in the "tools"
+field of every /api/chat request. The LLM never sees your code, only this description.
+
+Template
+--------
+
+{
+  "type": "function",                         <- always "function"
+  "function": {
+    "name": "<tool_name>",                    <- what the LLM writes when it asks for the tool
+    "description": "<what it does>",          <- how the LLM CHOOSES a tool. Write it like a prompt.
+    "parameters": {                           <- a JSON schema for the arguments
+      "type": "object",
+      "properties": {
+        "<arg_name>": {
+          "type": "string",                   <- string | number | integer | boolean | array | object
+          "description": "<what to pass>"
+        }
+      },
+      "required": ["<arg_name>"]              <- arguments the LLM must always fill in
+    }
+  }
+}
+
+Where it goes in the request
+----------------------------
+
+POST http://localhost:11434/api/chat
+{
+  "model": "qwen3.5:4b",
+  "messages": [ ... ],
+  "tools": [ <tool 1>, <tool 2>, <tool 3> ],  <- the only new field compared with Ep 3
+  "think": false,
+  "stream": false
+}
+
+Tips
+----
+- Use a model with the "tools" badge on ollama.com (qwen3.5 has it).
+- A vague description means the wrong tool, or no tool at all.
+- The definitions are sent on EVERY request (the API is stateless, Ep 3),
+  so they take up space in the context window each time.
+- Keep argument names simple: path, folder, name, content.

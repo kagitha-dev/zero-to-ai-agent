@@ -22,7 +22,8 @@
   <!-- Ep 1 and Ep 2 are slides and browser labs, so they have no Java module. -->
   <modules>
     <module>episodes/ep03-talking-to-llm-java-ollama</module>
-    <!-- Ep 4 onward are added here as each episode is released -->
+    <module>episodes/ep04-tool-calling-java</module>
+    <!-- Ep 5 onward are added here as each episode is released -->
   </modules>
 
   <build>
