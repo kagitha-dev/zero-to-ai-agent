@@ -78,6 +78,10 @@ Or open the repo in IntelliJ and press **Run** on any `StepN` class.
 | `SimpleChatbot` | One call to `/api/chat`, written out in full in a single file |
 | `HistoryChatbot` | A terminal chat loop that keeps a `List<Message>` history and resends it each turn |
 
+### Prefer Python?
+
+The [`python/`](python) folder has the same two programs in Python (`simple_chatbot.py`, `history_chatbot.py`), using only the standard library.
+
 ## The API in one request
 
 ```json
