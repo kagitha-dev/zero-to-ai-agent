@@ -46,7 +46,7 @@ ollama show qwen3.5:4b     # "tools" must be listed under Capabilities
 
 ## Run the lab
 
-Run these **from this folder**, because the tools work inside `workspace/`:
+The tools work inside `workspace/`. The code finds that folder by itself, so you can run from this folder or from the repo root:
 
 ```bash
 cd episodes/ep04-tool-calling-java
@@ -57,7 +57,7 @@ mvn -q exec:java -Dexec.mainClass=articleagent.Step3_ToolCall
 mvn -q exec:java -Dexec.mainClass=articleagent.Step4_Agent
 ```
 
-Or open the repo in IntelliJ and press **Run** on any `StepN` class (set the working directory to this folder).
+Or open the repo in IntelliJ and press **Run** on any `StepN` class. The first line printed shows which `workspace` folder is used.
 
 Every step first resets `workspace/articles/` back to just `tokens.md`, so you can run them in any order, as often as you like.
 

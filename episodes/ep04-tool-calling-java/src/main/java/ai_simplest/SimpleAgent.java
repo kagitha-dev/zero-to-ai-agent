@@ -19,9 +19,20 @@ import java.util.*;
 public class SimpleAgent {
 
     static final ObjectMapper JSON = new ObjectMapper();
-    static final Path WORKSPACE = Path.of("workspace");
+    static final Path WORKSPACE = findWorkspace();
+
+    /** The folder with Trends.txt, whether you run from the repo root (IntelliJ) or the episode folder. */
+    static Path findWorkspace() {
+        for (Path dir = Path.of("").toAbsolutePath(); dir != null; dir = dir.getParent()) {
+            for (Path c : List.of(dir.resolve("workspace"), dir.resolve("episodes/ep04-tool-calling-java/workspace"))) {
+                if (Files.isRegularFile(c.resolve("Trends.txt"))) return c;
+            }
+        }
+        throw new IllegalStateException("Can't find workspace/Trends.txt. Run from the repo or the episode folder.");
+    }
 
     public static void main(String[] args) throws Exception {
+        System.out.println("workspace: " + WORKSPACE.toAbsolutePath());
         List<Map<String, Object>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content",
                 "You are an article-writing agent. You cannot see any file unless you use a tool. "
@@ -62,7 +73,9 @@ public class SimpleAgent {
                     return Files.exists(file) ? Files.readString(file) : "error: file not found";
                 }
                 case "list_files": {
-                    try (var files = Files.list(WORKSPACE.resolve(a.path("folder").asText()))) {
+                    Path dir = WORKSPACE.resolve(a.path("folder").asText());
+                    if (!Files.isDirectory(dir)) return "error: folder not found";
+                    try (var files = Files.list(dir)) {
                         return String.join("\n", files.map(p -> p.getFileName().toString()).sorted().toList());
                     }
                 }

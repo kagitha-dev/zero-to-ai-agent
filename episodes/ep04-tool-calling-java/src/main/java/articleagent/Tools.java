@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  */
 public class Tools {
 
-    public static final Path WORKSPACE = Path.of("workspace").toAbsolutePath().normalize();
+    public static final Path WORKSPACE = findWorkspace();
     public static final Path ARTICLES  = WORKSPACE.resolve("articles");
 
     // =====================================================================
@@ -133,6 +133,20 @@ public class Tools {
         return Map.entry(name, description);
     }
 
+    /**
+     * Find the lab's "workspace" folder (the one with Trends.txt), whatever folder the program runs from:
+     * the episode folder, the repo root (IntelliJ's default), or anywhere below them.
+     */
+    static Path findWorkspace() {
+        for (Path dir = Path.of("").toAbsolutePath(); dir != null; dir = dir.getParent()) {
+            for (Path candidate : List.of(dir.resolve("workspace"),
+                                          dir.resolve("episodes/ep04-tool-calling-java/workspace"))) {
+                if (Files.isRegularFile(candidate.resolve("Trends.txt"))) return candidate.toAbsolutePath().normalize();
+            }
+        }
+        return Path.of("workspace").toAbsolutePath().normalize();   // not found: resetArticles() explains
+    }
+
     /** Resolve a path and refuse anything outside the workspace folder. */
     private static Path inWorkspace(String path) {
         Path p = WORKSPACE.resolve(path == null ? "" : path).normalize();
@@ -143,9 +157,10 @@ public class Tools {
     /** Put articles/ back to the start of the episode: only tokens.md. */
     public static void resetArticles() throws IOException {
         if (!Files.isRegularFile(WORKSPACE.resolve("Trends.txt"))) {
-            throw new IllegalStateException("workspace/Trends.txt not found. Run from the episode folder: "
-                    + "cd episodes/ep04-tool-calling-java");
+            throw new IllegalStateException("workspace/Trends.txt not found (looked in " + WORKSPACE + "). "
+                    + "Run from the repo or from episodes/ep04-tool-calling-java");
         }
+        System.out.println("(workspace: " + WORKSPACE + ")");
         Files.createDirectories(ARTICLES);
         try (Stream<Path> files = Files.list(ARTICLES)) {
             for (Path f : files.toList()) {
