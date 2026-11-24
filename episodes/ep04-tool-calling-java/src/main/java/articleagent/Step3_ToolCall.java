@@ -24,6 +24,7 @@ public class Step3_ToolCall {
         Tools.resetArticles();
 
         List<Message> messages = new ArrayList<>();
+        messages.add(Message.system(Step4_Agent.SYSTEM));      // the same rules as the agent
         messages.add(Message.user(Step1_LlmAlone.TASK));
 
         // ---- 1 · Describe the tools ----

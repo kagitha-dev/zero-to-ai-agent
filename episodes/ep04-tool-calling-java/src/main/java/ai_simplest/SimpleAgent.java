@@ -23,9 +23,13 @@ public class SimpleAgent {
 
     public static void main(String[] args) throws Exception {
         List<Map<String, Object>> messages = new ArrayList<>();
+        messages.add(Map.of("role", "system", "content",
+                "You are an article-writing agent. You cannot see any file unless you use a tool. "
+                        + "A topic is already written if the articles folder has a file named after it: skip it, never read it. "
+                        + "Topics that mean the same thing get one article. When every topic is handled, reply with a summary and no tool call."));
         messages.add(Map.of("role", "user", "content",
-                "Read Trends.txt. Write one short article (about 150 words) for each topic and save each as its own "
-                        + ".md file in the articles folder. Skip topics I have already written, and merge similar topics."));
+                "Read Trends.txt. For each topic, write a short article (about 150 words) and save it as its own "
+                        + ".md file in the articles folder. Skip topics that already have a file, and merge topics that mean the same thing."));
 
         for (int step = 1; step <= 10; step++) {                       // step limit
             JsonNode message = chat(messages).path("message");

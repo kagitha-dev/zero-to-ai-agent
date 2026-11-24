@@ -34,7 +34,7 @@ All paths are inside the episode's "workspace" folder.
   "type": "function",
   "function": {
     "name": "list_files",
-    "description": "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles",
+    "description": "List the file names in a folder on my computer. In the articles folder, each file is an article that is already written: tokens.md means the Tokens article exists, so do not write or read it again.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -69,6 +69,6 @@ THE FULL "tools" ARRAY (copy-paste ready)
 -----------------------------------------
 "tools": [
   { "type": "function", "function": { "name": "read_file", "description": "Read a text file from my computer and return its content. Example path: Trends.txt", "parameters": { "type": "object", "properties": { "path": { "type": "string", "description": "The file path, for example Trends.txt" } }, "required": ["path"] } } },
-  { "type": "function", "function": { "name": "list_files", "description": "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles", "parameters": { "type": "object", "properties": { "folder": { "type": "string", "description": "The folder name, for example articles" } }, "required": ["folder"] } } },
+  { "type": "function", "function": { "name": "list_files", "description": "List the file names in a folder on my computer. In the articles folder, each file is an article that is already written: tokens.md means the Tokens article exists, so do not write or read it again.", "parameters": { "type": "object", "properties": { "folder": { "type": "string", "description": "The folder name, for example articles" } }, "required": ["folder"] } } },
   { "type": "function", "function": { "name": "save_file", "description": "Save one article as a new markdown file in the articles folder. Fails if the file already exists.", "parameters": { "type": "object", "properties": { "name": { "type": "string", "description": "The file name, for example rag.md" }, "content": { "type": "string", "description": "The full article, in markdown" } }, "required": ["name", "content"] } } }
 ]

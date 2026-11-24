@@ -81,7 +81,8 @@ public class Tools {
                     "Read a text file from my computer and return its content. Example path: Trends.txt",
                     param("path", "The file path, for example Trends.txt")),
             tool("list_files",
-                    "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles",
+                    "List the file names in a folder on my computer. In the articles folder, each file is an article that is already written: "
+                            + "tokens.md means the Tokens article exists, so do not write or read it again.",
                     param("folder", "The folder name, for example articles")),
             tool("save_file",
                     "Save one article as a new markdown file in the articles folder. Fails if the file already exists.",

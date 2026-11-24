@@ -62,8 +62,8 @@ The final reply (no tool_calls = done)
 
 The whole history after the agent finishes
 ------------------------------------------
-system     You are an article-writing agent ...
-user       Read Trends.txt. Write one short article ...
+system     You are an article-writing agent ... (rules: skip existing files, merge same topics)
+user       Read Trends.txt. For each topic, write a short article ...
 assistant  tool_calls: read_file(path="Trends.txt")
 tool       RAG / MCP / Model Context Protocol / Tokens
 assistant  tool_calls: list_files(folder="articles")

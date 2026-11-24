@@ -6,10 +6,23 @@ How to use
 - Terminal: paste into bash, zsh or Git Bash. (Windows cmd needs different quoting: use Postman or Git Bash.)
 - Ollama must be running, with the model pulled:  ollama pull qwen3.5:4b
 
-These requests replay the agent from the slides, one request at a time.
-Requests 3 to 5 contain a history with example tool calls. Your model may ask for slightly
-different steps: that's fine. To follow your own run, copy the "message" from each reply into
-the next request's "messages", then add a {"role": "tool", ...} message with the result.
+These requests replay the agent from the slides, one round trip at a time.
+Every request (except 1) starts with the same SYSTEM message. It gives the small model clear rules:
+  - "already written" means a file with that name exists in articles: skip it, don't read it
+  - topics that mean the same thing get one article
+  - no tool call at the end = done
+
+Paths are relative to the lab's workspace folder (Trends.txt, articles), the same as the Java code.
+If your files are somewhere else (for example D:/Trends.txt and D:/articles), change the paths in the
+SYSTEM/USER messages AND in the example tool calls, and keep them consistent everywhere.
+
+Requests 3 to 6 contain an example history. Your model may ask for slightly different steps: that's fine.
+To follow your own run: copy the "message" from each reply into the next request's "messages",
+then add a {"role": "tool", "tool_name": "...", "content": "..."} message with the result.
+Always start a new run from request 2: a history made with older wording keeps steering the model.
+
+With "temperature": 0 and a fixed "seed", the same request gives the same reply.
+Re-sending an unchanged request won't change the answer: change the wording or the history instead.
 
 
 =====================================================================
@@ -23,7 +36,7 @@ ollama show qwen3.5:4b
 
 
 =====================================================================
-1 · The LLM alone (no tools)
+1 · The LLM alone (no tools, no system rules)
 =====================================================================
 Expect: an answer in text. It can't read Trends.txt or save files.
 
@@ -34,7 +47,7 @@ curl --location 'http://localhost:11434/api/chat' \
   "messages": [
     {
       "role": "user",
-      "content": "Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, and save each article as its own .md file in the articles folder.\nConditions: skip topics I have already written, and merge similar topics into one article."
+      "content": "Read Trends.txt. For each topic, write a short article (about 150 words, in markdown) and save it as its own .md file in the articles folder. Skip topics that already have a file in the articles folder, and merge topics that mean the same thing into one article."
     }
   ],
   "think": false,
@@ -47,9 +60,9 @@ curl --location 'http://localhost:11434/api/chat' \
 
 
 =====================================================================
-2 · Same job, now with tools
+2 · Same job, now with the system rules and tools
 =====================================================================
-Expect: "content": "" and "tool_calls": read_file(path="Trends.txt").
+Expect: "content": "" and tool_calls: read_file(path="Trends.txt").
 The LLM asks. It doesn't run anything.
 
 curl --location 'http://localhost:11434/api/chat' \
@@ -59,11 +72,11 @@ curl --location 'http://localhost:11434/api/chat' \
   "messages": [
     {
       "role": "system",
-      "content": "You are an article-writing agent working on my computer.\nYou cannot see any file unless you use a tool. Use the tools to do the whole job, one step at a time.\nWhen the job is finished, reply with a one-line summary and no tool call."
+      "content": "You are an article-writing agent working on my computer. You cannot see any file unless you use a tool. Work one step at a time.\nRules:\n- A topic is already written if the articles folder has a file named after it (tokens.md means Tokens is done). Skip it. Never read existing articles.\n- Topics that mean the same thing get one article.\n- Save each new article with save_file.\n- When every topic is handled, reply with a one-line summary and no tool call."
     },
     {
       "role": "user",
-      "content": "Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, and save each article as its own .md file in the articles folder.\nConditions: skip topics I have already written, and merge similar topics into one article."
+      "content": "Read Trends.txt. For each topic, write a short article (about 150 words, in markdown) and save it as its own .md file in the articles folder. Skip topics that already have a file in the articles folder, and merge topics that mean the same thing into one article."
     }
   ],
   "tools": [
@@ -90,7 +103,7 @@ curl --location 'http://localhost:11434/api/chat' \
       "type": "function",
       "function": {
         "name": "list_files",
-        "description": "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles",
+        "description": "List the file names in a folder on my computer. In the articles folder, each file is an article that is already written: tokens.md means the Tokens article exists, so do not write or read it again.",
         "parameters": {
           "type": "object",
           "properties": {
@@ -152,11 +165,11 @@ curl --location 'http://localhost:11434/api/chat' \
   "messages": [
     {
       "role": "system",
-      "content": "You are an article-writing agent working on my computer.\nYou cannot see any file unless you use a tool. Use the tools to do the whole job, one step at a time.\nWhen the job is finished, reply with a one-line summary and no tool call."
+      "content": "You are an article-writing agent working on my computer. You cannot see any file unless you use a tool. Work one step at a time.\nRules:\n- A topic is already written if the articles folder has a file named after it (tokens.md means Tokens is done). Skip it. Never read existing articles.\n- Topics that mean the same thing get one article.\n- Save each new article with save_file.\n- When every topic is handled, reply with a one-line summary and no tool call."
     },
     {
       "role": "user",
-      "content": "Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, and save each article as its own .md file in the articles folder.\nConditions: skip topics I have already written, and merge similar topics into one article."
+      "content": "Read Trends.txt. For each topic, write a short article (about 150 words, in markdown) and save it as its own .md file in the articles folder. Skip topics that already have a file in the articles folder, and merge topics that mean the same thing into one article."
     },
     {
       "role": "assistant",
@@ -202,7 +215,7 @@ curl --location 'http://localhost:11434/api/chat' \
       "type": "function",
       "function": {
         "name": "list_files",
-        "description": "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles",
+        "description": "List the file names in a folder on my computer. In the articles folder, each file is an article that is already written: tokens.md means the Tokens article exists, so do not write or read it again.",
         "parameters": {
           "type": "object",
           "properties": {
@@ -254,8 +267,8 @@ curl --location 'http://localhost:11434/api/chat' \
 =====================================================================
 4 · Send the list_files result back
 =====================================================================
-The folder has tokens.md, so the LLM should skip Tokens.
-Expect: tool_calls: save_file(name="rag.md", ...) and then mcp.md (one file for both MCP lines).
+The folder has tokens.md, so Tokens is already written: the LLM should skip it, without reading it.
+Expect: tool_calls: save_file(name="rag.md", content="# RAG ...").
 The article text is in the "content" argument.
 
 curl --location 'http://localhost:11434/api/chat' \
@@ -265,11 +278,11 @@ curl --location 'http://localhost:11434/api/chat' \
   "messages": [
     {
       "role": "system",
-      "content": "You are an article-writing agent working on my computer.\nYou cannot see any file unless you use a tool. Use the tools to do the whole job, one step at a time.\nWhen the job is finished, reply with a one-line summary and no tool call."
+      "content": "You are an article-writing agent working on my computer. You cannot see any file unless you use a tool. Work one step at a time.\nRules:\n- A topic is already written if the articles folder has a file named after it (tokens.md means Tokens is done). Skip it. Never read existing articles.\n- Topics that mean the same thing get one article.\n- Save each new article with save_file.\n- When every topic is handled, reply with a one-line summary and no tool call."
     },
     {
       "role": "user",
-      "content": "Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, and save each article as its own .md file in the articles folder.\nConditions: skip topics I have already written, and merge similar topics into one article."
+      "content": "Read Trends.txt. For each topic, write a short article (about 150 words, in markdown) and save it as its own .md file in the articles folder. Skip topics that already have a file in the articles folder, and merge topics that mean the same thing into one article."
     },
     {
       "role": "assistant",
@@ -334,7 +347,7 @@ curl --location 'http://localhost:11434/api/chat' \
       "type": "function",
       "function": {
         "name": "list_files",
-        "description": "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles",
+        "description": "List the file names in a folder on my computer. In the articles folder, each file is an article that is already written: tokens.md means the Tokens article exists, so do not write or read it again.",
         "parameters": {
           "type": "object",
           "properties": {
@@ -384,7 +397,158 @@ curl --location 'http://localhost:11434/api/chat' \
 
 
 =====================================================================
-5 · Send the save_file results back
+5 · Send the first save_file result back
+=====================================================================
+Expect: tool_calls: save_file(name="mcp.md", ...): ONE article for both MCP lines.
+(Some runs ask for both save_file calls in one reply. Then add both tool results and jump to request 6.)
+
+curl --location 'http://localhost:11434/api/chat' \
+--header 'Content-Type: application/json' \
+--data '{
+  "model": "qwen3.5:4b",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an article-writing agent working on my computer. You cannot see any file unless you use a tool. Work one step at a time.\nRules:\n- A topic is already written if the articles folder has a file named after it (tokens.md means Tokens is done). Skip it. Never read existing articles.\n- Topics that mean the same thing get one article.\n- Save each new article with save_file.\n- When every topic is handled, reply with a one-line summary and no tool call."
+    },
+    {
+      "role": "user",
+      "content": "Read Trends.txt. For each topic, write a short article (about 150 words, in markdown) and save it as its own .md file in the articles folder. Skip topics that already have a file in the articles folder, and merge topics that mean the same thing into one article."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "read_file",
+            "arguments": {
+              "path": "Trends.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_name": "read_file",
+      "content": "RAG\nMCP\nModel Context Protocol\nTokens\n"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "list_files",
+            "arguments": {
+              "folder": "articles"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_name": "list_files",
+      "content": "tokens.md"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "function": {
+            "name": "save_file",
+            "arguments": {
+              "name": "rag.md",
+              "content": "# RAG\n\n(the article the model wrote, shortened here)"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_name": "save_file",
+      "content": "saved articles/rag.md (150 words)"
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "read_file",
+        "description": "Read a text file from my computer and return its content. Example path: Trends.txt",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "The file path, for example Trends.txt"
+            }
+          },
+          "required": [
+            "path"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_files",
+        "description": "List the file names in a folder on my computer. In the articles folder, each file is an article that is already written: tokens.md means the Tokens article exists, so do not write or read it again.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "description": "The folder name, for example articles"
+            }
+          },
+          "required": [
+            "folder"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "save_file",
+        "description": "Save one article as a new markdown file in the articles folder. Fails if the file already exists.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The file name, for example rag.md"
+            },
+            "content": {
+              "type": "string",
+              "description": "The full article, in markdown"
+            }
+          },
+          "required": [
+            "name",
+            "content"
+          ]
+        }
+      }
+    }
+  ],
+  "think": false,
+  "stream": false,
+  "options": {
+    "temperature": 0,
+    "seed": 42
+  }
+}'
+
+
+=====================================================================
+6 · Send the second save_file result back
 =====================================================================
 Both files saved. Expect: NO tool_calls, just a short summary in "content".
 No tool call = done. That's when the agent loop stops.
@@ -396,11 +560,11 @@ curl --location 'http://localhost:11434/api/chat' \
   "messages": [
     {
       "role": "system",
-      "content": "You are an article-writing agent working on my computer.\nYou cannot see any file unless you use a tool. Use the tools to do the whole job, one step at a time.\nWhen the job is finished, reply with a one-line summary and no tool call."
+      "content": "You are an article-writing agent working on my computer. You cannot see any file unless you use a tool. Work one step at a time.\nRules:\n- A topic is already written if the articles folder has a file named after it (tokens.md means Tokens is done). Skip it. Never read existing articles.\n- Topics that mean the same thing get one article.\n- Save each new article with save_file.\n- When every topic is handled, reply with a one-line summary and no tool call."
     },
     {
       "role": "user",
-      "content": "Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, and save each article as its own .md file in the articles folder.\nConditions: skip topics I have already written, and merge similar topics into one article."
+      "content": "Read Trends.txt. For each topic, write a short article (about 150 words, in markdown) and save it as its own .md file in the articles folder. Skip topics that already have a file in the articles folder, and merge topics that mean the same thing into one article."
     },
     {
       "role": "assistant",
@@ -505,7 +669,7 @@ curl --location 'http://localhost:11434/api/chat' \
       "type": "function",
       "function": {
         "name": "list_files",
-        "description": "List the names of the files in a folder on my computer. Use it to see which articles already exist. Example folder: articles",
+        "description": "List the file names in a folder on my computer. In the articles folder, each file is an article that is already written: tokens.md means the Tokens article exists, so do not write or read it again.",
         "parameters": {
           "type": "object",
           "properties": {

@@ -15,9 +15,10 @@ public class Step1_LlmAlone {
 
     /** Today's job. The same sentence is used in every step. */
     public static final String TASK = """
-            Read Trends.txt. Write one short article (about 150 words, in markdown) for each topic, \
-            and save each article as its own .md file in the articles folder.
-            Conditions: skip topics I have already written, and merge similar topics into one article.""";
+            Read Trends.txt. For each topic, write a short article (about 150 words, in markdown) \
+            and save it as its own .md file in the articles folder. \
+            Skip topics that already have a file in the articles folder, \
+            and merge topics that mean the same thing into one article.""";
 
     public static void main(String[] args) throws Exception {
         Tools.resetArticles();

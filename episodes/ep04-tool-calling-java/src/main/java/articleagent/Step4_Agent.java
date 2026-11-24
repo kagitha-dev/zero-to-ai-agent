@@ -26,9 +26,12 @@ public class Step4_Agent {
     static final int MAX_STEPS = 10;   // rule 2: a confused model can't loop forever
 
     static final String SYSTEM = """
-            You are an article-writing agent working on my computer.
-            You cannot see any file unless you use a tool. Use the tools to do the whole job, one step at a time.
-            When the job is finished, reply with a one-line summary and no tool call.""";
+            You are an article-writing agent working on my computer. You cannot see any file unless you use a tool. Work one step at a time.
+            Rules:
+            - A topic is already written if the articles folder has a file named after it (tokens.md means Tokens is done). Skip it. Never read existing articles.
+            - Topics that mean the same thing get one article.
+            - Save each new article with save_file.
+            - When every topic is handled, reply with a one-line summary and no tool call.""";
 
     public static void main(String[] args) throws Exception {
         Tools.resetArticles();
