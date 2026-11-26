@@ -415,6 +415,48 @@ svg.ov{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:
 .l15 .m{color:var(--ink);font-weight:600}
 .l15 .w{color:var(--ink2);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+/* ===== SW what we'll build ===== */
+#sW .olW{left:140px;top:330px;width:240px;height:150px;padding:18px 20px;border-radius:18px;background:var(--navy);color:#fff}
+#sW .olW .k{color:var(--sky);font-size:15px}
+#sW .olW .t{font-family:var(--f-display);font-weight:800;font-size:28px;margin-top:6px}
+#sW .olW .d{font:500 15px var(--f-mono);color:#C9D6EA;margin-top:6px}
+.lnW{position:absolute;height:4px;background:var(--accent);z-index:1}
+.lnW::before,.lnW::after{content:"";position:absolute;top:-8px;border:10px solid transparent}
+.lnW::before{left:-6px;border-right:12px solid var(--accent);border-left:0}
+.lnW::after{right:-6px;border-left:12px solid var(--accent);border-right:0}
+.lnW.one::before{display:none}
+.lnW .lb{position:absolute;left:50%;top:-34px;transform:translateX(-50%);font:600 17px var(--f-mono);color:var(--accent);white-space:nowrap}
+.boxW{position:absolute;top:280px;height:430px;border-radius:22px;padding:20px 22px;background:var(--card);border:3px solid var(--navy)}
+.boxW .hd{display:flex;align-items:center;gap:12px}
+.boxW .t{font-family:var(--f-display);font-weight:800;font-size:32px;margin-top:2px}
+.num{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font:700 18px var(--f-mono)}
+.inW{position:absolute;left:22px;right:22px;border-radius:14px;padding:14px 18px}
+.inW .n{font:600 21px var(--f-mono)}
+.inW .d{font-size:18px;line-height:1.4;margin-top:4px}
+.inW.loop{background:var(--bg);border:2px dashed var(--b3)}
+.inW.loop .d{color:var(--ink2)}
+.inW.cli{background:var(--accent);color:#fff}
+.inW.cli .d{color:#D6E4FA}
+.inW.srv{background:var(--navy);color:#fff}
+.inW.srv .d{color:#C9D6EA}
+.inW.ft{background:var(--amber-soft);border:2px solid #EFD98A}
+.inW.ft .d{color:var(--ink2)}
+.chipsW{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chipsW span{font:500 15px var(--f-mono);padding:4px 9px;border-radius:7px;background:#2B4470;color:#fff}
+#sW .wsW{left:1600px;top:370px;width:180px;height:300px;border:2px dashed var(--b4);border-radius:16px;padding:16px 16px}
+#sW .wsW .t{font-family:var(--f-display);font-weight:800;font-size:24px;margin-bottom:10px}
+#sW .wsW div.f{font:500 17px/1.9 var(--f-mono);color:var(--ink2)}
+#sW .wsW div.f.new{color:var(--ok);font-weight:600}
+.bdg{position:absolute;width:34px;height:34px;border-radius:50%;background:var(--amber-hl);border:2px solid #E0A800;color:var(--ink);font:700 17px var(--f-mono);display:flex;align-items:center;justify-content:center;z-index:4}
+#sW .flowW{left:140px;top:728px;width:1640px;display:flex;gap:10px;align-items:center;font:500 20px var(--f-mono);color:var(--ink2)}
+#sW .flowW i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--amber-hl);border:2px solid #E0A800;color:var(--ink);font:700 15px var(--f-mono);display:inline-flex;align-items:center;justify-content:center;margin-right:2px}
+#sW .flowW b{color:var(--ink);font-weight:600}
+#sW .parts{left:140px;top:780px;width:1640px;display:flex;gap:22px}
+.pW{flex:1;display:flex;gap:16px;align-items:flex-start;padding:14px 20px}
+.pW .t{font-family:var(--f-display);font-weight:800;font-size:25px}
+.pW code{font:600 16px var(--f-mono);color:var(--accent)}
+.pW .d{font-size:18px;color:var(--ink2);margin-top:2px}
+
 /* ===== S16 hands on ===== */
 #s16 .steps16{left:140px;top:290px;width:1640px;display:flex;gap:22px}
 #s16 .st{flex:1;padding:24px;min-height:350px}
@@ -804,6 +846,52 @@ svg.ov{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:
     <div class="l15" id="r157"><span class="n">7</span><span class="dir">server → host</span><span class="m">result</span><span class="w">content: [{type: "text", text: "RAG, MCP…"}] → role "tool" → loop again</span></div>
   </div>
   <div class="statement b" data-s="8"><span class="tag">EPISODE 5</span>The loop didn't change. Only where the tool runs did.</div>
+</section>
+
+<!-- ============ 15b · WHAT WE'LL BUILD ============ -->
+<section class="slide" id="sW" data-steps="5" data-label="What we'll build"
+ data-notes="Step 0: Before we code, here's what we're building. On the right, our workspace folder from Episode 4: Trends.txt, and the articles folder with tokens.md already written. Same job as last time. | 1: Part 1: the MCP server, files-server. Inside, our three Episode 4 methods, copied unchanged, in FileTools. Around them, FilesServer: it gives each tool a name, a description and an input schema, and serves them over stdio. Before writing any client, we'll test it by hand: paste JSON-RPC into it. | 2: Part 2: the MCP client. It lives inside our agent, the host. It starts the server with java -jar files-server.jar and talks to it over stdio. We test it with Step1_ListAndCall: initialize, tools/list, tools/call. Still no LLM. | 3: Part 3: the agent. The same Episode 4 loop, talking to qwen3.5:4b in Ollama. Only two lines change: the tools come from the MCP client, and they run through it. | 4: Here's the full flow. One: tools/list. Two: the task and the tools go to the LLM. Three: the LLM answers with a tool call. Four: our client sends tools/call to the server. Five: the result goes back into the loop. Repeat, and rag.md and mcp.md appear. | 5: Three parts: the server, the client, the agent. Let's code them, one by one.">
+  <div class="eyebrow">What we'll build today</div>
+  <h1>One server. One client. <em>Our agent.</em></h1>
+
+  <div class="olW abs b" data-s="3"><div class="k">The LLM · Ollama</div><div class="t">qwen3.5:4b</div><div class="d">localhost:11434</div></div>
+  <div class="lnW b" data-s="3" style="left:384px;top:403px;width:72px"></div>
+
+  <div class="boxW b" data-s="2" style="left:460px;width:500px">
+    <div class="k">MCP host</div><div class="t">Our Java agent</div>
+    <div class="inW loop b" data-s="3" style="top:100px;height:150px"><div class="hd"><span class="num">3</span><span class="n">Step2_McpAgent</span></div><div class="d">the Ep 4 loop: chat → tool call → result → repeat</div></div>
+    <div class="inW cli" style="top:270px;height:126px"><div class="hd"><span class="num" style="background:#fff;color:var(--accent)">2</span><span class="n">MCP client</span></div><div class="d">FilesServerClient<br>starts: java -jar files-server.jar</div></div>
+  </div>
+
+  <div class="lnW b" data-s="2" style="left:964px;top:618px;width:182px"><span class="lb">stdio</span></div>
+
+  <div class="boxW b" data-s="1" style="left:1150px;width:410px">
+    <div class="k">MCP server</div><div class="t">files-server</div>
+    <div class="inW srv" style="top:100px;height:150px"><div class="hd"><span class="num">1</span><span class="n">FilesServer</span></div><div class="d">name + description + schema, over stdio</div>
+      <div class="chipsW"><span>read_file</span><span>list_files</span><span>save_file</span></div></div>
+    <div class="inW ft" style="top:270px;height:126px"><div class="n">FileTools</div><div class="d">the Ep 4 methods, unchanged<br>Files.readString · list · writeString</div></div>
+  </div>
+
+  <div class="lnW one b" data-s="1" style="left:1560px;top:618px;width:36px"></div>
+  <div class="card wsW abs"><div class="t">workspace/</div>
+    <div class="f">Trends.txt</div><div class="f">articles/</div><div class="f">&nbsp; tokens.md</div>
+    <div class="f new b" data-s="4">&nbsp; rag.md ✓</div><div class="f new b" data-s="4">&nbsp; mcp.md ✓</div></div>
+
+  <div class="bdg b" data-s="4" style="left:990px;top:636px">1</div>
+  <div class="bdg b" data-s="4" style="left:386px;top:430px">2</div>
+  <div class="bdg b" data-s="4" style="left:424px;top:360px">3</div>
+  <div class="bdg b" data-s="4" style="left:1080px;top:636px">4</div>
+  <div class="bdg b" data-s="4" style="left:905px;top:380px">5</div>
+
+  <div class="flowW abs b" data-s="4"><i>1</i><b>tools/list</b>&nbsp;→ <i>2</i><b>task + tools</b> to the LLM → <i>3</i><b>tool_call</b> → <i>4</i><b>tools/call</b> → <i>5</i>result back into the loop, repeat</div>
+
+  <div class="parts abs">
+    <div class="card pW b" data-s="1"><span class="num">1</span><div><div class="t">The server</div><code>FileTools · FilesServer</code><div class="d">test it by hand: paste JSON-RPC</div></div></div>
+    <div class="card pW b" data-s="2"><span class="num">2</span><div><div class="t">The client</div><code>FilesServerClient · Step1_ListAndCall</code><div class="d">initialize → tools/list → tools/call</div></div></div>
+    <div class="card pW b" data-s="3"><span class="num">3</span><div><div class="t">The agent</div><code>Step2_McpAgent</code><div class="d">the Ep 4 loop, with MCP tools</div></div></div>
+  </div>
+
+  <div class="statement b" data-s="5"><span class="tag">LET'S CODE</span>Server, then client, then agent. One by one.</div>
 </section>
 
 <!-- ============ 16 · HANDS ON ============ -->
