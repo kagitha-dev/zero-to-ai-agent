@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ep 5 MCP Slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Same system as Ep 3 and Ep 4: fixed 1920x1080 stage, click-to-step slides, speaker notes on N */
+:root{
+  --bg:#F3F5F9; --ink:#152033; --ink2:#3A4659; --muted:#6B7689;
+  --accent:#2B6FD6; --accent-soft:#E3ECFA; --line:#D5DDE9;
+  --b1:#DCE6F4; --b2:#C3D4EE; --b3:#9DBBEA; --b4:#5E8FDC;
+  --card:#FBFCFD; --navy:#152033; --navy2:#22314B; --sky:#8FB3EE;
+  --ok:#1F8A4C; --ok-soft:#E2F3E9; --bad:#B4432F; --bad-soft:#FBE9E7;
+  --amber:#8A6A00; --gh:#3A4659; --gh-soft:#E6E9EF; --amber-soft:#FFF4CF; --amber-hl:#FFE9A8; --gold:#E0A800;
+  --letterbox:#0b0f17; --term:#0F1828; --term-ink:#DCE6F4;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--letterbox);overflow:hidden;font-family:var(--f-body);color:var(--ink)}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--bg);padding:96px 140px;opacity:0;pointer-events:none;transition:opacity .5s ease;overflow:hidden}
+.slide.on{opacity:1;pointer-events:auto}
+.eyebrow{font-family:var(--f-mono);font-size:26px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase}
+h1{font-family:var(--f-display);font-weight:800;font-size:64px;line-height:1.04;letter-spacing:-.02em;margin:22px 0 0;max-width:1640px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.b{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+.b.in{opacity:1;transform:none}
+.abs{position:absolute}
+.k{font-family:var(--f-mono);font-size:19px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px}
+.statement{position:absolute;left:140px;right:140px;bottom:64px;background:var(--navy);color:#fff;border-radius:18px;padding:28px 44px;font-family:var(--f-display);font-weight:700;font-size:42px;display:flex;align-items:center;gap:24px;z-index:6}
+.statement .tag{font:500 20px var(--f-mono);letter-spacing:.16em;color:var(--sky);white-space:nowrap}
+.foot{position:absolute;left:140px;right:140px;bottom:60px;font-family:var(--f-display);font-weight:700;font-size:36px;display:flex;gap:18px;align-items:center}
+.foot .tag{font:500 20px var(--f-mono);letter-spacing:.16em;color:var(--accent);background:var(--accent-soft);padding:10px 16px;border-radius:10px;white-space:nowrap}
+.hint{position:absolute;right:28px;bottom:20px;font:14px var(--f-mono);color:#9aa4b5;letter-spacing:.08em;z-index:5}
+.progress{position:absolute;left:0;bottom:0;height:5px;background:var(--accent);transition:width .4s;z-index:4}
+.chip{display:inline-block;font:500 19px var(--f-mono);letter-spacing:.08em;padding:9px 15px;border-radius:10px;background:var(--accent-soft);color:var(--accent)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.dec{background:var(--amber-soft);color:var(--amber)}
+.chip.dk{background:var(--navy);color:#fff}
+.term{background:var(--term);border-radius:18px;color:var(--term-ink);font:500 24px/1.55 var(--f-mono);padding:22px 30px;overflow:hidden}
+.term pre{margin:0;font:inherit;white-space:pre}
+.term .cm{color:#7F8CA3}
+.term .kw{color:#8FB3EE}
+.term .st{color:#7BE0A3}
+.term .nu{color:#F5C46B}
+.term .ln{display:block;border-radius:6px;padding:0 8px;margin:0 -8px;transition:background .3s,opacity .3s}
+.term .ln.on{background:#2B4470}
+.term .ln.mcp{background:#4A3B0A}
+.term .ln.dim{opacity:.35}
+#auto{position:absolute;left:28px;bottom:16px;z-index:6;display:flex;align-items:center;gap:10px;font:14px var(--f-mono);letter-spacing:.08em;color:#9aa4b5}
+#auto .ring{width:90px;height:4px;border-radius:2px;background:#2a3446;overflow:hidden}
+#auto .ring i{display:block;height:100%;width:0;background:var(--sky)}
+#auto.off .ring{opacity:.3}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:rgba(10,14,22,.95);color:#dfe6f2;font:16px/1.55 var(--f-body);padding:16px 26px;display:none;z-index:9}
+#notes b{color:var(--sky);font-family:var(--f-mono);font-weight:500}
+
+/* shared: SVG wires that draw themselves */
+svg.wires{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:1}
+.wp{fill:none;stroke-width:4;stroke-dasharray:1400;stroke-dashoffset:1400;transition:stroke-dashoffset 1s cubic-bezier(.4,.1,.2,1)}
+.wp.on{stroke-dashoffset:0}
+.wp.red{stroke:#D98A7C}
+.wp.blue{stroke:var(--accent)}
+.node{position:absolute;display:flex;align-items:center;gap:16px;padding:0 22px;z-index:2;transition:opacity .5s,transform .5s}
+.node .t{font-family:var(--f-display);font-weight:700;font-size:28px}
+.node .d{font:500 16px var(--f-mono);color:var(--muted);letter-spacing:.06em}
+.node.dk{background:var(--navy);border-color:var(--navy);color:#fff}
+.node.dk .d{color:var(--sky)}
+.node.hid{opacity:0;transform:translateY(14px)}
+
+/* shared: flying message packets */
+.pkt{position:absolute;z-index:5;font:600 20px var(--f-mono);padding:12px 18px;border-radius:12px;white-space:nowrap;opacity:0;transition:left 1.1s cubic-bezier(.5,.1,.2,1),opacity .3s}
+.pkt.to{background:var(--accent);color:#fff;box-shadow:0 8px 20px rgba(43,111,214,.3)}
+.pkt.back{background:var(--amber-hl);color:var(--ink);border:2px solid #F2C94C;box-shadow:0 8px 20px rgba(224,168,0,.25)}
+.pkt.note{background:#fff;color:var(--ink2);border:2px dashed var(--b4)}
+.pkt.ok{background:var(--ok-soft);color:var(--ok);border:2px solid var(--ok)}
+
+/* ===== S1 title + the port ===== */
+#s1{display:flex;flex-direction:column;justify-content:center}
+#s1 h1{font-size:104px;max-width:880px}
+#s1 .sub{font-size:34px;color:var(--ink2);margin-top:30px;max-width:860px;line-height:1.35}
+#s1 .series{margin-top:64px;display:flex;gap:16px;align-items:center;font:500 22px var(--f-mono);letter-spacing:.14em;color:var(--muted)}
+#s1 .series i{display:block;width:60px;height:10px;border-radius:5px;background:var(--b2)}
+#s1 .series i.on{background:var(--accent)}
+.scene{position:absolute;left:1160px;top:240px;width:640px;height:580px}
+.laptop{position:absolute;left:0;top:40px;width:320px;height:380px;border-radius:22px;background:var(--navy);color:#fff;padding:28px}
+.laptop .an{font-family:var(--f-display);font-weight:800;font-size:40px;margin:6px 0 18px}
+.laptop .in{display:flex;flex-direction:column;gap:10px}
+.laptop .in span{font:500 19px var(--f-mono);background:var(--navy2);color:#C9D6EA;padding:10px 14px;border-radius:10px}
+.port{position:absolute;left:306px;top:188px;width:34px;height:84px;border-radius:12px;background:#0A111D;border:4px solid var(--sky);box-shadow:0 0 0 0 rgba(143,179,238,.6);animation:portglow 2.5s infinite}
+@keyframes portglow{0%,32%{box-shadow:0 0 0 0 rgba(143,179,238,0)}42%{box-shadow:0 0 0 14px rgba(143,179,238,.35)}70%,100%{box-shadow:0 0 0 0 rgba(143,179,238,0)}}
+.portlab{position:absolute;left:260px;top:290px;width:130px;text-align:center;font:600 18px var(--f-mono);color:var(--accent);letter-spacing:.12em}
+.dev{position:absolute;left:350px;top:160px;width:288px;height:140px;opacity:0;animation:plug 7.5s infinite}
+.dev .plug{position:absolute;left:0;top:44px;width:56px;height:52px;border-radius:10px;background:#C9D6EA;border:3px solid var(--b4)}
+.dev .cable{position:absolute;left:52px;top:64px;width:40px;height:12px;background:var(--b4)}
+.dev .box{position:absolute;left:88px;top:0;width:200px;height:140px;border-radius:16px;background:#fff;border:3px solid var(--b4);padding:16px 18px}
+.dev .box .t{font-family:var(--f-display);font-weight:800;font-size:32px}
+.dev .box .d{font:500 16px var(--f-mono);color:var(--muted);margin-top:4px}
+.dev .box .ok{font:600 17px var(--f-mono);color:var(--ok);margin-top:12px}
+.dev.d2{animation-delay:2.5s}.dev.d3{animation-delay:5s}
+@keyframes plug{0%{opacity:0;transform:translateX(170px)}4%{opacity:1;transform:translateX(170px)}12%{opacity:1;transform:translateX(-22px)}28%{opacity:1;transform:translateX(-22px)}33%{opacity:0;transform:translateX(-22px)}100%{opacity:0;transform:translateX(170px)}}
+.scene .cap{position:absolute;left:0;top:470px;width:640px;font-family:var(--f-display);font-weight:700;font-size:34px}
+.scene .cap span{color:var(--accent)}
+
+/* ===== S2 + S3: three agents, then MCP ===== */
+/* agent card */
+.agent{position:absolute;width:500px;padding:20px 24px}
+.agent .hd{display:flex;align-items:center;gap:14px}
+.agent .av{width:52px;height:52px;border-radius:14px;background:var(--navy);color:#fff;font:700 24px var(--f-mono);display:flex;align-items:center;justify-content:center;flex:none}
+.agent .t{font-family:var(--f-display);font-weight:800;font-size:38px}
+.needs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.needs span{font:600 17px var(--f-mono);padding:6px 10px;border-radius:8px}
+.cf{background:var(--accent-soft);color:var(--accent)}
+.cg{background:var(--gh-soft);color:var(--gh)}
+.cd{background:var(--amber-soft);color:var(--amber)}
+
+/* custom-code blocks inside an agent (slide A) */
+.blk{display:flex;align-items:center;gap:14px;height:62px;margin-top:12px;border-radius:12px;padding:0 16px;border:2px solid transparent;transition:opacity .5s,transform .5s,box-shadow .4s,border-color .4s}
+.blk .n{font-family:var(--f-display);font-weight:700;font-size:25px}
+.blk .s{margin-left:auto;font:500 15px var(--f-mono);opacity:.85}
+.blk.hide{opacity:0;transform:translateY(12px)}
+.blk.dup{border-color:#E0A800;box-shadow:0 0 0 5px rgba(255,233,168,.9)}
+.blk.cf{border-color:#s3BD0F2}.blk.cg{border-color:#CDD3DE}.blk.cd{border-color:#EFD98A}
+.blk.dup.cf,.blk.dup.cg,.blk.dup.cd{border-color:#E0A800}
+
+#s2 .count{left:140px;top:700px;width:1640px;text-align:center;font-family:var(--f-display);font-weight:800;font-size:44px}
+#s2 .count b{color:var(--bad)}
+#s2 .probs{left:140px;top:778px;width:1640px;display:flex;gap:24px}
+.pb{flex:1;display:flex;gap:16px;align-items:center;padding:16px 22px;border-color:#E8B4AA;background:#FFF8F6}
+.pb .x{width:42px;height:42px;border-radius:50%;background:var(--bad);color:#fff;font:800 22px var(--f-display);display:flex;align-items:center;justify-content:center;flex:none}
+.pb .t{font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1.2}
+
+/* slide B */
+#s3 .agent{height:168px}
+.slotB{position:relative;height:62px;margin-top:14px}
+.slotB .old{position:absolute;inset:0;display:flex;gap:8px;transition:opacity .5s,transform .5s}
+.slotB .old span{flex:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font:600 17px var(--f-mono);text-decoration:line-through;text-decoration-thickness:2px}
+.slotB .old.gone{opacity:0;transform:translateY(30px)}
+.slotB .cli{position:absolute;inset:0;border-radius:12px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;gap:12px;font:600 24px var(--f-mono);opacity:0;transform:scale(.85);transition:opacity .5s,transform .5s cubic-bezier(.2,.7,.2,1.3)}
+.slotB .cli small{font:500 15px var(--f-mono);color:#D6E4FA}
+.slotB .cli.on{opacity:1;transform:none}
+#s3 .band{left:140px;top:500px;width:1640px;height:64px;border-radius:14px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;gap:20px;z-index:3}
+#s3 .band b{font-family:var(--f-display);font-weight:800;font-size:32px;letter-spacing:.06em}
+#s3 .band span{font:500 19px var(--f-mono);color:var(--sky)}
+.msrv{position:absolute;top:610px;width:500px;height:150px;padding:18px 22px;transition:opacity .6s,transform .7s cubic-bezier(.2,.7,.2,1)}
+.msrv.hide{opacity:0;transform:translateY(-60px)}
+.msrv .k{font-size:15px}
+.msrv .t{font-family:var(--f-display);font-weight:800;font-size:32px;margin:4px 0 10px}
+.msrv .tools{display:flex;gap:8px;flex-wrap:wrap}
+.msrv .tools span{font:500 16px var(--f-mono);padding:5px 9px;border-radius:7px;background:#fff;border:1.5px solid var(--line);color:var(--ink2)}
+.msrv .once{position:absolute;right:18px;top:16px;font:600 15px var(--f-mono);color:var(--ok);background:var(--ok-soft);padding:5px 9px;border-radius:7px}
+.msrv.cf{border-color:#s3BD0F2;background:#F5F9FF}
+.msrv.cg{border-color:#CDD3DE;background:#F7F8FA}
+.msrv.cd{border-color:#EFD98A;background:#FFFCF0}
+svg.ov{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:2}
+.wpc{fill:none;stroke:var(--accent);stroke-width:5;stroke-dasharray:300;stroke-dashoffset:300;transition:stroke-dashoffset .8s cubic-bezier(.4,.1,.2,1)}
+.wpc.on{stroke-dashoffset:0}
+#s3 .gains{left:140px;top:790px;width:1640px;display:flex;gap:20px}
+.gn{flex:1;display:flex;gap:14px;align-items:center;padding:14px 20px;border-color:#s29D8BC;background:#F4FBF6}
+.gn .y{width:38px;height:38px;border-radius:50%;background:var(--ok);color:#fff;font:800 20px var(--f-display);display:flex;align-items:center;justify-content:center;flex:none}
+.gn .t{font-family:var(--f-display);font-weight:700;font-size:23px;line-height:1.2}
+
+/* ===== S4 RPC ===== */
+.mach{position:absolute;top:290px;width:560px;height:450px;padding:22px 26px}
+.mach .hd{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.mach .hd .ic{width:44px;height:30px;border-radius:6px;border:3px solid var(--ink2);position:relative}
+.mach .hd .ic::after{content:"";position:absolute;left:8px;right:8px;bottom:-10px;height:4px;background:var(--ink2);border-radius:2px}
+.mach .hd .t{font-family:var(--f-display);font-weight:700;font-size:30px}
+.mach .term{font-size:22px;padding:16px 22px}
+.fnbox{position:absolute;left:166px;top:576px;width:500px;padding:16px 20px;border-radius:14px;background:#fff;border:3px solid var(--b4);font:600 22px/1.45 var(--f-mono);z-index:3;transition:transform 1.1s cubic-bezier(.5,.1,.2,1),border-color .4s}
+.fnbox .k{font-size:14px;display:block;margin-bottom:4px}
+.fnbox.away{transform:translateX(1080px)}
+.status{margin-top:14px;border-radius:10px;padding:10px 14px;font:500 20px var(--f-mono);background:var(--bg);color:var(--ink2);min-height:48px;transition:background .3s,color .3s}
+.status.run{background:var(--amber-soft);color:var(--amber)}
+.status.ok{background:var(--ok-soft);color:var(--ok)}
+#s4 .net{position:absolute;left:720px;top:620px;width:480px;height:4px;background:repeating-linear-gradient(90deg,var(--b3) 0 12px,transparent 12px 22px)}
+#s4 .netk{position:absolute;left:720px;top:636px;width:480px;text-align:center}
+#s4 .rest{left:720px;top:290px;width:480px;padding:20px 24px;border-color:#F2C94C;background:#FFFBEC}
+#s4 .rest .t{font-family:var(--f-display);font-weight:700;font-size:28px;margin:4px 0 8px}
+#s4 .rest .d{font-size:21px;line-height:1.4;color:var(--ink2)}
+#s4 .flow4{left:140px;top:772px;width:1640px;display:flex;gap:14px;align-items:center;justify-content:center;font:600 22px var(--f-mono)}
+#s4 .flow4 span.n{padding:12px 18px;border-radius:12px;background:var(--card);border:2px solid var(--line)}
+#s4 .flow4 span.a{color:var(--b4);font-size:26px}
+#res4{color:var(--ok);font-weight:600}
+
+/* ===== S5 RPC family ===== */
+#s5 .fam{left:140px;top:280px;width:1640px;display:flex;gap:22px}
+.fc{flex:1;padding:22px 24px;height:560px;display:flex;flex-direction:column;transition:opacity .5s,border-color .5s,box-shadow .5s}
+.fc .yr{font:600 20px var(--f-mono);color:var(--accent)}
+.fc .t{font-family:var(--f-display);font-weight:800;font-size:40px;margin:4px 0 6px}
+.fc .fmt{font-size:20px;color:var(--ink2);line-height:1.35;min-height:56px}
+.fc .term{font-size:17px;padding:14px 16px;border-radius:12px;margin:14px 0;min-height:150px}
+.fc .pro{font-size:19px;line-height:1.4;color:var(--ink2)}
+.fc .pro b{color:var(--ink)}
+.fc .pick{margin-top:auto}
+.fc.fade{opacity:.38}
+.fc.win{border-color:var(--accent);box-shadow:0 0 0 6px var(--accent-soft)}
+
+/* ===== S6 why JSON-RPC ===== */
+#s6 .g6{left:140px;top:280px;width:1640px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.rc{padding:22px 28px;height:252px}
+.rc .t{font-family:var(--f-display);font-weight:700;font-size:32px;margin:6px 0 10px}
+.rc .d{font-size:22px;color:var(--ink2);line-height:1.4}
+.rc code{font:600 19px var(--f-mono);color:var(--accent);background:var(--accent-soft);padding:2px 7px;border-radius:6px}
+
+/* ===== S7 request ===== */
+#s7 .req{left:140px;top:280px;width:700px}
+#s7 .req .term{font-size:30px;padding:26px 34px}
+#s7 .slip{left:140px;top:600px;width:700px;padding:18px 24px}
+#s7 .slip .eng{font-size:30px;line-height:1.45;margin-top:10px;color:var(--ink2)}
+#s7 .slip .eng b{color:var(--accent)}
+#s7 .flds{left:900px;top:280px;width:880px;display:flex;flex-direction:column;gap:14px}
+#flds7{transition:opacity .4s}
+.fd{display:flex;gap:20px;align-items:flex-start;padding:16px 22px;transition:border-color .4s,background .4s,opacity .4s}
+.fd code{flex:none;width:150px;font:600 24px var(--f-mono);color:var(--accent);padding-top:3px}
+.fd .t{font-family:var(--f-display);font-weight:700;font-size:28px}
+.fd .d{font-size:20px;color:var(--ink2);line-height:1.4;margin-top:2px}
+.fd.on{border-color:var(--accent);background:var(--accent-soft)}
+#s7 .styles{left:900px;top:280px;width:880px;padding:22px 26px;border-color:var(--accent);z-index:3;background:#fff}
+#s7 .styles .t{font-family:var(--f-display);font-weight:700;font-size:32px;margin:4px 0 14px}
+#s7 .styles .term{font-size:20px;padding:14px 18px;border-radius:12px;margin:8px 0 6px}
+#s7 .styles .d{font-size:20px;color:var(--ink2)}
+
+/* ===== S8 response ===== */
+#s8 .lc{left:140px;top:280px;width:860px;display:flex;flex-direction:column;gap:16px}
+#s8 .lc .term{font-size:22px;padding:18px 24px}
+#s8 .lc .lab{display:flex;gap:12px;align-items:center;margin-bottom:-6px}
+#s8 .rules{left:1060px;top:280px;width:720px;padding:22px 28px}
+#s8 .rules .r{display:flex;gap:14px;font-size:22px;line-height:1.4;margin-top:12px}
+#s8 .rules .r b{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font:600 15px var(--f-mono);display:flex;align-items:center;justify-content:center;transform:translateY(3px)}
+#s8 .codes{left:1060px;top:560px;width:720px;padding:14px 24px}
+.cr{display:grid;grid-template-columns:120px 210px 1fr;gap:12px;align-items:center;height:46px;border-bottom:1px solid var(--line);font:500 19px var(--f-mono)}
+.cr:last-child{border-bottom:0}
+.cr .c{color:var(--bad);font-weight:600}
+.cr .m{color:var(--ink);font-weight:600}
+.cr .w{color:var(--ink2);font-family:var(--f-body);font-size:19px}
+
+/* ===== S9 id matching ===== */
+#s9 .cli{left:140px;top:280px;width:560px;height:470px;padding:22px 26px}
+#s9 .srv{left:1220px;top:280px;width:560px;height:470px;padding:22px 26px}
+.an{font-family:var(--f-display);font-weight:800;font-size:34px;margin:4px 0 14px}
+.slot{display:grid;grid-template-columns:64px 1fr 150px;gap:10px;align-items:center;height:62px;border-radius:12px;padding:0 14px;margin-bottom:10px;background:var(--bg);font:500 19px var(--f-mono);transition:background .4s,box-shadow .4s}
+.slot .id{color:var(--accent);font-weight:600}
+.slot .v{text-align:right;color:var(--muted)}
+.slot.got{background:var(--ok-soft)}
+.slot.got .v{color:var(--ok);font-weight:600}
+.slot.flash{box-shadow:0 0 0 4px var(--ok)}
+.slot.nt{background:#fff;border:2px dashed var(--b3)}
+.slot.nt .id{color:var(--muted)}
+.slog{font:500 19px/1.7 var(--f-mono);color:var(--ink2)}
+.slog div{opacity:0;transition:opacity .3s}
+.slog div.in{opacity:1}
+.slog .x{color:var(--bad)}
+#s9 .lane{position:absolute;left:720px;width:480px;height:4px;background:repeating-linear-gradient(90deg,var(--b2) 0 12px,transparent 12px 22px)}
+#s9 .batch{left:140px;top:772px;width:1640px;display:flex;gap:26px;align-items:center;padding:18px 26px}
+#s9 .batch .term{font-size:19px;padding:12px 18px;border-radius:12px;flex:none}
+#s9 .batch .d{font-size:23px;line-height:1.4;color:var(--ink2)}
+#s9 .batch .d b{color:var(--ink)}
+
+/* ===== S10 JSON-RPC inside MCP: side by side ===== */
+.bx10{top:296px;width:660px;height:430px;border-radius:18px;background:var(--term)}
+.g10{left:140px;top:312px;display:grid;grid-template-columns:660px 320px 660px;grid-template-rows:44px 56px 56px 56px 164px 44px;z-index:2}
+.c10{display:flex;align-items:center;padding:0 34px;margin:0 12px;border-radius:10px;color:var(--term-ink);font:500 26px var(--f-mono);white-space:pre;transition:background .4s,opacity .6s,transform .6s}
+.c10 pre{margin:0;font:inherit;line-height:1.5}
+.c10.r{padding:0 24px}
+.c10 .st{color:#7BE0A3}.c10 .nu{color:#F5C46B}
+.c10.same{background:#1E4A33}
+.c10.mcp{background:#4A3B0A}
+.tg10{display:flex;align-items:center;justify-content:center;text-align:center}
+.tg10 .chip{font-size:19px;line-height:1.35}
+.en10{top:748px;width:660px;font-size:27px;color:var(--ink2);font-style:italic}
+.en10 b{color:var(--accent);font-style:normal}
+.meth10{left:140px;top:820px;width:1640px;display:flex;gap:16px;align-items:center}
+.meth10 .lead{font-family:var(--f-display);font-weight:700;font-size:28px;margin-right:6px}
+.meth10 .chip{font-size:22px}
+.meth10 .w{font-size:23px;color:var(--ink2);margin-right:22px}
+
+/* ===== S11 three ways ===== */
+#s11 .lv{left:140px;top:270px;width:1640px;display:flex;gap:22px;align-items:flex-end}
+.lvc{flex:1;padding:20px 24px;transition:border-color .4s}
+.lvc .lvl{display:flex;align-items:center;gap:12px}
+.lvc .lvl b{width:40px;height:40px;border-radius:10px;background:var(--accent);color:#fff;font:700 20px var(--f-mono);display:flex;align-items:center;justify-content:center}
+.lvc .t{font-family:var(--f-display);font-weight:700;font-size:32px;margin:10px 0 8px;line-height:1.15}
+.lvc .sub{font:500 17px var(--f-mono);color:var(--muted);margin-bottom:10px}
+.lvc .li{font-size:20px;line-height:1.5;color:var(--ink2)}
+.lvc .li .y{color:var(--ok);font-weight:600}
+.lvc .li .n{color:var(--bad);font-weight:600}
+.lvc.l1{height:440px}.lvc.l2{height:470px}.lvc.l3{height:500px}
+.lvc.pick{border-color:var(--accent);box-shadow:0 0 0 6px var(--accent-soft)}
+#s11 .fixes{left:140px;top:790px;width:1640px;display:flex;gap:22px;z-index:3}
+.fix{flex:1;padding:14px 22px;border-color:#F2C94C;background:#FFFBEC;font-size:21px;line-height:1.4;color:var(--ink2)}
+.fix b{color:var(--amber);font:600 16px var(--f-mono);letter-spacing:.12em;display:block;margin-bottom:2px}
+
+/* ===== S12 Java SDK ===== */
+#s12 .facts{left:140px;top:280px;width:700px;padding:24px 30px}
+#s12 .facts .r{display:flex;gap:16px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line);font-size:23px}
+#s12 .facts .r:last-child{border-bottom:0}
+#s12 .facts .r .k{width:170px;flex:none;font-size:16px}
+#s12 .facts code{font:600 21px var(--f-mono);color:var(--accent)}
+#s12 .gens{left:900px;top:280px;width:880px;display:flex;gap:20px}
+.gen{flex:1;padding:22px 26px;height:420px}
+.gen .t{font-family:var(--f-display);font-weight:800;font-size:36px;margin:4px 0 4px}
+.gen .v{font:600 20px var(--f-mono);color:var(--accent);margin-bottom:14px}
+.gen .li{font-size:21px;line-height:1.5;color:var(--ink2)}
+.gen.mod{border-color:var(--accent)}
+#s12 .warn{left:900px;top:730px;width:880px;padding:14px 24px;border-color:#F2C94C;background:#FFFBEC;font-size:21px;line-height:1.4;color:var(--ink2)}
+#s12 .warn b{color:var(--ink)}
+
+/* ===== S12b big-picture architecture ===== */
+#sA .llmA{left:140px;top:395px;width:200px;height:150px;padding:18px 20px;border-radius:18px;background:var(--navy);color:#fff;z-index:2}
+#sA .llmA .k{color:var(--sky);font-size:15px}
+#sA .llmA .t{font-family:var(--f-display);font-weight:800;font-size:26px;margin-top:6px}
+#sA .llmA .d{font-size:16px;color:#C9D6EA;margin-top:4px}
+#sA .hostA{left:390px;top:270px;width:530px;height:420px;padding:20px 24px;border:3px solid var(--navy);border-radius:22px;background:var(--card);z-index:1}
+#sA .hostA .t{font-family:var(--f-display);font-weight:800;font-size:34px;margin:4px 0 6px}
+#sA .hostA .ex{font:500 16px var(--f-mono);color:var(--muted)}
+#sA .loopA{position:absolute;left:24px;top:140px;width:220px;height:250px;border-radius:14px;background:var(--bg);border:2px dashed var(--line);padding:16px;font-size:19px;line-height:1.45;color:var(--ink2)}
+#sA .loopA b{display:block;font-family:var(--f-display);font-size:24px;color:var(--ink);margin-bottom:6px}
+.cA{position:absolute;left:660px;width:240px;height:86px;border-radius:14px;background:var(--accent);color:#fff;padding:14px 18px;z-index:3}
+.cA .t{font:600 23px var(--f-mono)}
+.cA .d{font:500 15px var(--f-mono);color:#D6E4FA;margin-top:4px}
+.sA{position:absolute;left:1180px;width:420px;height:172px;padding:14px 18px;border:3px solid var(--navy);z-index:2}
+.sA .hd{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}
+.sA .hd .t{font-family:var(--f-display);font-weight:800;font-size:28px}
+.sA .row{display:grid;grid-template-columns:110px 1fr;align-items:center;gap:10px;height:34px;border-top:1px solid var(--line)}
+.sA .row b{font:600 15px var(--f-mono);letter-spacing:.08em;text-transform:uppercase}
+.sA .row b.tl{color:var(--amber)}.sA .row b.rs{color:var(--accent)}.sA .row b.pm{color:var(--ok)}
+.sA .row span{font:500 16px var(--f-mono);color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlA{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px solid var(--line);padding-top:12px}
+.tlA b{font:600 14px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--amber);margin-right:4px}
+.tlA span{font:500 15px var(--f-mono);padding:4px 8px;border-radius:8px;background:var(--amber-soft);color:var(--ink)}
+.wrapA{font:500 16px var(--f-mono);color:var(--muted);margin-top:14px}
+.rA{position:absolute;left:1650px;width:130px;height:110px;border-radius:14px;border:2px dashed var(--b4);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:var(--f-display);font-weight:700;font-size:22px;line-height:1.15;z-index:2}
+.rA small{font:500 14px var(--f-mono);color:var(--muted);margin-top:6px}
+.wA{position:absolute;left:908px;width:264px;text-align:center;z-index:3}
+.wA .m{font:600 17px var(--f-mono);color:var(--accent);background:var(--bg);padding:2px 8px;border-radius:6px}
+.wA .chip{font-size:15px;padding:4px 9px;margin-top:6px}
+#sA .defs{left:140px;top:722px;width:1640px;display:flex;gap:22px}
+.dA{flex:1;display:flex;gap:16px;align-items:flex-start;padding:16px 22px}
+.dA i{flex:none;width:18px;height:58px;border-radius:6px;margin-top:4px}
+.dA .t{font-family:var(--f-display);font-weight:800;font-size:27px}
+.dA .d{font-size:20px;color:var(--ink2);line-height:1.38;margin-top:2px}
+
+/* ===== S13 architecture ===== */
+#s13 .llm13{left:140px;top:330px;width:330px;height:260px;padding:22px 24px;border-radius:20px;background:var(--navy);color:#fff}
+#s13 .llm13 .k{color:var(--sky);font-size:16px}
+#s13 .llm13 .d{font-size:20px;color:#C9D6EA;line-height:1.4;margin-top:6px}
+#s13 .host{left:560px;top:280px;width:620px;height:560px;padding:22px 26px;border:3px solid var(--navy);border-radius:22px;background:var(--card)}
+#s13 .host .ex{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+#s13 .host .ex span{font:500 16px var(--f-mono);padding:6px 10px;border-radius:8px;background:var(--bg);color:var(--ink2)}
+#s13 .loop{margin-top:16px;padding:14px 18px;border-radius:12px;background:var(--bg);font:500 20px var(--f-mono);color:var(--ink2)}
+.cl{position:absolute;left:300px;width:296px;height:84px;border-radius:14px;background:var(--accent);color:#fff;padding:12px 18px;z-index:2}
+.cl .t{font:600 22px var(--f-mono)}
+.cl .d{font:500 15px var(--f-mono);color:#D6E4FA;margin-top:2px}
+.sv{position:absolute;left:1360px;width:420px;height:150px;padding:16px 20px;z-index:2}
+.sv .t{font-family:var(--f-display);font-weight:800;font-size:28px}
+.sv .d{font-size:18px;color:var(--ink2);margin-top:4px;line-height:1.35}
+.sv .chip{font-size:15px;padding:5px 9px;margin-top:8px}
+.wlab13{position:absolute;font:500 16px var(--f-mono);color:var(--accent);background:var(--bg);padding:2px 8px;border-radius:6px;z-index:2}
+#s13 .usb{left:140px;top:630px;width:330px;padding:16px 20px;font:500 18px/1.7 var(--f-mono);color:var(--ink2)}
+#s13 .usb b{color:var(--ink)}
+
+/* ===== S14 two ways to connect ===== */
+.tw{position:absolute;left:140px;top:280px;width:1640px;display:flex;gap:40px}
+.way{flex:1;height:390px;padding:22px 30px}
+.way .t{font-family:var(--f-display);font-weight:800;font-size:44px;margin:2px 0 14px}
+.way .li{font-size:23px;line-height:1.45;color:var(--ink2);margin-top:18px}
+.way .li b{color:var(--ink)}
+.pic{display:flex;align-items:center;gap:0;height:150px}
+.zone{position:relative;flex:1;height:150px;border:2px dashed var(--b3);border-radius:16px;display:flex;align-items:center;justify-content:center;gap:0;padding:0 20px}
+.zone.sm{flex:none;width:220px}
+.zl{position:absolute;left:14px;top:8px;font:500 14px var(--f-mono);letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.bx{flex:none;padding:16px 18px;border-radius:12px;font-family:var(--f-display);font-weight:700;font-size:22px;margin-top:14px}
+.bx.host{background:var(--card);border:3px solid var(--navy)}
+.bx.srv{background:var(--navy);color:#fff}
+.pipe{flex:1;position:relative;height:4px;background:var(--accent);margin:14px 10px 0;min-width:60px}
+.pipe::before,.pipe::after{content:"";position:absolute;top:-8px;border:10px solid transparent}
+.pipe::before{left:-4px;border-right:12px solid var(--accent);border-left:0}
+.pipe::after{right:-4px;border-left:12px solid var(--accent);border-right:0}
+.pipe span{position:absolute;left:50%;top:-38px;transform:translateX(-50%);white-space:nowrap;font:600 17px var(--f-mono);color:var(--accent)}
+.pipe.net{flex:1;margin:14px 12px 0}
+.ex14{position:absolute;left:140px;top:700px;width:1640px;display:flex;gap:24px}
+.exc{flex:1;padding:16px 22px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.exc .t{font-family:var(--f-display);font-weight:800;font-size:27px;margin-right:6px}
+.exc .chip{font-size:17px;padding:6px 11px}
+.exc .d{flex-basis:100%;font-size:19px;color:var(--ink2)}
+
+/* ===== S15 full flow ===== */
+.act{position:absolute;top:270px;width:400px;height:200px;padding:16px 22px;transition:box-shadow .4s,border-color .4s}
+.act .t{font-family:var(--f-display);font-weight:800;font-size:28px;margin:2px 0 8px}
+.act .d{font:500 17px/1.5 var(--f-mono);color:var(--ink2)}
+.act.dk{background:var(--navy);border-color:var(--navy);color:#fff}
+.act.dk .k{color:var(--sky)}
+.act.dk .d{color:#C9D6EA}
+.act.lit{box-shadow:0 0 0 6px var(--amber-hl);border-color:#F2C94C}
+.act .mini{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.act .mini span{font:500 15px var(--f-mono);padding:4px 8px;border-radius:7px;background:var(--bg);color:var(--ink2)}
+.act .mini span.c{background:var(--accent);color:#fff}
+#s15 .lane15{position:absolute;left:140px;top:500px;width:1640px;height:4px;background:repeating-linear-gradient(90deg,var(--b2) 0 12px,transparent 12px 22px)}
+#s15 .log15{left:140px;top:540px;width:1640px;padding:8px 22px}
+.l15{display:grid;grid-template-columns:44px 230px 260px 1fr;gap:14px;align-items:center;height:44px;border-bottom:1px solid var(--line);font:500 18px var(--f-mono);opacity:0;transition:opacity .4s,background .4s}
+.l15.hd{opacity:1;height:30px;font-size:14px;letter-spacing:.12em;color:var(--muted)}
+.l15.in{opacity:1}
+.l15.now{background:var(--amber-soft)}
+.l15:last-child{border-bottom:0}
+.l15 .n{color:var(--accent);font-weight:600}
+.l15 .dir{color:var(--ink2)}
+.l15 .m{color:var(--ink);font-weight:600}
+.l15 .w{color:var(--ink2);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ===== S16 hands on ===== */
+#s16 .steps16{left:140px;top:290px;width:1640px;display:flex;gap:22px}
+#s16 .st{flex:1;padding:24px;min-height:350px}
+#s16 .st .t{font-family:var(--f-display);font-weight:700;font-size:32px;margin:8px 0 14px}
+#s16 .st code{font:500 18px/1.5 var(--f-mono);color:var(--accent);background:var(--accent-soft);padding:10px 12px;border-radius:8px;display:block;white-space:pre}
+#s16 .st .d{font-size:21px;color:var(--ink2);line-height:1.4;margin-top:14px}
+#s16 .flow16{left:140px;top:690px;width:1640px;display:flex;align-items:center;gap:16px;font:600 23px var(--f-mono)}
+#s16 .flow16 .nd{padding:16px 20px;border-radius:14px;background:var(--card);border:2px solid var(--line)}
+#s16 .flow16 .nd.dk{background:var(--navy);color:#fff;border-color:var(--navy)}
+#s16 .flow16 .nd.bl{background:var(--accent);color:#fff;border-color:var(--accent)}
+#s16 .flow16 .ar{color:var(--b4);font-size:28px}
+
+@media (prefers-reduced-motion: reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}.dev{opacity:1!important;transform:none!important}.dev.d2,.dev.d3{display:none}}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+<!-- ============ 1 · TITLE ============ -->
+<section class="slide" id="s1" data-steps="0" data-label="Title"
+ data-notes="Episode 5. Look at the right side: one AI app, one port. Files plugs in. Then GitHub. Then a database. Same port every time, and the app never changes. That's MCP in one picture. By the end of today you'll know exactly what happens inside that port.">
+  <div class="eyebrow">AI Explained · Episode 5</div>
+  <h1>MCP: <em>plug-and-play</em> tools</h1>
+  <div class="sub">One standard port for AI apps. Build a tool once, use it in any AI app.</div>
+  <div class="series"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span>From zero to building an AI agent</span></div>
+  <div class="scene">
+    <div class="laptop"><div class="k" style="color:var(--sky)">AI app</div><div class="an">Your agent</div>
+      <div class="in"><span>LLM</span><span>the loop (Ep 4)</span><span>MCP client</span></div></div>
+    <div class="port"></div><div class="portlab">MCP</div>
+    <div class="dev d1"><div class="plug"></div><div class="cable"></div><div class="box"><div class="t">Files</div><div class="d">MCP server</div><div class="ok">● connected</div></div></div>
+    <div class="dev d2"><div class="plug"></div><div class="cable"></div><div class="box"><div class="t">GitHub</div><div class="d">MCP server</div><div class="ok">● connected</div></div></div>
+    <div class="dev d3"><div class="plug"></div><div class="cable"></div><div class="box"><div class="t">Database</div><div class="d">MCP server</div><div class="ok">● connected</div></div></div>
+    <div class="cap">One port. <span>Any tool.</span></div>
+  </div>
+</section>
+
+<!-- ============ 2 · THE PROBLEM ============ -->
+<section class="slide" id="s2" data-steps="4" data-label="The problem"
+ data-notes="Step 0: In Episode 4 we wrote the tool code inside our agent. Fine for one agent. But say we have three. Agent-1, Agent-2, Agent-3. Different jobs, but every one of them needs the same three things: access to files, to GitHub, and to a database. | 1: Agent-1 first. Like in Episode 4, we write the code ourselves: file access code, GitHub code, database code. All inside Agent-1. | 2: Now Agent-2 needs the same access. So we write the same three pieces again, inside Agent-2. And again for Agent-3. | 3: Look at the rows. The same file code, three times. The same GitHub code, three times. Same for the database. 3 agents times 3 tools: 9 pieces of custom code. | 4: And that hurts. It's the same work done three times. If GitHub changes something, we fix it in three places. And a new tool means changing every agent. That's the problem MCP solves.">
+  <div class="eyebrow">Where Episode 4 left us</div>
+  <h1>Three agents. <em>Same three needs.</em></h1>
+  <div class="card agent" style="left:140px;top:270px"><div class="hd"><span class="av">1</span><span class="t">Agent-1</span></div>
+    <div class="needs"><span class="cf">needs Files</span><span class="cg">needs GitHub</span><span class="cd">needs Database</span></div>
+    <div class="blk cf hide a1 rf"><span class="n">File access code</span><span class="s">written by us</span></div>
+    <div class="blk cg hide a1 rg"><span class="n">GitHub code</span><span class="s">written by us</span></div>
+    <div class="blk cd hide a1 rd"><span class="n">Database code</span><span class="s">written by us</span></div></div>
+  <div class="card agent" style="left:710px;top:270px"><div class="hd"><span class="av">2</span><span class="t">Agent-2</span></div>
+    <div class="needs"><span class="cf">needs Files</span><span class="cg">needs GitHub</span><span class="cd">needs Database</span></div>
+    <div class="blk cf hide a2 rf"><span class="n">File access code</span><span class="s">again</span></div>
+    <div class="blk cg hide a2 rg"><span class="n">GitHub code</span><span class="s">again</span></div>
+    <div class="blk cd hide a2 rd"><span class="n">Database code</span><span class="s">again</span></div></div>
+  <div class="card agent" style="left:1280px;top:270px"><div class="hd"><span class="av">3</span><span class="t">Agent-3</span></div>
+    <div class="needs"><span class="cf">needs Files</span><span class="cg">needs GitHub</span><span class="cd">needs Database</span></div>
+    <div class="blk cf hide a3 rf"><span class="n">File access code</span><span class="s">again</span></div>
+    <div class="blk cg hide a3 rg"><span class="n">GitHub code</span><span class="s">again</span></div>
+    <div class="blk cd hide a3 rd"><span class="n">Database code</span><span class="s">again</span></div></div>
+  <div class="count abs b" data-s="3">3 agents × 3 tools = <b>9</b> pieces of custom code</div>
+  <div class="probs abs b" data-s="4">
+    <div class="card pb"><span class="x">✕</span><span class="t">Same work, done 3 times</span></div>
+    <div class="card pb"><span class="x">✕</span><span class="t">GitHub changes? Fix it in 3 agents</span></div>
+    <div class="card pb"><span class="x">✕</span><span class="t">New tool? Change every agent</span></div></div>
+  <div class="statement b" data-s="4"><span class="tag">THE PROBLEM</span>Every agent rebuilds every connection.</div>
+</section>
+
+<!-- ============ 3 · HOW MCP SOLVES IT ============ -->
+<section class="slide" id="s3" data-steps="4" data-label="How MCP solves it"
+ data-notes="Step 0: Here are our three agents again, each full of its own copy of the tool code. | 1: MCP's idea: take that code out of the agents. Build each one once, as its own small program: an MCP server. A Files MCP server, a GitHub MCP server, a Database MCP server. Built once. | 2: Each agent now needs only one thing: an MCP client. It's the same for every agent, and the SDK gives it to us. | 3: MCP is the one standard way they talk. Any agent connects to any server. Agent-1 can use all three. So can Agent-2 and Agent-3. Just like USB-C: one port, any device. | 4: So now: each tool is built once. A fix in the GitHub server helps every agent at once. And a new agent? It just plugs in, with nothing to rewrite.">
+  <div class="eyebrow">How MCP solves it</div>
+  <h1>Build each tool <em>once.</em> Every agent plugs in.</h1>
+  <div class="card agent" style="left:140px;top:270px"><div class="hd"><span class="av">1</span><span class="t">Agent-1</span></div>
+    <div class="slotB"><div class="old"><span class="cf">File code</span><span class="cg">GitHub code</span><span class="cd">DB code</span></div><div class="cli">MCP client <small>one, same for all</small></div></div></div>
+  <div class="card agent" style="left:710px;top:270px"><div class="hd"><span class="av">2</span><span class="t">Agent-2</span></div>
+    <div class="slotB"><div class="old"><span class="cf">File code</span><span class="cg">GitHub code</span><span class="cd">DB code</span></div><div class="cli">MCP client <small>one, same for all</small></div></div></div>
+  <div class="card agent" style="left:1280px;top:270px"><div class="hd"><span class="av">3</span><span class="t">Agent-3</span></div>
+    <div class="slotB"><div class="old"><span class="cf">File code</span><span class="cg">GitHub code</span><span class="cd">DB code</span></div><div class="cli">MCP client <small>one, same for all</small></div></div></div>
+  <svg class="ov" id="svC" viewBox="0 0 1920 1080"></svg>
+  <div class="band abs b" data-s="3"><b>MCP</b><span>one standard way to talk · any agent ⇄ any server</span></div>
+  <div class="card msrv cf hide" style="left:140px"><div class="k">MCP server</div><div class="t">Files</div><div class="tools"><span>read_file</span><span>list_files</span><span>save_file</span></div><span class="once">built once</span></div>
+  <div class="card msrv cg hide" style="left:710px"><div class="k">MCP server</div><div class="t">GitHub</div><div class="tools"><span>list_issues</span><span>create_issue</span></div><span class="once">built once</span></div>
+  <div class="card msrv cd hide" style="left:1280px"><div class="k">MCP server</div><div class="t">Database</div><div class="tools"><span>run_query</span><span>insert_row</span></div><span class="once">built once</span></div>
+  <div class="gains abs b" data-s="4">
+    <div class="card gn"><span class="y">✓</span><span class="t">3 tools, each built once</span></div>
+    <div class="card gn"><span class="y">✓</span><span class="t">Fix the GitHub server: every agent gets it</span></div>
+    <div class="card gn"><span class="y">✓</span><span class="t">New agent? Plug in, rewrite nothing</span></div></div>
+  <div class="statement b" data-s="4"><span class="tag">MCP</span>Tools become MCP servers. Agents just plug in.</div>
+</section>
+
+<!-- ============ 4 · WHAT IS RPC ============ -->
+<section class="slide" id="s4" data-steps="4" data-label="What is RPC?"
+ data-notes="Step 0: Before we open the MCP port, one older idea it's built on: RPC. Start simple. In your program you call subtract(42, 23). The function is right there, in the same program. You get 19. That's a normal, local call. | 1: Now move subtract to another computer. Your line of code stays exactly the same: subtract(42, 23). But the function isn't here anymore. | 2: Watch what happens. Your side packs the call into a message: the name and the inputs. Sends it over the network. The other computer unpacks it, runs subtract, packs the answer, 19, and sends it back. Your code just sees: r = 19. | 3: Think of a restaurant. You say 'one pasta'. The kitchen cooks. The plate comes back to your table. You never walk into the kitchen. | 4: That's RPC: Remote Procedure Call. A call to a function on another computer that looks just like a normal call.">
+  <div class="eyebrow">Step back · the idea under MCP</div>
+  <h1>RPC: call a function that lives on <em>another computer</em></h1>
+  <div class="card mach" style="left:140px"><div class="hd"><span class="ic"></span><span class="t">Your computer</span></div>
+    <div class="term"><pre><span class="kw">int</span> r = subtract(<span class="nu">42</span>, <span class="nu">23</span>);
+<span class="cm">// r = </span><span id="res4"></span></pre></div>
+    <div class="status" id="stL4">calling…</div></div>
+  <div class="card mach" style="left:1220px"><div class="hd"><span class="ic"></span><span class="t">Another computer</span></div>
+    <div class="status" id="stR4" style="margin-top:110px">idle</div></div>
+  <div class="fnbox" id="fn4"><span class="k">the function</span>subtract(a, b) {<br>&nbsp;&nbsp;return a - b;<br>}</div>
+  <div class="net"></div><div class="k netk">network</div>
+  <div class="pkt" id="p4"></div>
+  <div class="card rest abs b" data-s="3"><div class="k" style="color:var(--amber)">Like a restaurant</div><div class="t">You order. The kitchen cooks.</div><div class="d">The plate comes back to your table. You never enter the kitchen.</div></div>
+  <div class="flow4 abs b" data-s="2"><span class="n">1 · pack the call</span><span class="a">→</span><span class="n">2 · send it</span><span class="a">→</span><span class="n">3 · run it there</span><span class="a">→</span><span class="n">4 · send the answer back</span></div>
+  <div class="statement b" data-s="4"><span class="tag">RPC</span>Remote Procedure Call: remote, but it feels local.</div>
+</section>
+
+<!-- ============ 5 · RPC FAMILY ============ -->
+<section class="slide" id="s5" data-steps="5" data-label="Ways to do RPC"
+ data-notes="Step 0: RPC is an idea. Over the years, people built many ways to do it. Here are four you'll hear about. The same subtract call, four ways. | 1: Java RMI, 1997, part of Java itself. You call a method on a Java object that lives on another machine. Feels natural, but both sides must be Java. | 2: XML-RPC, 1998. The call is written as XML and sent over HTTP. Any language can read it, but it's wordy. | 3: JSON-RPC. Version 1 around 2005, version 2.0 in 2010. The same idea in JSON: small, readable, and it doesn't care how you send it. | 4: gRPC, from Google, open-sourced in 2015. Very fast: it sends compact binary using Protocol Buffers over HTTP/2. But you can't read the messages by eye, and both sides share a .proto contract. | 5: And for MCP, the choice was JSON-RPC 2.0. Let's see why.">
+  <div class="eyebrow">One idea, many implementations</div>
+  <h1>The same call, <em>four ways</em></h1>
+  <div class="fam abs">
+    <div class="card fc b" data-s="1" id="f5a"><div class="yr">1997 · Sun / Java</div><div class="t">Java RMI</div><div class="fmt">Java objects, sent between Java programs</div>
+      <div class="term"><pre>calc.subtract(<span class="nu">42</span>, <span class="nu">23</span>);
+<span class="cm">// calc lives on
+// another JVM</span></pre></div>
+      <div class="pro"><b>+</b> feels like normal Java<br><b>−</b> both sides must be Java</div></div>
+    <div class="card fc b" data-s="2" id="f5b"><div class="yr">1998</div><div class="t">XML-RPC</div><div class="fmt">XML text, sent over HTTP</div>
+      <div class="term"><pre>&lt;methodCall&gt;
+ &lt;methodName&gt;subtract
+ &lt;/methodName&gt;
+ &lt;params&gt;…42…23…
+&lt;/methodCall&gt;</pre></div>
+      <div class="pro"><b>+</b> any language<br><b>−</b> wordy</div></div>
+    <div class="card fc b" data-s="3" id="f5c"><div class="yr">2005 · 2.0 in 2010</div><div class="t">JSON-RPC</div><div class="fmt">JSON text, over any transport</div>
+      <div class="term"><pre>{<span class="st">"jsonrpc"</span>: <span class="st">"2.0"</span>,
+ <span class="st">"method"</span>: <span class="st">"subtract"</span>,
+ <span class="st">"params"</span>: [<span class="nu">42</span>, <span class="nu">23</span>],
+ <span class="st">"id"</span>: <span class="nu">1</span>}</pre></div>
+      <div class="pro"><b>+</b> small, readable, any language<br><b>−</b> slower than binary</div>
+      <div class="pick b" data-s="5"><span class="chip ok">MCP uses this ✓</span></div></div>
+    <div class="card fc b" data-s="4" id="f5d"><div class="yr">2015 · Google</div><div class="t">gRPC</div><div class="fmt">Binary (Protocol Buffers) over HTTP/2</div>
+      <div class="term"><pre><span class="kw">rpc</span> Subtract(Pair)
+  <span class="kw">returns</span> (Result);
+<span class="cm">// sent as compact
+// binary bytes</span></pre></div>
+      <div class="pro"><b>+</b> very fast<br><b>−</b> not readable by eye, needs a .proto file</div></div>
+  </div>
+  <div class="statement b" data-s="5"><span class="tag">FOR MCP</span>The choice was JSON-RPC 2.0.</div>
+</section>
+
+<!-- ============ 6 · WHY JSON-RPC ============ -->
+<section class="slide" id="s6" data-steps="3" data-label="Why JSON-RPC?"
+ data-notes="Step 0: Why JSON-RPC and not the others? Six simple reasons. | 1: It's plain text you can read, so debugging is easy: you just look at the message. And every language already has a JSON parser, so you can write an MCP server in Java, Python, TypeScript, anything. | 2: It doesn't care how the message travels. The same message works through a pipe between two local programs, or over HTTP across the internet. MCP uses both. And the spec is tiny: a few pages. | 3: The AI world already speaks JSON: our Episode 4 tool calls were JSON. And it's proven: code editors use the Language Server Protocol, which runs on JSON-RPC, and MCP's designers took inspiration from it. So MCP didn't invent a new message format. It reused a good one.">
+  <div class="eyebrow">Why this one?</div>
+  <h1>Why MCP picked <em>JSON-RPC 2.0</em></h1>
+  <div class="g6 abs">
+    <div class="card rc b" data-s="1"><div class="k">1</div><div class="t">Easy to read</div><div class="d">Plain JSON text. To debug, you just look at the message.</div></div>
+    <div class="card rc b" data-s="1"><div class="k">2</div><div class="t">Any language</div><div class="d">Java, Python, TypeScript… every language can read JSON.</div></div>
+    <div class="card rc b" data-s="2"><div class="k">3</div><div class="t">Any transport</div><div class="d">The same message goes through a local pipe or over HTTP.</div></div>
+    <div class="card rc b" data-s="2"><div class="k">4</div><div class="t">Tiny spec</div><div class="d">A few pages. Easy to learn, easy to build.</div></div>
+    <div class="card rc b" data-s="3"><div class="k">5</div><div class="t">AI already speaks JSON</div><div class="d">Our Ep 4 <code>tool_calls</code> were JSON too.</div></div>
+    <div class="card rc b" data-s="3"><div class="k">6</div><div class="t">Proven</div><div class="d">Code editors' Language Server Protocol runs on it. MCP took ideas from it.</div></div>
+  </div>
+  <div class="statement b" data-s="3"><span class="tag">IN SHORT</span>MCP didn't invent a message format. It reused a proven one.</div>
+</section>
+
+<!-- ============ 7 · REQUEST ============ -->
+<section class="slide" id="s7" data-steps="6" data-label="JSON-RPC request"
+ data-notes="Step 0: This is a JSON-RPC request, straight from the spec. Just four fields. Read it in plain English: please run subtract with 42 and 23, this is request number 1. | 1: jsonrpc: always exactly the string 2.0. It says which version of JSON-RPC this is. | 2: method: the name of the function you want to run. | 3: params: the inputs. This one is optional; some methods need no inputs. | 4: id: the request number. A string or a number. The answer will come back with the same id, so you know which answer is yours. | 5: Params come in two styles. By position: an array, 42 then 23, and the order matters. Or by name: an object, minuend 42, subtrahend 23, and the order doesn't matter. Both give 19. Remember this one: MCP always uses the by-name style. | 6: Read the statement.">
+  <div class="eyebrow">JSON-RPC 2.0 · the request</div>
+  <h1>A request has just <em>four fields</em></h1>
+  <div class="req abs"><div class="term"><pre><span class="ln" id="q7a">{</span><span class="ln" id="q7b">  <span class="st">"jsonrpc"</span>: <span class="st">"2.0"</span>,</span><span class="ln" id="q7c">  <span class="st">"method"</span>:  <span class="st">"subtract"</span>,</span><span class="ln" id="q7d">  <span class="st">"params"</span>:  [<span class="nu">42</span>, <span class="nu">23</span>],</span><span class="ln" id="q7e">  <span class="st">"id"</span>:      <span class="nu">1</span></span><span class="ln" id="q7f">}</span></pre></div></div>
+  <div class="card slip abs"><div class="k">In plain English</div>
+    <div class="eng">"Please run <b>subtract</b> with <b>42</b> and <b>23</b>.<br>This is request number <b>1</b>."</div></div>
+  <div class="flds abs" id="flds7">
+    <div class="card fd" id="d7b"><code>jsonrpc</code><div><div class="t">Version tag</div><div class="d">Always exactly <b>"2.0"</b>.</div></div></div>
+    <div class="card fd" id="d7c"><code>method</code><div><div class="t">Which function to run</div><div class="d">A name, like "subtract".</div></div></div>
+    <div class="card fd" id="d7d"><code>params</code><div><div class="t">The inputs</div><div class="d">Optional. An array or an object.</div></div></div>
+    <div class="card fd" id="d7e"><code>id</code><div><div class="t">Request number</div><div class="d">String or number. The answer comes back with the same id.</div></div></div>
+  </div>
+  <div class="card styles abs b" data-s="5"><div class="k" style="color:var(--accent)">params · two styles</div><div class="t">By position, or by name</div>
+    <div class="d">By position (array): order matters</div>
+    <div class="term"><pre><span class="st">"params"</span>: [<span class="nu">42</span>, <span class="nu">23</span>]</pre></div>
+    <div class="d">By name (object): order doesn't matter</div>
+    <div class="term"><pre><span class="st">"params"</span>: {<span class="st">"subtrahend"</span>: <span class="nu">23</span>, <span class="st">"minuend"</span>: <span class="nu">42</span>}</pre></div>
+    <div class="d" style="margin-top:10px">Both return <b>19</b>. <span class="chip dec" style="font-size:16px;padding:5px 10px">MCP always uses by name</span></div></div>
+  <div class="statement b" data-s="6"><span class="tag">REQUEST</span>Four fields: version, method, params, id.</div>
+</section>
+
+<!-- ============ 8 · RESPONSE ============ -->
+<section class="slide" id="s8" data-steps="5" data-label="JSON-RPC response"
+ data-notes="Step 0: Now the answer that comes back. | 1: When it works: jsonrpc 2.0, result 19, and id 1, the same number we sent. | 2: Three rules. A response has result or error. Never both. The id must match the request. And if the server couldn't even read the id, because the JSON was broken, it sends id null. | 3: When it fails: an error object instead of result. Here we asked for a method called foobar, which doesn't exist. Code minus 32601, message: Method not found. | 4: The spec reserves five standard error codes. Parse error: the JSON itself is broken. Invalid request: valid JSON, but not a proper request. Method not found. Invalid params. Internal error. Servers can also define their own codes. | 5: Read the statement.">
+  <div class="eyebrow">JSON-RPC 2.0 · the response</div>
+  <h1>The answer comes back with <em>the same id</em></h1>
+  <div class="lc abs">
+    <div class="lab b" data-s="1"><span class="chip ok">it worked</span></div>
+    <div class="term b" data-s="1"><pre>{<span class="st">"jsonrpc"</span>: <span class="st">"2.0"</span>, <span class="st">"result"</span>: <span class="nu">19</span>, <span class="st">"id"</span>: <span class="nu">1</span>}</pre></div>
+    <div class="lab b" data-s="3"><span class="chip bad">it failed</span><span class="k" style="font-size:16px">we asked for method "foobar"</span></div>
+    <div class="term b" data-s="3"><pre>{<span class="st">"jsonrpc"</span>: <span class="st">"2.0"</span>,
+ <span class="st">"error"</span>: {<span class="st">"code"</span>: <span class="nu">-32601</span>,
+           <span class="st">"message"</span>: <span class="st">"Method not found"</span>},
+ <span class="st">"id"</span>: <span class="st">"1"</span>}</pre></div>
+  </div>
+  <div class="card rules abs b" data-s="2"><div class="k">Three rules</div>
+    <div class="r"><b>1</b><span><strong>result</strong> or <strong>error</strong>. Never both.</span></div>
+    <div class="r"><b>2</b><span>The <strong>id</strong> must match the request.</span></div>
+    <div class="r"><b>3</b><span>Couldn't read the request at all? Then <strong>"id": null</strong>.</span></div></div>
+  <div class="card codes abs b" data-s="4">
+    <div class="cr"><span class="c">-32700</span><span class="m">Parse error</span><span class="w">the JSON is broken</span></div>
+    <div class="cr"><span class="c">-32600</span><span class="m">Invalid Request</span><span class="w">JSON, but not a valid request</span></div>
+    <div class="cr"><span class="c">-32601</span><span class="m">Method not found</span><span class="w">no such method</span></div>
+    <div class="cr"><span class="c">-32602</span><span class="m">Invalid params</span><span class="w">wrong inputs</span></div>
+    <div class="cr"><span class="c">-32603</span><span class="m">Internal error</span><span class="w">it broke on the server side</span></div></div>
+  <div class="statement b" data-s="5"><span class="tag">RESPONSE</span>result or error, plus the same id.</div>
+</section>
+
+<!-- ============ 9 · ID + NOTIFICATIONS ============ -->
+<section class="slide" id="s9" data-steps="5" data-label="Why the id matters"
+ data-notes="Step 0: Why does the id matter so much? Watch. | 1: The client sends three requests, one after another: id 1 subtract, id 2 sum, id 3 get_data. It doesn't wait between them. | 2: The answers come back in a different order: 3 first, then 1, then 2. No problem. Each answer carries its id, so it lands in the right slot. | 3: Now a message with no id at all. That's called a notification. It means: just so you know, no reply needed. And the server must not reply. | 4: One more thing in the spec: a batch. You can send many requests in one array. Good to know, but MCP removed batching in its 2025-06-18 version, so you won't use it in MCP. | 5: Read the statement.">
+  <div class="eyebrow">JSON-RPC 2.0 · id and notifications</div>
+  <h1>The id pairs each answer with <em>its question</em></h1>
+  <div class="card cli abs"><div class="k">Client</div><div class="an">Waiting for answers</div>
+    <div class="slot" id="sl1"><span class="id">id 1</span><span>subtract(42, 23)</span><span class="v">…</span></div>
+    <div class="slot" id="sl2"><span class="id">id 2</span><span>sum(1, 2, 4)</span><span class="v">…</span></div>
+    <div class="slot" id="sl3"><span class="id">id 3</span><span>get_data()</span><span class="v">…</span></div>
+    <div class="slot nt b" data-s="3"><span class="id">no id</span><span>update([1,2,3,4,5])</span><span class="v">no wait</span></div></div>
+  <div class="card srv abs"><div class="k">Server</div><div class="an">Doing the work</div>
+    <div class="slog"><div id="g1">got id 1 · got id 2 · got id 3</div><div id="g2">finished id 3 first (fast one)</div><div id="g3">then id 1, then id 2</div><div id="g4">got "update" · no id</div><div id="g5" class="x">→ sends no reply (by design)</div></div></div>
+  <div class="lane" style="top:360px"></div><div class="k abs" style="left:720px;top:376px;font-size:15px">→ requests</div>
+  <div class="lane" style="top:500px"></div><div class="k abs" style="left:720px;top:516px;font-size:15px">← responses</div>
+  <div class="pkt" id="p9a" style="top:330px"></div><div class="pkt" id="p9b" style="top:470px"></div>
+  <div class="card batch abs b" data-s="4"><div class="term"><pre>[ {…, <span class="st">"id"</span>:<span class="nu">1</span>}, {…, <span class="st">"id"</span>:<span class="nu">2</span>} ]</pre></div>
+    <div class="d"><b>Batch:</b> JSON-RPC lets you send many requests in one array. <b>MCP removed batching</b> (version 2025-06-18), so you won't use it there.</div></div>
+  <div class="statement b" data-s="5"><span class="tag">REMEMBER</span>With an id: a request. Without an id: a notification, no reply.</div>
+</section>
+
+<!-- ============ 10 · JSON-RPC INSIDE MCP ============ -->
+<section class="slide" id="s10" data-steps="5" data-label="JSON-RPC inside MCP"
+ data-notes="Step 0: Here's why we learned JSON-RPC. On the left, the request you already know: please run subtract with 42 and 23. | 1: On the right, a real MCP message: our agent asking an MCP server to run read_file. Look at it. It's the same four fields. An MCP message is a JSON-RPC message. | 2: jsonrpc and id: exactly the same as before. | 3: method: instead of subtract, MCP uses its own fixed name, tools/call. It simply means: run a tool. | 4: params: MCP decides what goes inside: the tool's name, read_file, and its inputs, the path Trends.txt. That's all. (In the newest MCP version there's also a small _meta field with version info. The SDK fills it in for you.) | 5: So MCP doesn't invent a new message format. It's JSON-RPC, plus a short list of agreed method names. The two you'll use most: tools/list, what tools do you have, and tools/call, run this tool.">
+  <div class="eyebrow">JSON-RPC's role in MCP</div>
+  <h1>An MCP message is <em>just a JSON-RPC message</em></h1>
+  <div class="k abs" style="left:140px;top:262px">JSON-RPC · what you just learned</div>
+  <div class="k abs b" data-s="1" style="left:1120px;top:262px">MCP · our agent calling a tool</div>
+  <div class="bx10 abs" style="left:140px"></div>
+  <div class="bx10 abs b" data-s="1" style="left:1120px"></div>
+  <div class="g10 abs">
+    <div class="c10 l">{</div><div></div><div class="c10 r b" data-s="1">{</div>
+    <div class="c10 l" id="l1"><span class="st">"jsonrpc"</span>: <span class="st">"2.0"</span>,</div><div class="tg10 b" data-s="2"><span class="chip ok">same</span></div><div class="c10 r b" data-s="1" id="r1"><span class="st">"jsonrpc"</span>: <span class="st">"2.0"</span>,</div>
+    <div class="c10 l" id="l2"><span class="st">"id"</span>: <span class="nu">1</span>,</div><div class="tg10 b" data-s="2"><span class="chip ok">same</span></div><div class="c10 r b" data-s="1" id="r2"><span class="st">"id"</span>: <span class="nu">7</span>,</div>
+    <div class="c10 l" id="l3"><span class="st">"method"</span>: <span class="st">"subtract"</span>,</div><div class="tg10 b" data-s="3"><span class="chip dec">MCP's name for<br>"run a tool"</span></div><div class="c10 r b" data-s="1" id="r3"><span class="st">"method"</span>: <span class="st">"tools/call"</span>,</div>
+    <div class="c10 l" id="l4"><span class="st">"params"</span>: [<span class="nu">42</span>, <span class="nu">23</span>]</div><div class="tg10 b" data-s="4"><span class="chip dec">which tool +<br>its inputs</span></div><div class="c10 r b" data-s="1" id="r4"><pre><span class="st">"params"</span>: {
+  <span class="st">"name"</span>: <span class="st">"read_file"</span>,
+  <span class="st">"arguments"</span>: {<span class="st">"path"</span>: <span class="st">"Trends.txt"</span>}
+}</pre></div>
+    <div class="c10 l">}</div><div></div><div class="c10 r b" data-s="1">}</div>
+  </div>
+  <div class="en10 abs" style="left:140px">"Please run <b>subtract</b> with <b>42</b> and <b>23</b>."</div>
+  <div class="en10 abs b" data-s="1" style="left:1120px">"Please run the tool <b>read_file</b> with <b>Trends.txt</b>."</div>
+  <div class="meth10 abs b" data-s="5"><span class="lead">MCP's two key methods:</span><span class="chip dk">tools/list</span><span class="w">what tools do you have?</span><span class="chip dk">tools/call</span><span class="w">run this tool</span></div>
+  <div class="statement b" data-s="5"><span class="tag">MCP</span>Same JSON-RPC message. MCP just agrees on the method names.</div>
+</section>
+
+<!-- ============ 11 · THREE WAYS ============ -->
+<section class="slide" id="s11" data-steps="5" data-label="Three ways to build"
+ data-notes="Step 0: So how do you actually build an MCP server or client? Three ways. Think of them as three levels, each standing on the one below. | 1: Level 1: by hand. Read JSON from the pipe or HTTP, check the method name, build every MCP message shape yourself, handle versions, errors, transports. Great for learning how it works. A lot of code for a real project. | 2: Level 2: an official MCP SDK. There's one for Python, TypeScript, Java and several more languages. It handles the messages, the routing, the transports and the errors. You write your tools. | 3: Level 3: Spring AI. If you already use Spring Boot, it gives you starters, auto-configuration and annotations, so a tool can be a simple annotated method. | 4: Two small corrections to how this is often said. Level 1 isn't 'just JSON-RPC': JSON-RPC is only the slip. You also have to follow every MCP rule on top. And Spring AI isn't a separate implementation: it uses the official Java SDK underneath. The Spring team actually helps maintain that SDK. | 5: In this series we use level 2, the official Java SDK. Plain Java, so you see what really happens.">
+  <div class="eyebrow">Building with MCP</div>
+  <h1>Three ways to build it: <em>three levels</em></h1>
+  <div class="lv abs">
+    <div class="card lvc l1 b" data-s="1"><div class="lvl"><b>1</b><span class="k">from scratch</span></div><div class="t">Plain JSON-RPC, by hand</div><div class="sub">any language</div>
+      <div class="li"><span class="n">You write it all:</span><br>· read and parse JSON<br>· route method names<br>· every MCP message shape<br>· versions, errors, transports</div>
+      <div class="li" style="margin-top:12px"><span class="y">Good for:</span> learning how it works</div></div>
+    <div class="card lvc l2 b" data-s="2" id="lv2"><div class="lvl"><b>2</b><span class="k">official toolkit</span></div><div class="t">MCP SDK</div><div class="sub">Python · TypeScript · Java · and more</div>
+      <div class="li"><span class="y">Done for you:</span><br>· messages and routing<br>· stdio + HTTP transports<br>· versions and errors<br><span class="n">You write:</span> your tools</div>
+      <div class="li" style="margin-top:12px"><span class="y">Good for:</span> most projects</div></div>
+    <div class="card lvc l3 b" data-s="3"><div class="lvl"><b>3</b><span class="k">framework</span></div><div class="t">Spring AI</div><div class="sub">built on the MCP Java SDK</div>
+      <div class="li"><span class="y">Adds on top:</span><br>· Spring Boot starters<br>· auto-configuration<br>· annotations: a tool is an annotated method<br><span class="n">You write:</span> your tools</div>
+      <div class="li" style="margin-top:12px"><span class="y">Good for:</span> Spring Boot apps</div></div>
+  </div>
+  <div class="fixes abs b" data-s="4">
+    <div class="card fix"><b>FIX 1</b>Level 1 is more than JSON-RPC: you must also follow every MCP rule on top.</div>
+    <div class="card fix"><b>FIX 2</b>Spring AI is not a separate way: it uses the Java SDK underneath.</div></div>
+  <div class="statement b" data-s="5"><span class="tag">THIS SERIES</span>We use level 2: the official MCP Java SDK.</div>
+</section>
+
+<!-- ============ 12 · JAVA SDK ============ -->
+<section class="slide" id="s12" data-steps="3" data-label="The MCP Java SDK"
+ data-notes="Step 0: The official MCP Java SDK, from modelcontextprotocol.io. One Maven dependency, Java 17 or newer. It gives you both sides: server and client, with a sync API or an async one, over stdio or Streamable HTTP. | 1: One important thing. MCP changed a lot in July 2026. So the SDK has two generations side by side. Modern, for the 2026-07-28 version: no handshake, no session; every request carries everything it needs. | 2: Legacy, for 2025-11-25 and earlier: client and server first shake hands with initialize, then keep a session. Legacy is not deprecated: lots of apps still speak it. | 3: The rule: match the other side. A modern client can't talk to a legacy server, and the other way round. Also note: the modern API may still change in small releases until version 3.0.">
+  <div class="eyebrow">Our toolkit</div>
+  <h1>The official <em>MCP Java SDK</em></h1>
+  <div class="card facts abs">
+    <div class="r"><span class="k">Maven</span><code>io.modelcontextprotocol.sdk:mcp</code></div>
+    <div class="r"><span class="k">Java</span><span>17 or newer</span></div>
+    <div class="r"><span class="k">Both sides</span><span>MCP server and MCP client</span></div>
+    <div class="r"><span class="k">Style</span><span>sync or async API</span></div>
+    <div class="r"><span class="k">Transports</span><span>stdio · Streamable HTTP</span></div>
+    <div class="r"><span class="k">Made with</span><span>the Spring AI team</span></div></div>
+  <div class="gens abs">
+    <div class="card gen mod b" data-s="1"><div class="k" style="color:var(--accent)">Modern</div><div class="t">Stateless</div><div class="v">spec 2026-07-28</div>
+      <div class="li">· no handshake, no session<br>· every request carries its version and capabilities in <b>_meta</b><br>· optional <b>server/discover</b><br>· package <b>…modern</b></div></div>
+    <div class="card gen b" data-s="2"><div class="k">Legacy</div><div class="t">Session</div><div class="v">spec 2025-11-25 and earlier</div>
+      <div class="li">· starts with an <b>initialize</b> handshake<br>· then a session<br>· still widely used<br>· not deprecated</div></div></div>
+  <div class="card warn abs b" data-s="3"><b>Match the other side.</b> A modern client can't talk to a legacy server, or the other way round. The modern API may still change in minor releases until SDK 3.0.</div>
+</section>
+
+<!-- ============ 12b · BIG-PICTURE ARCHITECTURE ============ -->
+<section class="slide" id="sA" data-steps="4" data-label="MCP architecture"
+ data-notes="Step 0: Here's the whole MCP picture on one page. Start on the left: the host. The host is the AI app itself: our Java agent, or Claude Desktop, or VS Code. It runs the agent loop and talks to the LLM. | 1: Inside the host: MCP clients. A client is a small connector. One client for each server. Its job: ask the server what it offers, and call it when the LLM needs something. The SDK gives us this; we don't write it. | 2: On the right: MCP servers. A server is a small program that wraps a real system, like your disk or GitHub, and offers it in MCP's standard way. Inside, it offers tools: the actions it can do, like read_file or create_issue. | 3: Now the wiring. Each client talks to exactly one server, using MCP messages, which are JSON-RPC. A local server talks over stdio; a remote one over HTTP. And behind each server sits the real thing: your disk, the GitHub API. | 4: So in one line: the host uses clients, each client talks to one server, and each server wraps a real system.">
+  <div class="eyebrow">MCP architecture</div>
+  <h1>The big picture: <em>host, client, server</em></h1>
+  <svg class="wires" id="wA" viewBox="0 0 1920 1080"></svg>
+  <div class="llmA abs"><div class="k">The LLM</div><div class="t">qwen3.5:4b</div><div class="d">thinks, asks for tools</div></div>
+  <div class="hostA abs"><div class="k">MCP host · the AI app</div><div class="t">Our Java agent</div><div class="ex">or Claude Desktop, VS Code…</div>
+    <div class="loopA"><b>Agent loop</b>chat with the LLM<br>→ tool call<br>→ result<br>→ repeat</div></div>
+  <div class="cA b" data-s="1" style="top:400px"><div class="t">MCP client 1</div><div class="d">for files-server</div></div>
+  <div class="cA b" data-s="1" style="top:562px"><div class="t">MCP client 2</div><div class="d">for github-server</div></div>
+  <div class="card sA b" data-s="2" style="top:322px"><div class="hd"><span class="k" style="font-size:15px">MCP server</span><span class="t">files-server</span></div>
+    <div class="tlA"><b>Tools</b><span>read_file</span><span>list_files</span><span>save_file</span></div>
+    <div class="wrapA">wraps → your disk</div></div>
+  <div class="card sA b" data-s="2" style="top:520px"><div class="hd"><span class="k" style="font-size:15px">MCP server</span><span class="t">github-server</span></div>
+    <div class="tlA"><b>Tools</b><span>list_issues</span><span>create_issue</span></div>
+    <div class="wrapA">wraps → GitHub's web API</div></div>
+  <div class="rA b" data-s="3" style="top:353px">Your disk<small>real files</small></div>
+  <div class="rA b" data-s="3" style="top:551px">GitHub<small>its web API</small></div>
+  <div class="wA b" data-s="3" style="top:352px"><span class="m">MCP · JSON-RPC</span><br><span class="chip">local · stdio</span></div>
+  <div class="wA b" data-s="3" style="top:548px"><span class="m">MCP · JSON-RPC</span><br><span class="chip">remote · HTTP</span></div>
+  <div class="defs abs">
+    <div class="card dA"><i style="background:var(--navy)"></i><div><div class="t">Host</div><div class="d">The AI app. Runs the loop, talks to the LLM.</div></div></div>
+    <div class="card dA b" data-s="1"><i style="background:var(--accent)"></i><div><div class="t">MCP client</div><div class="d">A connector inside the host. One per server. The SDK gives it to you.</div></div></div>
+    <div class="card dA b" data-s="2"><i style="background:#fff;border:3px solid var(--navy)"></i><div><div class="t">MCP server</div><div class="d">A small program that wraps a real system and offers its tools.</div></div></div>
+  </div>
+  <div class="statement b" data-s="4"><span class="tag">IN ONE LINE</span>Host uses clients. Each client talks to one server.</div>
+</section>
+
+<!-- ============ 13 · ARCHITECTURE ============ -->
+<section class="slide" id="s13" data-steps="5" data-label="Host, client, server"
+ data-notes="Step 0: Now the same picture, step by step, with our own project. First, the host: the AI app itself. Our Java agent is a host. So are Claude Desktop and VS Code. It runs the Episode 4 loop and talks to the LLM. | 1: Inside the host: MCP clients. One client for each server it connects to. The client is the part that speaks MCP. | 2: And the MCP servers: programs that offer tools. Our files-server runs on the same laptop, started by the host. A GitHub server can run far away, on the internet. | 3: Each client keeps its own connection to exactly one server. Two servers, two clients. | 4: Think of the port from the title slide, like USB-C. The host is the laptop. The client is the port. The server is the device you plug in. | 5: Notice: the LLM sits outside all of this. It never connects to an MCP server. The host does.">
+  <div class="eyebrow">MCP architecture</div>
+  <h1>Host, client, server: <em>in our project</em></h1>
+  <div class="llm13 abs"><div class="k">The LLM · Ollama</div><div class="an" style="font-size:30px">qwen3.5:4b</div><div class="d">thinks and asks for tools, like Ep 4. Never speaks MCP.</div></div>
+  <svg class="wires" id="w13" viewBox="0 0 1920 1080"></svg>
+  <div class="host abs"><div class="k">MCP host · the AI app</div><div class="an" style="margin-bottom:8px">Our Java agent</div>
+    <div class="ex"><span>also: Claude Desktop</span><span>VS Code</span></div>
+    <div class="loop">the Ep 4 loop: chat → tool call → result</div></div>
+  <div class="cl b" data-s="1" style="left:860px;top:560px"><div class="t">MCP client 1</div><div class="d">connects to files-server</div></div>
+  <div class="cl b" data-s="1" style="left:860px;top:700px"><div class="t">MCP client 2</div><div class="d">connects to github-server</div></div>
+  <div class="card sv b" data-s="2" style="top:530px"><div class="t">files-server</div><div class="d">our read_file, list_files, save_file</div><span class="chip">local · stdio</span></div>
+  <div class="card sv b" data-s="2" style="top:700px"><div class="t">github-server</div><div class="d">issues, pull requests</div><span class="chip">remote · Streamable HTTP</span></div>
+  <div class="wlab13 b" data-s="3" style="left:1188px;top:560px">1 : 1</div>
+  <div class="wlab13 b" data-s="3" style="left:1188px;top:722px">1 : 1</div>
+  <div class="card usb abs b" data-s="4"><b>Laptop</b> = host<br><b>Port</b> = client<br><b>Device</b> = server</div>
+  <div class="statement b" data-s="5"><span class="tag">KEY</span>The LLM never talks to a server. The host does.</div>
+</section>
+
+<!-- ============ 14 · TWO WAYS TO CONNECT ============ -->
+<section class="slide" id="s14" data-steps="4" data-label="Two ways to connect"
+ data-notes="Step 0: How does a host actually reach an MCP server? There are two ways. The messages are the same JSON-RPC either way. Only the delivery changes. | 1: Way one: stdio. The server runs on the same computer. The host starts it as a small program, and they talk through that program's input and output, stdin and stdout. No network, no login. Perfect for things on your own machine. | 2: Way two: Streamable HTTP. The server runs as a web service. It can be on another machine, in the cloud, or even on localhost. The host sends each message as an HTTP request, and the server can stream answers back. Many people can share one server, and it can ask for sign-in. | 3: Some examples. A files server: stdio, because it needs your own disk. A GitHub server: usually HTTP, because GitHub runs one online for you. A database server: either. stdio for a database on your laptop, HTTP when a whole team shares it. | 4: Read the statement.">
+  <div class="eyebrow">Connecting to an MCP server</div>
+  <h1>Two ways to <em>connect</em></h1>
+  <div class="tw">
+    <div class="card way b" data-s="1"><div class="k">Way 1</div><div class="t">stdio</div>
+      <div class="pic"><div class="zone"><span class="zl">your computer</span>
+        <div class="bx host">Host</div><div class="pipe"><span>stdin / stdout</span></div><div class="bx srv">MCP server</div></div></div>
+      <div class="li">The host <b>starts the server</b> as a small program on the same computer.<br>No network. No login.</div></div>
+    <div class="card way b" data-s="2"><div class="k">Way 2</div><div class="t">Streamable HTTP</div>
+      <div class="pic"><div class="zone sm"><span class="zl">your computer</span><div class="bx host">Host</div></div>
+        <div class="pipe net"><span>HTTP</span></div>
+        <div class="zone sm"><span class="zl">anywhere · cloud</span><div class="bx srv">MCP server</div></div></div>
+      <div class="li">The server runs as a <b>web service</b>. Many users can share it.<br>It can ask for sign-in (OAuth).</div></div>
+  </div>
+  <div class="ex14 b" data-s="3">
+    <div class="card exc"><div class="t">Files server</div><span class="chip dk">stdio</span><div class="d">needs your own disk</div></div>
+    <div class="card exc"><div class="t">GitHub server</div><span class="chip">Streamable HTTP</span><div class="d">GitHub runs one online for you</div></div>
+    <div class="card exc"><div class="t">Database server</div><span class="chip dk">stdio</span><span class="chip">HTTP</span><div class="d">your laptop's DB: stdio · a shared team DB: HTTP</div></div>
+  </div>
+  <div class="statement b" data-s="4"><span class="tag">SAME MESSAGES</span>Same JSON-RPC either way. Only the delivery changes.</div>
+</section>
+
+<!-- ============ 15 · FULL FLOW ============ -->
+<section class="slide" id="s15" data-steps="8" data-label="How it talks to the agent"
+ data-notes="Step 0: Let's put it all together with our Episode 4 job: write articles from Trends.txt. Three players: the LLM, our agent as the host with its MCP client, and our files-server. | 1: First, connect. The host starts files-server over stdio. Then a version check. With the legacy protocol: an initialize handshake. With the newest, 2026-07-28: no handshake; the version travels inside every request. | 2: The client asks: tools/list. What tools do you have? | 3: The server answers with three tools: read_file, list_files, save_file. Each with a name, a description and an input schema. | 4: Now the host does the same thing as Episode 4: it sends the task to the LLM, plus these tools in the 'tools' field. The LLM doesn't know or care that they came from MCP. | 5: The LLM replies with a tool call: read_file, path Trends.txt. Exactly like last episode. | 6: Here's the new part. Instead of running a Java method itself, the host's MCP client sends tools/call to the server: name read_file, arguments path Trends.txt, as JSON-RPC. | 7: The server runs it, Files.readString, and sends a result: content, type text, the four topics. The host adds it to the history as a tool message, and the loop goes on, just like Episode 4. | 8: Read the statement. The loop didn't change. Only where the tool runs changed.">
+  <div class="eyebrow">Putting it together</div>
+  <h1>Same Ep 4 loop. The tools now live <em>in a server.</em></h1>
+  <div class="card act dk" id="x15a" style="left:140px"><div class="k">The LLM · Ollama</div><div class="t">qwen3.5:4b</div><div class="d">speaks chat + tool_calls<br>never speaks MCP</div></div>
+  <div class="card act" id="x15b" style="left:760px"><div class="k">MCP host</div><div class="t">Our Java agent</div><div class="d">Ep 4 loop + history</div><div class="mini"><span class="c">MCP client</span><span>talks to the server</span></div></div>
+  <div class="card act" id="x15c" style="left:1380px"><div class="k">MCP server · stdio</div><div class="t">files-server</div><div class="mini"><span>read_file</span><span>list_files</span><span>save_file</span></div><div class="d" style="margin-top:6px">plain Java: Files.readString…</div></div>
+  <div class="lane15"></div>
+  <div class="pkt" id="p15" style="top:478px"></div>
+  <div class="card log15 abs">
+    <div class="l15 hd"><span>#</span><span>FROM → TO</span><span>MESSAGE</span><span>WHAT IT SAYS</span></div>
+    <div class="l15" id="r151"><span class="n">1</span><span class="dir">host → server</span><span class="m">connect + version</span><span class="w">legacy: initialize handshake · 2026-07-28: version inside every request</span></div>
+    <div class="l15" id="r152"><span class="n">2</span><span class="dir">host → server</span><span class="m">tools/list</span><span class="w">"What tools do you have?"</span></div>
+    <div class="l15" id="r153"><span class="n">3</span><span class="dir">server → host</span><span class="m">result: 3 tools</span><span class="w">read_file · list_files · save_file, each with name, description, inputSchema</span></div>
+    <div class="l15" id="r154"><span class="n">4</span><span class="dir">host → LLM</span><span class="m">task + tools</span><span class="w">the same "tools" field as Ep 4</span></div>
+    <div class="l15" id="r155"><span class="n">5</span><span class="dir">LLM → host</span><span class="m">tool_calls</span><span class="w">read_file(path: "Trends.txt")</span></div>
+    <div class="l15" id="r156"><span class="n">6</span><span class="dir">host → server</span><span class="m">tools/call</span><span class="w">{"name": "read_file", "arguments": {"path": "Trends.txt"}}</span></div>
+    <div class="l15" id="r157"><span class="n">7</span><span class="dir">server → host</span><span class="m">result</span><span class="w">content: [{type: "text", text: "RAG, MCP…"}] → role "tool" → loop again</span></div>
+  </div>
+  <div class="statement b" data-s="8"><span class="tag">EPISODE 5</span>The loop didn't change. Only where the tool runs did.</div>
+</section>
+
+<!-- ============ 16 · HANDS ON ============ -->
+<section class="slide" id="s16" data-steps="4" data-label="Hands on"
+ data-notes="Step 0: Enough slides. Let's build it. We take our three tools out of the Episode 4 agent and put them in their own MCP server. | 1: Step 1: build files-server with the MCP Java SDK. For each tool: a name, a description, an input schema, and the plain Java method that runs it. | 2: Step 2: run it over stdio, and test it with MCP Inspector, the official testing tool. We'll see the real tools/list and tools/call JSON-RPC messages. | 3: Step 3: turn our Episode 4 agent into an MCP host. Its MCP client lists the tools, hands them to Ollama, and sends tools/call when the LLM asks. | 4: Step 4: run the same Trends.txt job. Same result: rag.md and mcp.md. But now any MCP app that speaks the same protocol version can plug into our files-server too.">
+  <div class="eyebrow">Hands on</div>
+  <h1>Now let's build it with the <em>Java SDK</em></h1>
+  <div class="steps16 abs">
+    <div class="card st b" data-s="1"><div class="k">Step 1</div><div class="t">Build files-server</div><code>read_file
+list_files
+save_file</code><div class="d">Each tool: name, description, input schema, Java method.</div></div>
+    <div class="card st b" data-s="2"><div class="k">Step 2</div><div class="t">Run + inspect</div><code>stdio
+MCP Inspector</code><div class="d">See the real tools/list and tools/call messages.</div></div>
+    <div class="card st b" data-s="3"><div class="k">Step 3</div><div class="t">Agent becomes a host</div><code>list tools → Ollama
+tool_call → tools/call</code><div class="d">The Ep 4 loop, now with an MCP client.</div></div>
+    <div class="card st b" data-s="4"><div class="k">Step 4</div><div class="t">Run the job</div><code>Trends.txt →
+rag.md, mcp.md</code><div class="d">Same result. Now any MCP app can plug in.</div></div>
+  </div>
+  <div class="flow16 abs b" data-s="3"><div class="nd dk">qwen3.5:4b</div><div class="ar">⇄</div><div class="nd">Java agent (host)</div><div class="ar">→</div><div class="nd bl">MCP client</div><div class="ar">→ stdio →</div><div class="nd dk">files-server</div><div class="ar">→</div><div class="nd">Files.readString</div></div>
+  <div class="foot b" data-s="4"><span class="tag">BUILT ONCE</span>Our tools now work with any MCP app.</div>
+</section>
+
+<div class="progress" id="prog"></div>
+</div>
+<div class="hint" id="hint">→ / click: next · ← back · A: auto on/off · N: notes · H: hide</div>
+<div id="auto" class="off"><span id="autoL">AUTO OFF</span><span class="ring"><i id="autoBar"></i></span></div>
+<div id="notes"></div>
+
+<script>
+{
+const $=s=>document.querySelector(s);
+const all=s=>[...document.querySelectorAll(s)];
+let RUN=0;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const NS='http://www.w3.org/2000/svg';
+
+/* draw wires from a list of [x1,y1,x2,y2,cls,id] */
+function wires(svg,list){svg.innerHTML='';list.forEach(([x1,y1,x2,y2,c,id])=>{const p=document.createElementNS(NS,'path');const mx=(x1+x2)/2;p.setAttribute('d',`M${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`);p.setAttribute('class','wp '+c);p.id=id;svg.appendChild(p)})}
+function on(id,v){const e=document.getElementById(id);if(e)e.classList.toggle('on',v)}
+
+/* packet fly: centre from x1 to x2 */
+function fly(el,text,x1,x2,cls){el.className='pkt '+cls;el.textContent=text;el.style.transition='none';el.style.opacity=1;const w=el.offsetWidth;el.style.left=(x1-w/2)+'px';void el.offsetWidth;el.style.transition='';el.style.left=(x2-w/2)+'px'}
+function hide(el){el.style.opacity=0}
+
+/* ---------- A ---------- */
+function s2(step){
+  all('#s2 .a1').forEach((e,i)=>{e.style.transitionDelay=(i*.18)+'s';e.classList.toggle('hide',step<1)});
+  all('#s2 .a2,#s2 .a3').forEach((e,i)=>{e.style.transitionDelay=(i*.12)+'s';e.classList.toggle('hide',step<2)});
+  all('#s2 .blk').forEach(e=>e.classList.toggle('dup',step===3));
+}
+
+/* ---------- B: wires agent → band → every server ---------- */
+const CXc=[390,960,1530];let w='';
+CXc.forEach((x,i)=>{w+=`<path class="wpc" id="u${i}" d="M${x} 438 V500"/>`;w+=`<path class="wpc" id="v${i}" d="M${x} 564 V610"/>`});
+$('#svC').innerHTML=w;
+function s3(step){
+  all('#s3 .old').forEach(e=>e.classList.toggle('gone',step>=1));
+  all('#s3 .msrv').forEach((e,i)=>{e.style.transitionDelay=(i*.15)+'s';e.classList.toggle('hide',step<1)});
+  all('#s3 .cli').forEach((e,i)=>{e.style.transitionDelay=(i*.15)+'s';e.classList.toggle('on',step>=2)});
+  [0,1,2].forEach(i=>{$('#u'+i).classList.toggle('on',step>=3);$('#v'+i).classList.toggle('on',step>=3)});
+}
+
+/* ---------- S4 ---------- */
+function st(el,t,c){el.textContent=t;el.className='status'+(c?' '+c:'')}
+async function s4(step,prev){
+  const tok=RUN,fn=$('#fn4'),p=$('#p4'),L=$('#stL4'),R=$('#stR4'),res=$('#res4');hide(p);
+  fn.classList.toggle('away',step>=1);
+  if(step===0){res.textContent='19';st(L,'local call: subtract() is right here','ok');st(R,'idle');return}
+  if(step===1){res.textContent='?';st(L,'subtract() is not here anymore…','run');st(R,'subtract() lives here now');return}
+  if(step>=2&&prev!==1){res.textContent='19';st(L,'got 19 · looked like a normal call','ok');st(R,'ran subtract(42, 23) = 19','ok');return}
+  res.textContent='?';st(L,'1 · packing: subtract, 42, 23','run');st(R,'waiting…');
+  await sleep(900);if(tok!==RUN)return;
+  fly(p,'subtract · 42 · 23',600,1360,'to');st(L,'2 · sending…','run');
+  await sleep(1250);if(tok!==RUN)return;hide(p);
+  st(R,'3 · unpack → run subtract(42, 23)','run');await sleep(1100);if(tok!==RUN)return;
+  st(R,'= 19 · packing the answer','ok');await sleep(700);if(tok!==RUN)return;
+  fly(p,'result · 19',1360,600,'back');st(L,'4 · answer on its way…','run');
+  await sleep(1250);if(tok!==RUN)return;hide(p);
+  res.textContent='19';st(L,'got 19 · looked like a normal call','ok');
+}
+
+/* ---------- S5 ---------- */
+function s5(step){['a','b','d'].forEach(k=>$('#f5'+k).classList.toggle('fade',step>=5));$('#f5c').classList.toggle('win',step>=5)}
+
+/* ---------- S7 ---------- */
+function s7(step){
+  const m={1:'b',2:'c',3:'d',4:'e'};
+  document.querySelectorAll('#s7 .ln').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('#s7 .fd').forEach(e=>e.classList.remove('on'));
+  if(m[step]){$('#q7'+m[step]).classList.add('on');$('#d7'+m[step]).classList.add('on')}
+  if(step===5)$('#q7d').classList.add('on');
+  $('#flds7').style.opacity=step>=5?0:1;
+}
+
+/* ---------- S9 ---------- */
+const V9={1:'19',2:'7',3:'["hello",5]'};
+function slots9(got,flash){[1,2,3].forEach(i=>{const s=$('#sl'+i);const g=got.includes(i);s.classList.toggle('got',g);s.classList.toggle('flash',i===flash);s.querySelector('.v').textContent=g?V9[i]:'…'})}
+function glog(n){for(let i=1;i<=5;i++)$('#g'+i).classList.toggle('in',i<=n)}
+async function s9(step,prev){
+  const tok=RUN,a=$('#p9a'),b=$('#p9b');hide(a);hide(b);
+  const anim=prev===step-1;
+  if(step===0){slots9([]);glog(0);return}
+  if(step===1){slots9([]);if(!anim){glog(1);return}glog(0);
+    for(const [t,i] of [['id 1 · subtract',1],['id 2 · sum',2],['id 3 · get_data',3]]){fly(a,t,430,1500,'to');await sleep(900);if(tok!==RUN)return}
+    hide(a);glog(1);return}
+  if(step===2){if(!anim){slots9([1,2,3]);glog(3);return}slots9([]);glog(1);const got=[];
+    for(const i of [3,1,2]){fly(b,'id '+i+' · '+V9[i],1500,430,'back');await sleep(1150);if(tok!==RUN)return;got.push(i);slots9(got,i);glog(i===3?2:3)}
+    hide(b);await sleep(500);if(tok===RUN)slots9(got);return}
+  slots9([1,2,3]);
+  if(step===3&&anim){glog(3);fly(a,'update [1,2,3,4,5] · no id',430,1500,'note');await sleep(1250);if(tok!==RUN)return;hide(a);glog(4);await sleep(600);if(tok===RUN)glog(5);return}
+  glog(5);
+}
+
+/* ---------- S10 ---------- */
+function s10(step){
+  const set=(ids,cls)=>ids.forEach(i=>$('#'+i).classList.add(cls));
+  document.querySelectorAll('#s10 .c10').forEach(e=>e.classList.remove('same','mcp'));
+  if(step===2||step===5)set(['l1','r1','l2','r2'],'same');
+  if(step===3||step===5)set(['l3','r3'],'mcp');
+  if(step===4||step===5)set(['l4','r4'],'mcp');
+}
+
+/* ---------- S11 ---------- */
+function s11(step){$('#lv2').classList.toggle('pick',step>=5)}
+
+/* ---------- S12b big picture ---------- */
+wires($('#wA'),[[340,470,390,470,'blue','wA0'],[900,443,1180,408,'blue','wA1'],[900,605,1180,606,'blue','wA2'],[1600,408,1650,408,'blue','wA3'],[1600,606,1650,606,'blue','wA4']]);
+function sA(step){on('wA0',true);['wA1','wA2','wA3','wA4'].forEach(i=>on(i,step>=3))}
+
+/* ---------- S13 ---------- */
+const w13=$('#w13');
+wires(w13,[[470,460,560,460,'blue','w13l'],[1156,602,1360,605,'blue','w13a'],[1156,742,1360,775,'blue','w13b']]);
+function s13(step){on('w13l',true);on('w13a',step>=2);on('w13b',step>=2)}
+
+/* ---------- S15 ---------- */
+const X={L:340,H:960,S:1580};
+const R15=[null,
+ ['H','S','connect + version','to','H','S'],
+ ['H','S','tools/list','to','H','S'],
+ ['S','H','3 tools','back','S','H'],
+ ['H','L','task + tools','to','H','L'],
+ ['L','H','tool_calls: read_file','back','L','H'],
+ ['H','S','tools/call · read_file','to','H','S'],
+ ['S','H','result: RAG, MCP…','back','S','H']];
+const ACT={L:'x15a',H:'x15b',S:'x15c'};
+function rows15(n,now){for(let i=1;i<=7;i++){const r=$('#r15'+i);r.classList.toggle('in',i<=n);r.classList.toggle('now',i===now)}}
+function lit(ks){Object.entries(ACT).forEach(([k,id])=>$('#'+id).classList.toggle('lit',ks.includes(k)))}
+async function s15(step,prev){
+  const tok=RUN,p=$('#p15');hide(p);
+  if(step===0){rows15(0);lit([]);return}
+  const n=Math.min(step,7);
+  if(step===8||prev!==step-1){rows15(n,step===8?0:n);lit(step===8?[]:[R15[n][5]]);return}
+  rows15(n-1,0);const r=R15[n];lit([r[4]]);
+  fly(p,r[2],X[r[0]],X[r[1]],r[3]);
+  await sleep(1200);if(tok!==RUN)return;hide(p);lit([r[5]]);rows15(n,n);
+}
+
+/* ---------- deck engine (same controls as Ep 3 / Ep 4) ---------- */
+const HOOKS={s2,s3,s4,s5,s7,s9,s10,s11,sA,s13,s15};
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0,step=0;
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);$('#stage').style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener('resize',fit);fit();
+let AUTO=false,autoTimer=null;
+function clearAuto(){clearTimeout(autoTimer);autoTimer=null;const b=$('#autoBar');b.style.transition='none';b.style.width='0'}
+function scheduleAuto(ms,tok){if(!AUTO||tok!==RUN)return;const b=$('#autoBar');b.style.transition='none';b.style.width='0';void b.offsetWidth;b.style.transition=`width ${ms}ms linear`;b.style.width='100%';autoTimer=setTimeout(()=>{if(tok===RUN)next()},ms)}
+function render(prevStep,changedSlide,forward){
+  RUN++;clearAuto();const TOK=RUN;
+  slides.forEach((s,i)=>s.classList.toggle('on',i===cur));
+  const s=slides[cur];
+  s.querySelectorAll('[data-s]').forEach(e=>e.classList.toggle('in',+e.dataset.s<=step));
+  const hr=HOOKS[s.id]?HOOKS[s.id](step,changedSlide?-1:prevStep):null;
+  if(forward&&AUTO)Promise.resolve(hr).then(()=>scheduleAuto(5000,TOK));
+  $('#prog').style.width=((cur+(step/(+s.dataset.steps+1)))/slides.length*100)+'%';
+  const n=s.dataset.notes.split('|').map(x=>x.trim());
+  $('#notes').innerHTML=`<b>${cur+1}/${slides.length} · ${s.dataset.label} · step ${step}/${s.dataset.steps}</b><br>`+n.map((x,i)=>i===step?`<span style="color:#fff">▶ ${x}</span>`:`<span style="opacity:.55">${x}</span>`).join('<br>');
+  try{history.replaceState(null,'','#'+(cur+1))}catch(e){}
+}
+function next(){const p=step,max=+slides[cur].dataset.steps;let ch=false;if(step<max)step++;else if(cur<slides.length-1){cur++;step=0;ch=true}else return;render(p,ch,true)}
+function prev(){const p=step;let ch=false;if(step>0)step--;else if(cur>0){cur--;step=+slides[cur].dataset.steps;ch=true}else return;render(p,ch)}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next()}
+  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
+  else if(e.key==='n'||e.key==='N'){const n=$('#notes');n.style.display=n.style.display==='block'?'none':'block'}
+  else if(e.key==='h'||e.key==='H'){const h=$('#hint'),a=$('#auto'),v=h.style.display==='none';h.style.display=v?'block':'none';a.style.display=v?'flex':'none'}
+  else if(e.key==='a'||e.key==='A'){AUTO=!AUTO;$('#auto').classList.toggle('off',!AUTO);$('#autoL').textContent=AUTO?'AUTO ON':'AUTO OFF';if(!AUTO)clearAuto();else scheduleAuto(5000,RUN)}
+});
+document.addEventListener('click',e=>{if(e.target.closest('#notes'))return;next()});
+const m=location.hash.match(/^#(\d+)/);cur=m?Math.min(slides.length-1,Math.max(0,+m[1]-1)):0;
+render(-1,true,true);
+}
+</script>
+</body>
+</html>

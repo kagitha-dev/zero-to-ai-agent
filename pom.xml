@@ -23,6 +23,7 @@
   <modules>
     <module>episodes/ep03-talking-to-llm-java-ollama</module>
     <module>episodes/ep04-tool-calling-java</module>
+    <module>episodes/ep05-mcp-java-sdk</module>
     <!-- Ep 5 onward are added here as each episode is released -->
   </modules>
 

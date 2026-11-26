@@ -1,0 +1,2 @@
+# Ep 5 · Python version: the official MCP Python SDK
+mcp==2.3.0
