@@ -141,6 +141,10 @@ Use **full paths** (on Windows, write `\\` in JSON: `"C:\\Users\\you\\..."`). Th
 - **Safety.** `files-server` only works inside `workspace/`, and `save_file` never overwrites (Ep 4 rule 4).
 - A small local model is not perfect. If it skips a step or misses the duplicate, rerun, or try `qwen3.5:9b`.
 
+## Part 2 · Hello World MCP
+
+[`helloworld/`](helloworld) is the smallest version of all this, written with the SDK's **modern** API: a server with `sayHello` and `getProfile`, a plain client, and a host that puts an Ollama LLM in front of the client (host → client → server). See its [README](helloworld/README.md).
+
 ## Next
 
 [← Ep 4](../ep04-tool-calling-java) · [Ep 6 · RAG →](../ep06-rag-java)
